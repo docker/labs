@@ -1,13 +1,14 @@
-
+# Running a Heterogeneous Azure-hosted Swarm Cluster
+_with both Linux and Windows nodes_
 
 # Introduction
-This tutorial will show you how to build an Azure-hosted Swarm cluster 
-including both a Linux node and a Windows node, then deploy and run an 
+This tutorial will show you how to build an Azure-hosted Swarm cluster
+including both a Linux node and a Windows node, then deploy and run an
 application comprising Linux and Windows Containers on the Swarm.
 
 It demonstrates using a Docker client running on Windows to interact with
 the Swarm cluster, utilizing the Azure CLI to provision the Swarm manager
-and node host VMs. The same approach may be used on Mac OS X or Linux, since 
+and node host VMs. The same approach may be used on Mac OS X or Linux, since
 the Azure CLI is available on those platforms as well.
 
 Here is the sequence of steps you'll follow:
@@ -18,15 +19,15 @@ Here is the sequence of steps you'll follow:
 
 3. [Create Swarm cluster comprising Linux and Windows nodes](#create-swarm-cluster-comprising-linux-and-windows-nodes)
 
-4. [Run heterogeneous Linux / Windows application on Swarm cluster](#run-heterogeneous-linux--windows-application-on-swarm-cluster) 
+4. [Run heterogeneous Linux / Windows application on Swarm cluster](#run-heterogeneous-linux--windows-application-on-swarm-cluster)
 
 # Application Description and Architecture
 The Bike Commuter Weather App is intended for bicycle commuters, for whom
-wind speed and direction are critical parameters - many weather apps leave this 
+wind speed and direction are critical parameters - many weather apps leave this
 out or de-emphasize it. The architecture looks like this:
 
 * Web UI: ASP.NET 4.6 application hosted in a Docker Windows Container
-* Backend Web Service: Python REST web service, wrapping a weather service, 
+* Backend Web Service: Python REST web service, wrapping a weather service,
 hosted in a Docker Linux Container
 
 _**\<\<INSERT Docker-swarm-diagram here\>\>**_
@@ -45,19 +46,19 @@ Open an Admin command prompt:
 
 ## Install Git
 <pre>
-> choco install git -y 
+> choco install git -y
 </pre>
 
 ## Install npm package manager
-Use npm to install Azure CLI (the same approach is used with Mac OS X 
+Use npm to install Azure CLI (the same approach is used with Mac OS X
 and Linux, if you should choose to use one of those as your client platform):
- 
+
 <pre>
 > choco install nodejs.install -y
 </pre>
 
-## Install openssl and other Unix utilities 
-Since openssl and other Unix utilities are referenced by Azure CLI, 
+## Install openssl and other Unix utilities
+Since openssl and other Unix utilities are referenced by Azure CLI,
 install Cygwin and its package manager cyg-get:
 
 <pre>
@@ -67,7 +68,7 @@ install Cygwin and its package manager cyg-get:
 </pre>
 
 ## Install Azure CLI
-_**Open "Cygwin64 Terminal" from the desktop icon and use it for all 
+_**Open "Cygwin64 Terminal" from the desktop icon and use it for all
 remaining commands.**_
 
 <pre>
@@ -82,25 +83,25 @@ Navigate to [Docker Toolbox](https://www.docker.com/products/docker-toolbox)
 to download and run the installer.
 
 # Provision Swarm cluster VM hosts, build and push Images to Registry
-If you don't have an Azure account, you can get a [30-day trial](https://azure.microsoft.com/en-us/free/) with a $200 
+If you don't have an Azure account, you can get a [30-day trial](https://azure.microsoft.com/en-us/free/) with a $200
 credit - this requires a credit card to sign-up, but the card will
 not be charged for the first month's usage.
 
 ## Login using Azure subscription credentials
 _Substitute your Azure Account Id for **yourAzureAccountId** below:_
- 
+
 <pre>
 $ azure login <b>yourAzureAccountId</b>
 </pre>
 
 You'll see a code in the command line window - as the on-screen instructions
-say, go to [aka.ms/devicelogin](https://aka.ms/devicelogin) 
+say, go to [aka.ms/devicelogin](https://aka.ms/devicelogin)
 and enter the code.
 
-_Optional: If you have more than one Azure subscription associated with the 
+_Optional: If you have more than one Azure subscription associated with the
 account, specify the subscription to use in subsequent commands as follows,
-substituting the subscription id (from the Azure portal) for 
-**yourDefaultAzureSubscriptionId** below:_ 
+substituting the subscription id (from the Azure portal) for
+**yourDefaultAzureSubscriptionId** below:_
 
 <pre>
 $ azure account set <b>yourDefaultAzureSubscriptionId</b>
@@ -112,7 +113,7 @@ Change mode to ARM (Azure Resource Manager):
 $ azure config mode arm
 </pre>
 
-Create a resource group which will contain all the resources for 
+Create a resource group which will contain all the resources for
 the Swarm cluster:
 
 <pre>
@@ -120,14 +121,14 @@ $ azure group create -n "cliEastUsSwarmRG" -l "East US"
 </pre>
 
 ## Provision VM host for Windows Swarm node using Azure ARM template
-You'll provision the Windows Swarm node first using an ARM template, 
-since Windows is not yet fully supported by the Azure CLI "azure vm docker 
-create" command. The "cli-win-node_subnet" created by this provisioning step 
+You'll provision the Windows Swarm node first using an ARM template,
+since Windows is not yet fully supported by the Azure CLI "azure vm docker
+create" command. The "cli-win-node_subnet" created by this provisioning step
 is subsequently used by the Linux VM provisioning steps.
 
-_You'll need to substitute a unique node name for the "dnsNameForPublicIP" 
+_You'll need to substitute a unique node name for the "dnsNameForPublicIP"
 parameter before running the following command in place of
-**uniqueWindowsNodeName**, such as "myname-win-node" - this step can take up 
+**uniqueWindowsNodeName**, such as "myname-win-node" - this step can take up
 to 20 minutes to complete:_
 
 <pre>
@@ -135,8 +136,8 @@ $ azure group deployment create cliEastUsSwarmRG cli-win-node --template-uri htt
 </pre>
 
 ## Provision VM host for Swarm Manager and Registry using Azure docker create
-Below you will create the Swarm manager VM with its own NIC, Public IP Address 
-and a new storage account, sharing the Windows VM host subnet created earlier. 
+Below you will create the Swarm manager VM with its own NIC, Public IP Address
+and a new storage account, sharing the Windows VM host subnet created earlier.
 Ubuntu is used in this tutorial for the Linux VMs.
 
 _This step can take up to 15 minutes to complete._
@@ -145,19 +146,19 @@ _This step can take up to 15 minutes to complete._
 $ azure vm docker create --resource-group cliEastUsSwarmRG --name cli-swarm-master -l "East US" --os-type linux --nic-name clitestnic --public-ip-name clitestpip --vnet-name cli-win-node_vnet --vnet-subnet-name cli-win-node_subnet --storage-account-name cliswarmstorageacct --vnet-address-prefix 10.0.0/16  --vnet-subnet-address-prefix 10.0.0/24 --image-urn canonical:UbuntuServer:14.04.4-LTS:14.04.201602220 --admin-username Azure123 --admin-password 'Azure!23'
 </pre>
 
-_When prompted for "public IP domain name", provide a **uniqueManagerName** that 
-will be unique in the eastus.cloudapp.azure.com DNS namespace, such as 
+_When prompted for "public IP domain name", provide a **uniqueManagerName** that
+will be unique in the eastus.cloudapp.azure.com DNS namespace, such as
 "myname-manager"_
 
 This will be DNS-accessible as **uniqueManagerName**.eastus.cloudapp.azure.com
 
 ### Configure Manager VM host Docker Engine startup options
-For the purposes of this tutorial, you will disable TLS for the entire swarm, 
+For the purposes of this tutorial, you will disable TLS for the entire swarm,
 since TLS is not working with the Windows Docker Engine as of TP4.
 
 _For **uniqueManagerName** below, substitute the name you supplied above,
 such as "myname-manager"_:
- 
+
 <pre>
 $ ssh <b>uniqueManagerName</b>.eastus.cloudapp.azure.com -l Azure123
 </pre>
@@ -186,7 +187,7 @@ In order to utilize the Label-based deployment described in
 (#run-heterogeneous-linux--windows-application-on-swarm-cluster)
 below, you'll need a Docker registry.
 
-Since Windows, as of TP4, does not support Docker Hub, you'll set up a 
+Since Windows, as of TP4, does not support Docker Hub, you'll set up a
 local Docker Registry, sharing the same host VM as the Swarm Manager.
 
 <pre>
@@ -203,8 +204,8 @@ _This step can take up to 15 minutes to complete._
 $ azure vm docker create --resource-group cliEastUsSwarmRG --name cli-linux-node -l "East US" --os-type linux --nic-name clitestnic-linux-node --public-ip-name clitestpip-linux-node --vnet-name cli-win-node_vnet --vnet-subnet-name cli-win-node_subnet --storage-account-name cliswarmstorageacct --vnet-address-prefix 10.0.0/16  --vnet-subnet-address-prefix 10.0.0/24 --image-urn canonical:UbuntuServer:14.04.4-LTS:14.04.201602220 --admin-username Azure123 --admin-password 'Azure!23'
 </pre>
 
-_When prompted for "public IP domain name", provide a **uniqueLinuxNodeName** 
-that will be unique in the eastus.cloudapp.net DNS namespace, such as 
+_When prompted for "public IP domain name", provide a **uniqueLinuxNodeName**
+that will be unique in the eastus.cloudapp.net DNS namespace, such as
 "myname-linux-node"_
 
 ### Configure Linux node VM Docker Engine startup options
@@ -321,7 +322,7 @@ PS > docker push <b>uniqueManagerName</b>.eastus.cloudapp.azure.com:5000/rushhou
 </pre>
 
 # Create Swarm cluster comprising Linux and Windows nodes
-You'll use the docker client on your workstation to create the Swarm cluster. 
+You'll use the docker client on your workstation to create the Swarm cluster.
 The sequence of steps is:
 
 1. Create Swarm cluster id on the Manager host
@@ -341,12 +342,12 @@ $ docker -H tcp://<b>uniqueManagerName</b>.eastus.cloudapp.azure.com:2376 run --
 </pre>
 
 _The cluster id is the guid code which is output at the end of the above
-command - save this as you will need it later on, referred to as 
+command - save this as you will need it later on, referred to as
 **myClusterId**._
 
 ## Join Linux node to Swarm cluster
-For **uniqueLinuxNodeName** below, substitute the unique Linux host name you recorded 
-above, for **linuxNodeAdvertiseIP** below, the IP address, and for 
+For **uniqueLinuxNodeName** below, substitute the unique Linux host name you recorded
+above, for **linuxNodeAdvertiseIP** below, the IP address, and for
 **myClusterId**, the cluster id:_
 
 <pre>
@@ -354,8 +355,8 @@ $ docker -H tcp://<b>uniqueLinuxNodeName</b>.eastus.cloudapp.azure.com:2375 run 
 </pre>
 
 ## Join Windows node to Swarm cluster
-_For **uniqueWindowsNodeName** below, substitute the unique Windows host name you recorded 
-above, for **windowsNodeAdvertiseIP**, the IP address, and for **myClusterId**, 
+_For **uniqueWindowsNodeName** below, substitute the unique Windows host name you recorded
+above, for **windowsNodeAdvertiseIP**, the IP address, and for **myClusterId**,
 the cluster id:_
 
 <pre>
@@ -369,7 +370,7 @@ you recorded above, and for **myClusterId**, the cluster id:_
 $ docker -H tcp://<b>uniqueManagerName</b>.eastus.cloudapp.azure.com:2376 run -d -p 2375:2375 swarm manage token://<b>myClusterId</b>
 </pre>
 
-Set SWARM_HOST environment variable on the workstation so that subsequent 
+Set SWARM_HOST environment variable on the workstation so that subsequent
 docker client commands default to using the Swarm Manager.
 
 _For **uniqueManagerName** below, substitute the name you supplied above,
@@ -378,7 +379,7 @@ such as "myname-manager":_
 <pre>
 $ export DOCKER_HOST=<b>uniqueManagerName</b>.eastus.cloudapp.azure.com:2375
 </pre>
- 
+
 List the nodes - you should see something like the excerpt below, showing
 both Linux and Windows nodes up. You'll sometimes need to wait up to 1
 minute for the service discovery process to complete, and both nodes to appear:
@@ -431,7 +432,7 @@ api key (note the demo application will run without this key, displaying an erro
 message that the key is required):
 
 <pre>
-$ docker run --name rushhourweatherappservice -d -p 5000:5000 -e constraint:ostypelabel==linuxcompat -e WUNDERGROUND_API_KEY=<b>yourWundergroundApiKey</b> <b>uniqueManagerName</b>.eastus.cloudapp.azure.com:5000/rushhourweatherappservice 
+$ docker run --name rushhourweatherappservice -d -p 5000:5000 -e constraint:ostypelabel==linuxcompat -e WUNDERGROUND_API_KEY=<b>yourWundergroundApiKey</b> <b>uniqueManagerName</b>.eastus.cloudapp.azure.com:5000/rushhourweatherappservice
 </pre>
 
 ## Run App Web UI in a Windows Container on the Swarm cluster
@@ -494,7 +495,7 @@ Name: d73f6f2cf088
 
 ## Try out the running application on the Swarm cluster
 
-_For **uniqueWindowsNodeName** and **uniqueLinuxNodeName** below, substitute the 
+_For **uniqueWindowsNodeName** and **uniqueLinuxNodeName** below, substitute the
 names you supplied above, such as "myname-win-node" and "myname-linux-node"._
 
 Try out the Web UI application from a web browser - navigate to:
@@ -503,7 +504,7 @@ Try out the Web UI application from a web browser - navigate to:
 http://<b>uniqueWindowsNodeName</b>.eastus.cloudapp.azure.com/RushHourWeatherApp
 </pre>
 
-The Web UI Windows application consumes the Linux service - you can directly examine 
+The Web UI Windows application consumes the Linux service - you can directly examine
 the Linux service by navigating to:
 
 <pre>
@@ -512,7 +513,7 @@ http://<b>uniqueLinuxNodeName</b>.eastus.cloudapp.azure.com:5000/today/amrush
 
 # Credits
 * [Stefan Scherer: How to run a Windows Docker Engine in Azure]
-(https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/) - defines an Azure ARM template which improves on the 
+(https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/) - defines an Azure ARM template which improves on the
 [Msft Azure TP4 quickstart-templates](https://github.com/Azure/azure-quickstart-templates), including enabling public TCP listening
 * [Stefan Scherer: Build Docker Swarm binary for Windows the "Docker way"]
 (https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/)- dockerized Swarm Image for Windows
