@@ -1,0 +1,146 @@
+:imagesdir: images
+
+[[Docker_Basics]]
+## Docker Basic Concepts
+
+*PURPOSE*: This chapter introduces the basic terminology of Docker.
+
+[quote, docs.docker.com/]
+Docker is a platform for developers and sysadmins to develop, ship, and run applications. Docker lets you quickly assemble applications from components and eliminates the friction that can come when shipping code. Docker lets you get your code tested and deployed into production as fast as possible.
+
+Docker simplifies software delivery by making it easy to build and share images that contain your application’s entire environment, or _application operating system_.
+
+**What does it mean by an application operating system ?**
+
+Your application typically require a specific version of operating system, application server, JDK, database server, may require to tune the configuration files, and similarly multiple other dependencies. The application may need binding to specific ports and certain amount of memory. The components and configuration together required to run your application is what is referred to as application operating system.
+
+You can certainly provide an installation script that will download and install these components. Docker simplifies this process by allowing to create an image that contains your application and infrastructure together, managed as one component. These images are then used to create Docker containers which run on the container virtualization platform, provided by Docker.
+
+**Main Components of Docker**
+
+Docker has three main components:
+
+. __Images__ are the *build component* of Docker and are the read-only templates defining an application operating system.
+. __Containers__ are the *run component* of Docker and created from images. Containers can be run, started, stopped, moved, and deleted.
+. Images are stored, shared, and managed in a __registry__ and are the *distribution component* of Docker. Docker Hub is a publicly available registry and is available at http://hub.docker.com.
+
+In order for these three components to work together, the *Docker Daemon* runs on a host machine and does the heavy lifting of building, running, and distributing Docker containers. In addition, the *Client* is a Docker binary which accepts commands from the user and communicates back and forth with the Daemon.
+
+.Docker architecture
+image::docker-architecture.png[]
+
+The Client communicates with a Daemon that is either co-located on the same host or on a different host. Use the `pull` command on the Client to request the Daemon to pull an image from the registry. The Daemon then downloads the image from Docker Hub, or whichever registry is configured. Multiple images can be downloaded from the registry and installed on the Daemon host. To run an Image, use the `run` command on the Client to request the Daemon to create a container on-demand based on the image.
+
+**How does a Docker Image work?**
+
+We've already seen that Docker images are read-only templates from which Docker containers are launched. Each image consists of a series of layers. Docker makes use of union file systems to combine these layers into a single image. Union file systems allow files and directories of separate file systems, known as branches, to be transparently overlaid, forming a single coherent file system.
+
+One of the reasons Docker is so lightweight is because of these layers. When you change a Docker image—for example, update an application to a new version— a new layer gets built. Thus, rather than replacing the whole image or entirely rebuilding, as you may do with a virtual machine, only that layer is added or updated. Now you don't need to distribute a whole new image, just the update, making distributing Docker images faster and simpler.
+
+Every image starts from a base image, for example `ubuntu`, a base Ubuntu image, or `fedora`, a base Fedora image. You can also use images of your own as the basis for a new image, for example if you have a base Apache image you could use this as the base of all your web application images.
+
+NOTE: By default, Docker obtains these base images from Docker Hub.
+
+Docker images are then built from these base images using a simple, descriptive set of steps we call instructions. Each instruction creates a new layer in our image. Instructions include actions like:
+
+. Run a command
+. Add a file or directory
+. Create an environment variable
+. Run a process when launching a container
+
+These instructions are stored in a file called a Dockerfile. Docker reads this Dockerfile when you request a build of an image, executes the instructions, and returns a final image.
+
+**How does a Container work?**
+
+A container consists of an operating system, user-added files, and meta-data. As we've seen, each container is built from an image. That image tells Docker what the container holds, what process to run when the container is launched, and a variety of other configuration data. The Docker image is read-only. When Docker runs a container from an image, it adds a read-write layer on top of the image (using a union file system as we saw earlier) in which your application can then run.
+
+### Docker Machine
+
+Machine makes it really easy to create Docker hosts on your computer, on cloud providers and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.
+
+Once your Docker host has been created, it then has a number of commands for managing containers:
+
+. Start, stop, restart container
+. Upgrade Docker
+. Configure the Docker client to talk to a host
+
+Docker Machine was already installed as part of Docker Toolbox during the setup.
+
+Find out more details at link:https://docs.docker.com/machine/[Docker Machine Website].
+
+Open Docker shell, check if docker machine is working:
+
+  docker-machine -v
+
+It shows the output:
+
+  docker-machine version 0.5.0 (04cfa58)
+
+NOTE: The exact version may differ based upon how recently the installation was performed.
+
+### Docker Client
+
+The client communicates with the demon process on your host and let's you work with images and containers.
+
+Check if your client is working using the following command:
+
+  docker -v
+
+It shows the output:
+
+  Docker version 1.9.0, build 76d6bc9
+
+NOTE: The exact version may differ based upon how recently the installation was performed.
+
+The most important options you'll be using frequently are:
+
+. `run` - runs a container
+. `ps`- lists containers
+. `stop` - stops a container
+. `rm` - Removes a container
+
+Get a full list of available commands with
+
+  docker
+
+A more commonly used list of commands is available at <<Common_Docker_Commands>>.
+
+### Verify Docker Configuration
+
+Open Docker shell, check if your Docker Host is running:
+
+  docker-machine ls
+
+You should see the output similar to:
+
+[source, text]
+----
+NAME        ACTIVE   DRIVER       STATE     URL                         SWARM
+default     *        virtualbox   Running   tcp://192.168.99.100:2376   
+----
+
+This machine is shown in "`Running`" state. If the machine state is stopped, start it with:
+
+  docker-machine start default
+
+After it is started you can find out IP address of your Docker Host with:
+
+  docker-machine ip default
+
+We already did this during the setup document, remember? So, this is a good chance to check, if you already added this IP to your hosts file.
+
+Type:
+
+  ping dockerhost
+
+and see if this resolves to the IP address that the docker-machine command printed out. You should see an output as:
+
+[source, text]
+----
+> ping dockerhost
+PING dockerhost (192.168.99.101): 56 data bytes
+64 bytes from 192.168.99.101: icmp_seq=0 ttl=64 time=0.394 ms
+64 bytes from 192.168.99.101: icmp_seq=1 ttl=64 time=0.387 ms
+----
+
+If it does, you're ready to start the workshop.
