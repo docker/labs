@@ -1,0 +1,137 @@
+:imagesdir: images
+
+== Docker Cloud
+
+=== Key Concepts
+
+Docker Cloud is a SaaS that allows you to build, deploy and manage Docker containers in physical servers, virtual machine or cloud providers.
+
+The main concepts of Docker Cloud are: 
+
+- *Nodes* are individual Linux hosts/VMs used to deploy and run your applications. New nodes can be provisioned to increase the capacity. Docker Cloud does not provide hosting services. Nodes are provisioned using physical servers, virtual machine or cloud providers.
+- *Node Clusters* are logical groups of nodes of the same type. Node Clusters allow to scale the infrastructure easily by provisioning more nodes.
+- *Services* are logical groups of containers from the same image. Services make it simple to scale your application across different nodes.
+
+This chapter will show how to use TomEE Docker image and deploy it using Docker Cloud CLI.
+
+=== Docker Cloud CLI
+
+Install Docker Cloud CLI following the https://docs.docker.com/docker-cloud/tutorials/installing-cli/[instructions].
+
+=== Create new Docker Cloud Node
+
+Create a new node cluster:
+
+[source, text]
+----
+docker-cloud nodecluster create -t 1 --tag tomee tomee aws us-west-1 m3.large
+----
+
+This node cluster has a single node (`-t 1`) and uses the tag "`couchbase`" (`--tag couchbase`). Last four parameters are nodecluster name (`couchbase-node`), provider (`aws`), region (`us-west-1`) and nodetype (`m3.large`).
+
+Each node in this node cluster will be given the assigned tag. This will be used later to assign services to a specific node or node cluster.
+
+Deploying a node can take up to 10 minutes.
+
+=== Create a new Docker Cloud Service
+
+Create a Docker Cloud Service:
+
+[source, text]
+----
+docker-cloud service create --tag tomee -p 8080:8080 tomee
+8d3572ae-ad9a-4092-afbc-2b99f26016bc
+----
+
+Start the Service:
+
+[source, text]
+----
+docker-cloud service start 8d3572ae-ad9a-4092-afbc-2b99f26016bc
+----
+
+Check the service logs:
+
+[source, text]
+----
+docker-cloud service logs 8d3572ae-ad9a-4092-afbc-2b99f26016bc
+----
+
+It shows the output as:
+
+[source, text]
+----
+tomee-4eb05078-1 | 2016-03-15T01:15:12.629119545Z INFO - Server version:        Apache Tomcat (TomEE)/8.0.32 (7.0.0-M3)
+tomee-4eb05078-1 | 2016-03-15T01:15:12.629539055Z INFO - Server built:          Feb 2 2016 19:34:53 UTC
+tomee-4eb05078-1 | 2016-03-15T01:15:12.629896543Z INFO - Server number:         8.0.32.0
+tomee-4eb05078-1 | 2016-03-15T01:15:12.630188415Z INFO - OS Name:               Linux
+tomee-4eb05078-1 | 2016-03-15T01:15:12.630430719Z INFO - OS Version:            3.13.0-61-generic
+tomee-4eb05078-1 | 2016-03-15T01:15:12.630779071Z INFO - Architecture:          amd64
+tomee-4eb05078-1 | 2016-03-15T01:15:12.631063161Z INFO - Java Home:             /usr/lib/jvm/java-8-openjdk-amd64/jre
+
+. . .
+
+tomee-4eb05078-1 | 2016-03-15T01:15:15.283837628Z INFO - Assembling app: /usr/local/tomee/webapps/docs
+tomee-4eb05078-1 | 2016-03-15T01:15:15.291932146Z INFO - Deployed Application(path=/usr/local/tomee/webapps/docs)
+tomee-4eb05078-1 | 2016-03-15T01:15:15.311051364Z INFO - At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+tomee-4eb05078-1 | 2016-03-15T01:15:15.336165182Z INFO - Deployment of web application directory /usr/local/tomee/webapps/docs has finished in 76 ms
+tomee-4eb05078-1 | 2016-03-15T01:15:15.341409256Z INFO - Starting ProtocolHandler ["http-nio-8080"]
+tomee-4eb05078-1 | 2016-03-15T01:15:15.348118092Z INFO - Starting ProtocolHandler ["ajp-nio-8009"]
+tomee-4eb05078-1 | 2016-03-15T01:15:15.349340425Z INFO - Server startup in 1162 ms
+----
+
+=== Access Couchbase Server in Docker Cloud
+
+Inspect the Docker Cloud service for the exposed container ports:
+
+[source, text]
+----
+docker-cloud service inspect 8d3572ae-ad9a-4092-afbc-2b99f26016bc | jq ".container_ports"
+----
+
+To be more specific, exact URI for the http://tomee.apache.org/apache-tomee.html[TomEE] main page can be obtained as:
+
+[source, text]
+----
+docker-cloud service inspect 8d3572ae-ad9a-4092-afbc-2b99f26016bc | jq ".container_ports[0].endpoint_uri" | sed 's/tcp/http/g'
+"http://tomee-4eb05078.8d3572ae.svc.dockerapp.io:8080/"
+----
+
+Access the main page of TomEE at http://tomee-4eb05078.8d3572ae.svc.dockerapp.io:8080/ to see:
+
+image::docker-cloud-tomee-landing-page.png[]
+
+=== Terminate the Docker Cloud Service and Node
+
+Check the list of Docker Cloud services running:
+
+[source, text]
+----
+docker-cloud service ps
+NAME            UUID      STATUS       #CONTAINERS  IMAGE         DEPLOYED       PUBLIC DNS                                  STACK
+tomee-4eb05078  8d3572ae  ▶ Running              1  tomee:latest  4 minutes ago  tomee-4eb05078.8d3572ae.svc.dockerapp.io
+----
+
+Terminate the service:
+
+[source, text]
+----
+docker-cloud service terminate tomee-4eb05078
+----
+
+Check the list of nodes:
+
+[source, text]
+----
+docker-cloud node ls
+UUID      FQDN                                                    LASTSEEN        STATUS      CLUSTER        DOCKER_VER
+31572d65  31572d65-5cca-4389-bc4d-4fd473f80b09.node.dockerapp.io  15 seconds ago  ▶ Deployed  tomee-cluster  1.9.1-cs2
+----
+
+Terminate the node as:
+
+[source, text]
+----
+docker-cloud node rm 31572d65
+----
+
