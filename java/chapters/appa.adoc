@@ -1,6 +1,6 @@
 [appendix]
 [[Common_Docker_Commands]]
-## Common Docker Commands
+== Common Docker Commands
 
 Here is the list of commonly used Docker commands:
 
@@ -32,3 +32,11 @@ Here is the list of commonly used Docker commands:
 | Open a shell in to a container | `docker exec -it ${CID} bash`
 | Get container id for an image by a regular expression | `docker ps \| grep wildfly \| awk '{print $1}'`
 |==================
+
+=== Exit code status
+
+The exit code from `docker run` gives information about why the container failed to run or why it exited. The complete list of code is listed:
+
+https://docs.docker.com/engine/reference/run/#exit-status
+
+All other codes are the exit code of the command running in the container.

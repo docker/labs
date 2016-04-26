@@ -28,7 +28,7 @@ An application using Docker containers will typically consist of multiple contai
 | `migrate-to-labels  Recreate containers to add labels
 |====
 
-Docker Compose applications can use "`classic`" container linking that is confined to a single host. Alternatively, it can use multi-host networking introduced in Docker 1.9.
+Docker Compose applications can use networking introduced in Docker 1.9. Read more details about it at https://docs.docker.com/engine/userguide/networking/.
 
 === Multi-container application
 
@@ -61,6 +61,8 @@ services:
       - COUCHBASE_URI=db
     ports:
       - 8080:8080
+    depends_on:
+      - mycouchbase
 ----
 ====
 
@@ -73,6 +75,7 @@ In this Compose file:
 . Environment variable for WildFly container is defined in `environment` attribute
 . Couchbase container is linked with WildFly container using `COUCHBASE_URI`. This is used in the application code as shown at https://github.com/arun-gupta/couchbase-javaee/blob/master/src/main/java/org/couchbase/sample/javaee/Database.java#L44.
 . Port forwarding is achieved using `ports` attribute
+. `depends_on` attribute allows to express dependency between services. In this case, Couchbase will be started before WildFly. Application-level health are still user's responsibility.
 
 === Start Services
 
@@ -317,11 +320,10 @@ The log shows:
 
 === Verify Application
 
-Access the application by invoking the REST API using `curl`:
+Access the application by invoking the REST API using `curl http://dockerhost:8080/airlines/resources/airline`. This will show the following output:
 
 [source, text]
 ----
-curl http://dockerhost:8080/airlines/resources/airline
 [{"travel-sample":{"country":"United States","iata":"Q5","callsign":"MILE-AIR","name":"40-Mile Air","icao":"MLA","id":10,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"TQ","callsign":"TXW","name":"Texas Wings","icao":"TXW","id":10123,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"A1","callsign":"atifly","name":"Atifly","icao":"A1F","id":10226,"type":"airline"}}, {"travel-sample":{"country":"United Kingdom","iata":null,"callsign":null,"name":"Jc royal.britannica","icao":"JRB","id":10642,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"ZQ","callsign":"LOCAIR","name":"Locair","icao":"LOC","id":10748,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"K5","callsign":"SASQUATCH","name":"SeaPort Airlines","icao":"SQH","id":10765,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"KO","callsign":"ACE AIR","name":"Alaska Central Express","icao":"AER","id":109,"type":"airline"}}, {"travel-sample":{"country":"United Kingdom","iata":"5W","callsign":"FLYSTAR","name":"Astraeus","icao":"AEU","id":112,"type":"airline"}}, {"travel-sample":{"country":"France","iata":"UU","callsign":"REUNION","name":"Air Austral","icao":"REU","id":1191,"type":"airline"}}, {"travel-sample":{"country":"France","iata":"A5","callsign":"AIRLINAIR","name":"Airlinair","icao":"RLA","id":1203,"type":"airline"}}]
 ----
 

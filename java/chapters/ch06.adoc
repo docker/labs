@@ -100,7 +100,7 @@ Create a Swarm Master using the Consul discovery service:
 ====
 [source, text]
 ----
-docker-machine create -d virtualbox --virtualbox-disk-size "5000" --swarm --swarm-master --swarm-discovery="consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-store=consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-advertise=eth1:2376" swarm-master
+docker-machine create -d virtualbox --swarm --swarm-master --swarm-discovery="consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-store=consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-advertise=eth1:2376" swarm-master
 ====
 
 Few options to look here:
@@ -110,7 +110,6 @@ Few options to look here:
 . `--swarm-discovery` defines address of the discovery service
 . `--cluster-advertise` advertise the machine on the network
 . `--cluster-store` designate a distributed k/v storage backend for the cluster
-. `--virtualbox-disk-size` sets the disk size for the created Machine to 5GB. This is required so that WildFly and Couchbase image can be downloaded on any of the nodes.
 
 Find some information about this machine as `docker-machine inspect --format='{{json .Driver}}'  swarm-master | jq`:
 
@@ -144,7 +143,9 @@ Find some information about this machine as `docker-machine inspect --format='{{
 }
 ----
 
-Note that the disk size is defined by `DiskSize` attribute and its value is 5GB.
+The disk size is defined by `DiskSize` attribute and its value is 5GB.
+
+NOTE: `jq` can be installed as `brew install jq`.
 
 ==== Create Swarm Worker Nodes
 
@@ -155,7 +156,7 @@ Create the first Swarm node to join this cluster:
 ====
 [source, text]
 ----
-docker-machine create -d virtualbox --virtualbox-disk-size "5000" --swarm --swarm-discovery="consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-store=consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-advertise=eth1:2376" swarm-node-01
+docker-machine create -d virtualbox --swarm --swarm-discovery="consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-store=consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-advertise=eth1:2376" swarm-node-01
 ----
 ====
 
@@ -168,9 +169,22 @@ Create a second Swarm node to join this cluster:
 ====
 [source, text]
 ----
-docker-machine create -d virtualbox --virtualbox-disk-size "5000" --swarm --swarm-discovery="consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-store=consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-advertise=eth1:2376" swarm-node-02
+docker-machine create -d virtualbox --swarm --swarm-discovery="consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-store=consul://$(docker-machine ip consul-machine):8500" --engine-opt="cluster-advertise=eth1:2376" swarm-node-02
 ----
 ====
+
+This concludes the creation of Docker Swarm cluster. If you want to recreate the entire cluster again:
+
+- Stop the existing machines:
+
+    docker-machine stop swarm-node-02 swarm-node-01 swarm-master consul-machine`
+
+- Remove the existing machines
+
+    docker-machine rm swarm-node-02 swarm-node-01 swarm-master consul-machine`
+
+- Create the cluster using https://gist.github.com/arun-gupta/c42cacfa3225727f5c71ff4a5dc547dc
+
 
 ==== Get Information about Swarm Cluster
 
@@ -275,7 +289,14 @@ ac9808732975        swarm:latest        "/swarm manage --tlsv"   16 minutes ago 
 ----
 ====
 
-You can also query the Consul discovery service to find the list of nodes in the cluster using `docker run swarm list consul://$(docker-machine ip consul-machine):8500`:
+You can also query the Consul discovery service to find the list of nodes in the cluster using:
+
+[source, text]
+----
+docker run swarm list consul://$(docker-machine ip consul-machine):8500
+----
+
+This will show the output as:
 
 [[Docker_Swarm_Node_List]]
 .Docker Swarm Node List
@@ -325,7 +346,12 @@ Docker creates three networks for each host:
 
 A total of nine networks are created for this three-node Swarm cluster.
 
-Now let's use Compose file to start WildFly and Couchbase:
+Create a new directory and `cd` to it:
+
+    mkdir compose-swarm
+    cd compose-swarm
+
+Create a new Compose definition using the Compose file shown below. This will start WildFly and Couchbase:
 
 [[WildFly_and_Couchbase_Compose_Definition]]
 .WildFly and Couchbase Compose Definition
@@ -479,14 +505,19 @@ INFO: JBoss Remoting version 4.0.9.Final
 
 === Access Application
 
-Now that the WildFly and Couchbase servers have been configured, lets access the application. You need to specify the IP address of the Machine where WildFly is running (swarm-node-01 in this example but update as needed for your cluster):
+Now that the WildFly and Couchbase servers have been configured, let's access the application. You need to specify the IP address of the Machine where WildFly is running (`swarm-node-01` in this example but update as needed for your cluster).
+
+The endpoint can be accessed in this case as:
+
+    curl http://$(docker-machine ip swarm-node-01):8080/airlines/resources/airline
+
+The output is shown as:
 
 [[Java_EE_Application_Output]]
 .Java EE Application Output
 ====
 [source, text]
 ----
-curl http://$(docker-machine ip swarm-node-01):8080/couchbase-javaee/resources/airline
 [{"travel-sample":{"id":10123,"iata":"TQ","icao":"TXW","name":"Texas Wings","callsign":"TXW","type":"airline","country":"United States"}}, {"travel-sample":{"id":10642,"iata":null,"icao":"JRB","name":"Jc royal.britannica","callsign":null,"type":"airline","country":"United Kingdom"}}, {"travel-sample":{"id":112,"iata":"5W","icao":"AEU","name":"Astraeus","callsign":"FLYSTAR","type":"airline","country":"United Kingdom"}}, {"travel-sample":{"id":1355,"iata":"BA","icao":"BAW","name":"British Airways","callsign":"SPEEDBIRD","type":"airline","country":"United Kingdom"}}, {"travel-sample":{"id":10765,"iata":"K5","icao":"SQH","name":"SeaPort Airlines","callsign":"SASQUATCH","type":"airline","country":"United States"}}, {"travel-sample":{"id":13633,"iata":"WQ","icao":"PQW","name":"PanAm World Airways","callsign":null,"type":"airline","country":"United States"}}, {"travel-sample":{"id":139,"iata":"SB","icao":"ACI","name":"Air Caledonie International","callsign":"AIRCALIN","type":"airline","country":"France"}}, {"travel-sample":{"id":13391,"iata":"-+","icao":"--+","name":"U.S. Air","callsign":null,"type":"airline","country":"United States"}}, {"travel-sample":{"id":1191,"iata":"UU","icao":"REU","name":"Air Austral","callsign":"REUNION","type":"airline","country":"France"}}, {"travel-sample":{"id":1316,"iata":"FL","icao":"TRS","name":"AirTran Airways","callsign":"CITRUS","type":"airline","country":"United States"}}]
 ----
 ====
