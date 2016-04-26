@@ -61,7 +61,7 @@ You can also run a second webserver at the same time, specifying a custom host p
 ```
 $ docker run --name static-site-2 -e AUTHOR="Your Name" -d -p 8888:80 seqvence/static-site
 ```
-<img src="./images/static.png" title="static">
+<img src="../images/static.png" title="static">
 
 I'm sure you agree that was super simple. To deploy this on a real server you would just need to install docker, and run the above docker command.
 
@@ -378,3 +378,5 @@ Open another terminal window and execute the following commands:
 $ docker stop myfirstapp
 $ docker rm myfirstapp
 ```
+## Next Steps
+For the next step in the tutorial head over to [3.0 Run a multi-container app with Docker Compose](./votingapp.md)

@@ -1,4 +1,4 @@
-## 1.0 Playing with Alpine
+## 1.0 Running your first container
 Now that you have everything setup, it's time to get our hands dirty. In this section, you are going to run a [Alpine Linux](http://www.alpinelinux.org/) container (a lightweight linux distribution) on our system and get a taste of the `docker run` command.
 
 To get started, let's run the following in our terminal:
@@ -97,3 +97,6 @@ In the last section, you saw a lot of Docker-specific jargon which might be conf
 - *Docker daemon* - The background service running on the host that manages building, running and distributing Docker containers.
 - *Docker client* - The command line tool that allows the user to interact with the Docker daemon.
 - *Docker Hub* - A [registry](https://hub.docker.com/explore/) of Docker images. You can think of the registry as a directory of all available Docker images. You'll be using this later in this tutorial.
+
+## Next Steps
+For the next step in the tutorial, head over to [2.0 Webapps with Docker](./webapps.md)

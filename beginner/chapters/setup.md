@@ -20,3 +20,5 @@ Hello from Docker.
 This message shows that your installation appears to be working correctly.
 ...
 ```
+## Next Steps
+For the next step in the tutorial, head over to [1.0 Running your first container](alpine.md)
