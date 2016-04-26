@@ -154,7 +154,7 @@ This will be DNS-accessible as **uniqueManagerName**.eastus.cloudapp.azure.com
 
 ### Configure Manager VM host Docker Engine startup options
 For the purposes of this tutorial, you will disable TLS for the entire swarm,
-since TLS is not working with the Windows Docker Engine as of TP4.
+since TLS is not working with the Windows Docker Engine as of TP5.
 
 _For **uniqueManagerName** below, substitute the name you supplied above,
 such as "myname-manager"_:
@@ -187,8 +187,9 @@ In order to utilize the Label-based deployment described in
 (#run-heterogeneous-linux--windows-application-on-swarm-cluster)
 below, you'll need a Docker registry.
 
-Since Windows, as of TP4, does not support Docker Hub, you'll set up a
-local Docker Registry, sharing the same host VM as the Swarm Manager.
+You'll set up a local Docker Registry, sharing the same host VM as the Swarm Manager.
+
+**Note in many use cases you can just use [Docker Hub](https://hub.docker.com) instead of setting up a registry**
 
 <pre>
 $ docker run -d -p 5000:5000 --restart=always --name registry -v `pwd`/registry:/var/lib/registry registry:2
@@ -514,7 +515,7 @@ http://<b>uniqueLinuxNodeName</b>.eastus.cloudapp.azure.com:5000/today/amrush
 # Credits
 * [Stefan Scherer: How to run a Windows Docker Engine in Azure]
 (https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/) - defines an Azure ARM template which improves on the
-[Msft Azure TP4 quickstart-templates](https://github.com/Azure/azure-quickstart-templates), including enabling public TCP listening
+[Msft Azure quickstart-templates](https://github.com/Azure/azure-quickstart-templates), including enabling public TCP listening
 * [Stefan Scherer: Build Docker Swarm binary for Windows the "Docker way"]
 (https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/)- dockerized Swarm Image for Windows
 * [Msft: Install the Azure CLI](https://azure.microsoft.com/en-us/documentation/articles/xplat-cli-install/)
