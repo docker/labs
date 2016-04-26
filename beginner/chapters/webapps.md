@@ -366,7 +366,7 @@ $ docker run -p 8888:5000 --name myfirstapp YOUR_USERNAME/myfirstapp
 
 Head over to `http://<DOCKER_HOST-IP-ADDRESS>:8888` and your app should be live. You may need to open up another terminal and determine the container ip address using `docker-machine ip default`.
 
-<img src="./images/catgif.png" title="static">
+<img src="../images/catgif.png" title="static">
 
 Hit the Refresh button in the web browser to see a few more cat images.
 

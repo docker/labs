@@ -126,7 +126,7 @@ $ docker-machine ip default
 
 It'll return an IP address. If you only have one Docker Machine running, most likely, that's 192.168.99.100. We'll call that `<YOUR_IP_ADDRESS>`. Navigate to `http://<YOUR_IP_ADDRESS>:5000` in your browser, and you'll see the voting app, something like this:
 
-<img src="https://raw.githubusercontent.com/docker/labs/master/beginner/images/vote.png" title="vote">
+<img src="../images/vote.png" title="vote">
 
 Click on one to vote. You can check the results at `http://<YOUR_IP_ADDRESS:5001>`.
 
