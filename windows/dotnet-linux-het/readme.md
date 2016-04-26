@@ -132,7 +132,7 @@ parameter before running the following command in place of
 to 20 minutes to complete:_
 
 <pre>
-$ azure group deployment create cliEastUsSwarmRG cli-win-node --template-uri https://raw.githubusercontent.com/brogersyh/Dockerfiles-for-windows/master/dotnet-aspnet46-webapp/azuredeploy.json -p '{"adminUsername": {"value": "Azure123"}, "adminPassword": {"value": "Azure!23"}, "dnsNameForPublicIP": {"value": "<b>uniqueWindowsNodeName</b>"}, "VMName": {"value": "cli-win-node"},"location": {"value": "East US"}}'
+$ azure group deployment create cliEastUsSwarmRG cli-win-node --template-uri https://raw.githubusercontent.com/docker/labs/master/windows/dotnet-aspnet46-webapp/azuredeploy.json -p '{"adminUsername": {"value": "Azure123"}, "adminPassword": {"value": "Azure!23"}, "dnsNameForPublicIP": {"value": "<b>uniqueWindowsNodeName</b>"}, "VMName": {"value": "cli-win-node"},"location": {"value": "East US"}}'
 </pre>
 
 ## Provision VM host for Swarm Manager and Registry using Azure docker create
@@ -249,8 +249,8 @@ eth0      Link encap:Ethernet  HWaddr 00:0d:3a:12:16:7f
 
 ### Build App Linux Image
 <pre>
-$ git clone https://github.com/brogersyh/Dockerfiles-for-Linux.git
-$ docker build -t rushhourweatherappservice Dockerfiles-for-Linux/Python-REST-Service
+$ git clone https://github.com/docker/labs.git
+$ docker build -t rushhourweatherappservice labs/windows/Python-REST-Service
 </pre>
 
 ### Push App Linux Image to Registry
@@ -302,8 +302,8 @@ Ethernet adapter Ethernet 2:
 <pre>
 PS > choco install git -y
 PS > $env:PATH = "$env:PATH;c:\program files\git\cmd"
-PS > git clone https://github.com/brogersyh/Dockerfiles-for-windows.git
-PS > cd Dockerfiles-for-windows
+PS > git clone https://github.com/labs.git
+PS > cd labs\windows
 PS > docker build -t swarm swarm-windows
 </pre>
 
