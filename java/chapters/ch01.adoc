@@ -18,7 +18,6 @@ Follow the instructions to install Docker:
 . https://www.docker.com/products/docker-toolbox[Docker Toolbox for Mac or Windows]
 . http://docs.docker.com/engine/installation/ubuntulinux/[Docker on Ubuntu]
 . http://docs.docker.com/engine/installation/centos/[Docker on Centos]
-. http://docs.docker.com/engine/installation/fedora/[Docker on Fedora]
 
 Complete set of operating systems are listed at http://docs.docker.com/engine/installation/[Install Docker Engine].
 
@@ -28,17 +27,21 @@ Complete set of operating systems are listed at http://docs.docker.com/engine/in
 . Docker Machine: https://github.com/docker/machine/releases/latest
 . VirtualBox: https://www.virtualbox.org/wiki/Downloads
 
+These are required to create a Docker Swarm cluster.
+
 === Create Docker Host Mapping
 
-To make it easier to start/stop the containers, an entry is added into the host mapping table of your operating system. Find out the IP address of your machine:
+To make it easier to start/stop the containers, an entry is added into the host mapping table of your operating system. 
+
+For Mac and Windows, find out the IP address of your machine:
 
 ```console
 docker-machine ip default
 ```
 
-This will provide the IP address associated with the Docker Machine created earlier.
+This will provide the IP address associated with the Docker Machine created by Toolbox.
 
-For Linux machine, Docker host is running on local machine and so the IP address would be `127.0.0.1`.
+For Linux, Docker host is running on local machine and so the IP address would be `127.0.0.1`.
 
 Edit `/etc/hosts` (Mac OS or Linux) or `C:\Windows\System32\drivers\etc\hosts` (Windows) and add:
 
@@ -88,6 +91,8 @@ Give the command to pull all the images:
 ```console
 docker-compose -f docker-compose-pull-images.yml pull
 ```
+
+NOTE: For Linux, `docker-compose` and `docker` commands need `sudo` access. So prefix all commands with `sudo`.
 
 ==== Software
 

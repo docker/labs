@@ -174,7 +174,7 @@ image::tomee-first-run-default-page.png[]
 
 ### Run Container with Specified Port
 
-Lets stop the previously running container as:
+Stop the previously running container as:
 
 [source, text]
 ----
@@ -191,6 +191,13 @@ docker run -d -p 8080:8080 tomee
 The format is `-p hostPort:containerPort`. This option maps container ports to host ports and allows other containers on our host to access them.
 
 Now we're ready to test http://dockerhost:8080 again. This works with the exposed port, as expected.
+
+Let's stop the container as:
+
+[source, text]
+----
+docker stop `docker ps | grep tomee | awk '{print $1}'`
+----
 
 ### Deploy a WAR file to Application Server
 
@@ -223,7 +230,7 @@ Access the endpoint:
 
 [source, text]
 ----
-curl http://192.168.99.100:8080/javaee7-simple-sample/resources/persons | xml-fmt
+curl http://dockerhost:8080/javaee7-simple-sample/resources/persons
 ----
 
 See the output:
@@ -274,6 +281,8 @@ See the output:
 </persons>
 ----
 
+Optional: `brew install XML-Coreutils` will install XML formatting utility on Mac. This output can then be piped to `xml-fmt` to display a formatted result.
+
 ### Stop Container
 
 Stop a specific container:
@@ -283,14 +292,14 @@ Stop a specific container:
 docker stop <CONTAINER ID>
 ----
 
-Stop all the running containers
+Stop all running containers:
 
 [source, text]
 ----
 docker stop $(docker ps -q)
 ----
 
-Stop only the exited containers
+Stop only the exited containers:
 
 [source, text]
 ----
