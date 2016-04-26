@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WebAppForm.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="WeatherServiceUrl" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:5000</Value>
+    </Setting>
+    <Setting Name="tempStation" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">KILCHICA388</Value>
+    </Setting>
+    <Setting Name="windStation" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">KILCHICA30</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
