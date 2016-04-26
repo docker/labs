@@ -30,7 +30,7 @@ out or de-emphasize it. The architecture looks like this:
 * Backend Web Service: Python REST web service, wrapping a weather service,
 hosted in a Docker Linux Container
 
-_**\<\<INSERT Docker-swarm-diagram here\>\>**_
+![Application Diagram](./Docker-swarm-diagram.PNG)
 
 # Install Prerequisites
 
