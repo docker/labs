@@ -6,5 +6,5 @@ Index:
 * Docker for [ASP.NET and Windows containers](windows/readme.md)
 * [Docker for Java Developers](java/readme.adoc)
 * [Docker Tutorials from the Community](community-tutorials.md)
-* [Guide to submitting your own tutorial](contriubtions.md)
+* [Guide to submitting your own tutorial](contribute.md)
 * [Docker documentation](https://docs.docker.com)
