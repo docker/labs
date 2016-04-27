@@ -2,7 +2,7 @@
 Great! So you have now looked at `docker run`, played with a docker container and also got a hang of some terminology. Armed with all this knowledge, you are now ready to get to the real-stuff i.e. deploying web applications with Docker.
 
 ### 2.1 Static Sites
-_Code for this section is in this repo in the [static-site directory](https://github.com/ManoMarks/labs/tree/master/beginner/static-site)_
+_Code for this section is in this repo in the [static-site directory](https://github.com/docker/labs/tree/master/beginner/static-site)_
 Let's start by taking baby-steps. The first thing we're going to look at is how you can run a dead-simple static website. You're going to pull a docker image from the docker hub, run the container and see how easy it so to set up a webserver.
 
 The image that you are going to use is a single-page website that was already created for this demo and is available on the Docker Hub as [`seqvence/static-site`](https://hub.docker.com/r/seqvence/static-site/). You can download and run the image directly in one go using `docker run`.
@@ -129,7 +129,7 @@ Then there are two more types of images that can be both base and child images, 
 - **User images** are images created and shared by users like you. They build on base images and add additional functionality. Typically these are formatted as `user/image-name`. The `user` value in the image name is your Docker Hub user or organization name.
 
 ### 2.3 Our First Image
-_The code for this section is in this repository in the [flask-app](https://github.com/ManoMarks/labs/tree/master/beginner/flask-app) directory_
+_The code for this section is in this repository in the [flask-app](https://github.com/docker/labs/tree/master/beginner/flask-app) directory_
 Now that you have a better understanding of images, it's time to create our own. Our goal in this section will be to create an image that sandboxes a small [Flask](http://flask.pocoo.org) application.
 For the purposes of this workshop, we'll created a fun little Python Flask app that displays a random cat `.gif` every time it is loaded - because you know, who doesn't like cats?
 
