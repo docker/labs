@@ -12,4 +12,4 @@ We will be following the a lightweight version of the Docker contribution polici
 - [Docker documentation](https://docs.docker.com)
 - The [Docker engine repo](https://github.com/docker/docker/blob/master/CONTRIBUTING.md).
 
-This largely boils down to [signing your PRs](https://github.com/docker/docker/blob/master/CONTRIBUTING.md#sign-your-work), and following the community guidelines.
+This largely boils down to [signing your PRs](https://github.com/docker/docker/blob/master/CONTRIBUTING.md#sign-your-work), following the Docker [trademark guidelines](https://www.docker.com/trademark-guidelines), and following the community guidelines.
