@@ -1,6 +1,6 @@
 # Docker Tutorials and Labs
 
-This repo contains [Docker](https://docker.com) tutorials and links to tutorials on other sites. The tutorials are authored both by Docker, and by members of the community. It's a growing repo which we intend to continue to grow, with help from the community.
+This repo contains [Docker](https://docker.com) tutorials authored both by Docker, and by members of the community. It's a growing repo which we intend to continue to grow, with help from the community.
 
 Index:
 * Docker for [ASP.NET and Windows containers](windows/readme.md)
