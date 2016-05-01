@@ -4,4 +4,5 @@
 == References
 
 . Docker Docs: http://docs.docker.com
-. Latest lab content: https://github.com/docker/community/tree/master/tutorials/java
+. Latest lab content: https://github.com/arun-gupta/labs/tree/master/java
+
