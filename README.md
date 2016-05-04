@@ -5,6 +5,6 @@ This repo contains [Docker](https://docker.com) tutorials authored both by Docke
 Index:
 * Docker for [ASP.NET and Windows containers](windows/readme.md)
 * [Docker for Java Developers](java/readme.adoc)
-* [Docker Tutorials from the Community](community-tutorials.md)
+* [Docker Tutorials from the Community](https://github.com/docker/community/blob/master/tutorials/docker-tutorials.md)
 * [Guide to submitting your own tutorial](contribute.md)
 * [Docker documentation](https://docs.docker.com)
