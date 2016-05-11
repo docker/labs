@@ -303,7 +303,7 @@ Ethernet adapter Ethernet 2:
 <pre>
 PS > choco install git -y
 PS > $env:PATH = "$env:PATH;c:\program files\git\cmd"
-PS > git clone https://github.com/labs.git
+PS > git clone https://github.com/docker/labs.git
 PS > cd labs\windows
 PS > docker build -t swarm swarm-windows
 </pre>
