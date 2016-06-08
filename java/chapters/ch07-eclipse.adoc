@@ -3,7 +3,7 @@
 [[Docker_Eclipse]]
 == Docker and Eclipse
 
-This chapter will guide you through:
+This chapter will show you basic Docker tooling with Eclipse:
 
 - Pull/Push/Build Docker images
 - Run/Start/Stop/Kill Docker containers
