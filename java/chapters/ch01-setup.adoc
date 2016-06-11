@@ -97,8 +97,8 @@ NOTE: For Linux, `docker-compose` and `docker` commands need `sudo` access. So p
 ==== Software
 
 . Download Java IDE based upon your choice and install.
-.. http://eclipse.org/[Eclipse IDE for Java EE Developers Mars 2]
+.. http://bits.netbeans.org/download/trunk/nightly/latest/[NetBeans Nightly] (`"Java EE"` version)
 .. https://www.jetbrains.com/idea/download/[IntelliJ IDEA Community or Ultimate]
-. Download http://eclipse.org/[Eclipse IDE for Java EE Developers Mars 2] and install.
+.. http://eclipse.org/[Eclipse IDE for Java EE Developers Mars 2]
 . Download https://maven.apache.org/download.cgi[Maven] and install.
 . Install Docker Cloud CLI following the https://docs.docker.com/docker-cloud/tutorials/installing-cli/[instructions].
