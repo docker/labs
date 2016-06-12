@@ -1,25 +1,20 @@
 # Deployment on a Docker Swarm
 
-* Docker hosts cluster
-* one or several swarm master (for HA)
-  * orchestrator / scheduler
-  * failover
-* one Swarm agent per node
-* easy to create with Docker Machine
-* integration of Docker Machine / Docker Compose / Docker Swarm
+As for the multi Docker host environment, a Docker Swarm requires a key value store to gather the nodes / containers configurations and states. 
 
 ## Creation of a key-value store
 
-* creation of a Docker host
-  * ```docker-machine create -d virtualbox consul```
-* switch to context of newly created machine
-  * ```eval "$(docker-machine env consul)"```
-* run container based on Consul image
-  *  ```docker run -d -p "8500:8500" -h "consul" progrium/consul -server -bootstrap```
+Several steps are needed to run the key value store
 
-## Creation of the swarm
+* Create dedicated Docker host with Machine) ```docker-machine create -d virtualbox consul```
+* Switch to context of the newly created machine ```eval "$(docker-machine env consul)"```
+* Run container based on Consul image ```docker run -d -p "8500:8500" -h "consul" progrium/consul -server -bootstrap```
 
-### swarm master
+## Creation of the Swarm
+
+Additional options needs to be provided to docker-machine in order to define a Swarm.
+
+### Creation of the Swarm master
 
 ```
 $ docker-machine create \
@@ -32,7 +27,7 @@ $ docker-machine create \
 demo0
 ```
 
-### swarm agent
+### Creation of the Swarm agent
 
 ```
 $ docker-machine create \
@@ -45,21 +40,22 @@ demo1
 
 ### List the nodes
 
-3 Docker hosts created (key-store, Swarm master, Swarm node)
-
+So far, we have created 3 Docker hosts (key-store, Swarm master, Swarm agent)
 
 ```
 $ docker-machine ls
 
 NAME          ACTIVE   DRIVER         STATE     URL                         SWARM
 consul   *        virtualbox     Running   tcp://192.168.99.100:2376
-demo0    -        virtualbox     Running   tcp://192.168.99.101:2376   demo0 (master)
-demo1    -        virtualbox     Running   tcp://192.168.99.102:2376  demo1
+demo0    -        virtualbox     Running   tcp://192.168.99.101:2376        demo0 (master)
+demo1    -        virtualbox     Running   tcp://192.168.99.102:2376        demo1
 ```
 
 ## Create a DNS load balancer
 
-**Dockerfile**
+In order to load balance the traffic towards several instances of our **app** service, we will add a new service based on nginx. This one uses the DNS round-robin capability of Docker engine (version 1.11) for containers with the same network alias.
+
+The following Dockerfile uses nginx:1.9 official image and add a custom nginx.conf configuration file.
 
 ```
 FROM nginx:1.9
@@ -75,7 +71,10 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-**nginx.conf**
+The following nginx.conf file define a proxy_pass directive towards **http://apps** for each request received on port 80.
+
+**apps** is the value we will set as the app service network alias.
+
 ```
 user nginx;
 worker_processes 2;
@@ -100,6 +99,8 @@ http {
 }
 ```
 
+Let's build and publish the image of this load-balancer to Docker Hub: 
+
 ```
 # Create image
 $ docker build -t lucj/lb-dns .
@@ -108,12 +109,11 @@ $ docker build -t lucj/lb-dns .
 $ docker push -t lucj/lb-dns
 ```
 
+The image can now be used in our Docker Compose file.
+
 ## Update our docker-compose file
 
-* use lb load balancer
-* add constraints to choose the nodes
-* a new user defined overlay network is created
-  * No need to use link between containers
+The new version of the docker-compose.yml file is the following one
 
 ```
 version: '2'
@@ -156,16 +156,22 @@ networks:
     driver: overlay
 ```
 
+There are several important update here:  
+* usage of the lb-dns load balancer
+* constraints to choose the nodes on which each services will run (needed in our example to illustrate the DNS round robin)
+* creation of a new user defined overlay network to enable each container to communicate with each other through their name
+* definition of network used by each container
+* definition of network alias for the **app** service (crucial item as this is the one that will enable nginx to proxy requests)
+
 ## Deployment and scaling of the application
 
-* switch to the swarm master contexte
-  * ```eval $(docker-machine env --swarm demo0)```
-* run application using networking option
-  * ```docker-compose up```
-* scaling
-  * ```docker-compose scale app=5```
-* messageApp API is available through http://192.168.99.101:8000/message
-  * IP of the swarm master
-  * Port of the load balancer
+In order to run the application in this swarm, we will issue the following commands
+* switch to the swarm master contexte ```eval $(docker-machine env --swarm demo0)```
+* run the new compose file ```docker-compose up```
+* increase the number of **app** service instances ```docker-compose scale app=5```
+
+Our application is then available through http://192.168.99.101:8000/message
+
+192.168.99.101 is the IP of the swarm master. 8000 is the port exported by the load balancer to the outside.
 
 
