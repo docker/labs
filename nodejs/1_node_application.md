@@ -1,10 +1,12 @@
-# Application details
+# Setup our sample Node.js application
 
-* API HTTP Rest - Node.js (Sails.js) / MongoDB
-* Prerequisite
-  * nodejs 4.4.5 (LTS) - https://nodejs.org/en/
-  * mongo 3.2 - https://docs.mongodb.org/manual/installation/
-* CRUD on a “Message” model
+## Application details
+
+* API HTTP Rest based on Node.js / [Sails.js](sailsjs.org)) and [MongoDB](https://www.mongodb.com/)
+* A couple of prerequisite to run the application locally
+  * [Node.js 4.4.5 (LTS)](https://nodejs.org/en/)
+  * [mongo 3.2](https://docs.mongodb.org/manual/installation/)
+* CRUD (Create / Read / Update / Delete HTTP verbs) on a “Message” model
 
 HTTP verb | URI | Action
 ----------| --- | ------
@@ -14,11 +16,10 @@ POST | /message | create a new message
 PUT | /message/ID | modify message with ID
 DELETE | /message/ID | delete message with ID
 
-# Setup
+## Setup
 
-* usage of sailsjs framework (RoR of Node.js)
-  * install sailsjs: ```sudo npm install sails -g``` (should install 0.12.3)
-  * create the  application:  ```sails new messageApp && cd messageApp```
+* install sailsjs (Sailsjs is for Node.js what RoR is to Ruby): ```sudo npm install sails -g``` (should install 0.12.3)
+* create the  application:  ```sails new messageApp && cd messageApp```
 * link with local MongoDB
   * usage of sails-mongo orm: ```npm install sails-mongo --save```
   * change configuration
@@ -42,21 +43,25 @@ module.exports.connections = {
 };
 ```
 
-* create API: sails generate api message
-* run the application: sails lift
+* create API ```sails generate api message```
+* run the application: ```sails lift```
 * API available on localhost:1337
 
-# Example
+## Test the application in command line
 
-* curl http://localhost:1337/message
+* Get current list of messages
+  * ```curl http://localhost:1337/message```
 
 ```
 []
 ```
 
-* curl -XPOST http://localhost:1337/message?text=hello
-* curl -XPOST http://localhost:1337/message?text=hola
-* curl http://localhost:1337/message
+* Create new messages
+  * ```curl -XPOST http://localhost:1337/message?text=hello```
+  * ```curl -XPOST http://localhost:1337/message?text=hola```
+  
+* Get list of messages
+  * ```curl http://localhost:1337/message```
 
 ```
 [
@@ -74,11 +79,14 @@ module.exports.connections = {
   }
 ]
 ```
+* Modify a message
+  * ```curl -XPUT http://localhost:1337/message/5638b363c5cd0825511690bd?text=hey````
 
+* Delete a message
+  * ```curl -XDELETE http://localhost:1337/message/5638b381c5cd0825511690be````
 
-* curl -XPUT http://localhost:1337/message/5638b363c5cd0825511690bd?text=hey
-* curl -XDELETE http://localhost:1337/message/5638b381c5cd0825511690be
-* curl http://localhost:1337/message
+* Get list of messages
+  * ```curl http://localhost:1337/message```
 
 ```
 [
