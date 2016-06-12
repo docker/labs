@@ -12,7 +12,7 @@ Several steps are needed to run the key value store
 
 ## Creation of the Swarm
 
-Additional options needs to be provided to docker-machine in order to define a Swarm.
+Additional options need to be provided to docker-machine in order to define a Swarm.
 
 ### Creation of the Swarm master
 
@@ -40,7 +40,7 @@ demo1
 
 ### List the nodes
 
-So far, we have created 3 Docker hosts (key-store, Swarm master, Swarm agent)
+We have created 3 Docker hosts (key-store, Swarm master, Swarm agent)
 
 ```
 $ docker-machine ls
@@ -53,7 +53,7 @@ demo1    -        virtualbox     Running   tcp://192.168.99.102:2376        demo
 
 ## Create a DNS load balancer
 
-In order to load balance the traffic towards several instances of our **app** service, we will add a new service based on nginx. This one uses the DNS round-robin capability of Docker engine (version 1.11) for containers with the same network alias.
+In order to load balance the traffic towards several instances of our **app** service, we will add a new service. This one uses the DNS round-robin capability of Docker engine (version 1.11) for containers with the same network alias.
 
 The following Dockerfile uses nginx:1.9 official image and add a custom nginx.conf configuration file.
 
@@ -156,7 +156,7 @@ networks:
     driver: overlay
 ```
 
-There are several important update here:  
+There are several important updates here:  
 * usage of the lb-dns load balancer
 * constraints to choose the nodes on which each services will run (needed in our example to illustrate the DNS round robin)
 * creation of a new user defined overlay network to enable each container to communicate with each other through their name
@@ -165,13 +165,13 @@ There are several important update here:
 
 ## Deployment and scaling of the application
 
-In order to run the application in this swarm, we will issue the following commands
+In order to run the application in this Swarm, we will issue the following commands
 * switch to the swarm master contexte ```eval $(docker-machine env --swarm demo0)```
 * run the new compose file ```docker-compose up```
 * increase the number of **app** service instances ```docker-compose scale app=5```
 
 Our application is then available through http://192.168.99.101:8000/message
 
-192.168.99.101 is the IP of the swarm master. 8000 is the port exported by the load balancer to the outside.
+192.168.99.101 is the IP of the Swarm master. 8000 is the port exported by the load balancer to the outside.
 
 
