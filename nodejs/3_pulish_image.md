@@ -1,46 +1,39 @@
-# Why image should be published ?
+# Publish image
 
-* provide access to the packaged application
-  * public or private access
-* possible to use tags to handle all the versions of the application
-  * format ⇒ username/image:tag (note: official images do not have the username prefix, eg: mongo, redis, ...)
-    * mongo:3.2
-    * lucj/message-app (same as lucj/message-app:latest)
-* GitHub account can be linked to Docker hub
-  * build can be automatically triggered on a  git push command
-  
-# Create repository on Docker Public Registry
+## Create repository on Docker Public Registry
 
-* hub.docker.com
+* Docker Hub
 
 ![hub.docker.com](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/registry_1.png)
 
-* list of user’s repositories
+* List of user’s repositories
 
-![User repos](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/registry_2.png)
+![List of user repository](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/registry_2.png)
 
-* repository details
+* Repository details
 
-![Repo details](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/registry_3.png)
+![Repository details](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/registry_3.png)
 
-* repository created
+* Repository created
 
-![Repo created](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/registry_4.png)
+![Repository created](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/registry_4.png)
 
 **the newly created repository will contain all the version of the application’s image**
 
-# Publish image
+## Create image
 
-* image needs to be created using username of the Docker hub account 
+* Image needs to be created using username of the Docker hub account 
 ```docker build -t lucj/message-app .```
 
-* identification
+## Push image to Docker Hub
+
+Before publishing an image, authentication must be performed with the following command:
 ```docker login```
 
-* publication
+Image can then be published to the user repository
 ```docker push lucj/message-app```
 
-* the image (public) can now be used from any Docker host
+The image can then be used form any Docker host
   * ```docker pull lucj/message-app```
-  * ```docker run -dP lucj/message-app (will start with an error as no database information is provided)```
+  * ```docker run -dP lucj/message-app``` (will start with an error as no database information is provided)
 
