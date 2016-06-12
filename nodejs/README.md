@@ -16,7 +16,7 @@ Some of the Docker basis will be reviewed in this tutorial but it is recommended
 
 [Create the application's image](https://github.com/lucj/labs/blob/master/nodejs/2_application_image.md)
 
-[Publish image on Docker Hub](https://github.com/lucj/labs/blob/master/nodejs/3_pulish_image.md)
+[Publish image on Docker Hub](https://github.com/lucj/labs/blob/master/nodejs/3_publish_image.md)
 
 [Single Docker host networking](https://github.com/lucj/labs/blob/master/nodejs/4_single_host_networking.md)
 
