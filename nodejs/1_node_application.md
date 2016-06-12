@@ -14,14 +14,13 @@ POST | /message | create a new message
 PUT | /message/ID | modify message with ID
 DELETE | /message/ID | delete message with ID
 
-
 # Setup
 
 * usage of sailsjs framework (RoR of Node.js)
-  * install sailsjs: sudo npm install sails -g (should install 0.12.3)
-  * create the  application:  sails new messageApp && cd messageApp
+  * install sailsjs: ```sudo npm install sails -g``` (should install 0.12.3)
+  * create the  application:  ```sails new messageApp && cd messageApp```
 * link with local MongoDB
-  * usage of sails-mongo orm: npm install sails-mongo --save
+  * usage of sails-mongo orm: ```npm install sails-mongo --save```
   * change configuration
 
 ```
@@ -29,7 +28,9 @@ config/model.js:
 module.exports.models = {
 connection: mongo,
  migrate: 'safe'
-};```
+};
+```
+
 
 ```
 config/connections.js:
@@ -47,13 +48,15 @@ module.exports.connections = {
 
 # Example
 
-curl http://localhost:1337/message
+* curl http://localhost:1337/message
 
-    []
+```
+[]
+```
 
-curl -XPOST http://localhost:1337/message?text=hello
-curl -XPOST http://localhost:1337/message?text=hola
-curl http://localhost:1337/message
+* curl -XPOST http://localhost:1337/message?text=hello
+* curl -XPOST http://localhost:1337/message?text=hola
+* curl http://localhost:1337/message
 
 ```
 [
@@ -61,7 +64,7 @@ curl http://localhost:1337/message
     "text": "hello",
     "createdAt": "2015-11-08T13:15:15.363Z",
     "updatedAt": "2015-11-08T13:15:15.363Z",
-    "id": "5638b363c5cd0825511690bd"
+    "id": "5638b363c5cd0825511690bd" 
   },
   {
     "text": "hola",
@@ -72,9 +75,10 @@ curl http://localhost:1337/message
 ]
 ```
 
-curl -XPUT http://localhost:1337/message/5638b363c5cd0825511690bd?text=hey
-curl -XDELETE http://localhost:1337/message/5638b381c5cd0825511690be
-curl http://localhost:1337/message
+
+* curl -XPUT http://localhost:1337/message/5638b363c5cd0825511690bd?text=hey
+* curl -XDELETE http://localhost:1337/message/5638b381c5cd0825511690be
+* curl http://localhost:1337/message
 
 ```
 [
