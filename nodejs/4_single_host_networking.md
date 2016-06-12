@@ -124,7 +124,7 @@ $ curl -XGET http://192.168.99.100:1337/message
 
 Application container is connected to mongo container using container name
 
-# Packaging of the application with Docker Compose
+## Packaging of the application with Docker Compose
 
 * docker-compose file enables to easily package a multi containers application
 
@@ -165,12 +165,81 @@ volumes:
 * scalability
   * ```docker-compose scale app=3```
 
-But how are the new containers found ? need to add a load balancer that will be updated each time a container is created or removed
+![3 api containers](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/single_host_net_1.png)
 
+But how are the new containers found ?
+Need to add a load balancer that will be updated each time a container is created or removed
 
+## Usage of dockercloud/haproxy image
 
+* listen to all Docker Engine events
+  * http://docs.docker.com/engine/reference/commandline/events/
+* automatic update of load balancer configuration
+  * when a container is created or removed
+* works on a swarm or on a single Docker host
 
+![load balancer](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/single_host_net_2.png)
 
+# Adding load balancer to docker-compose.yml
 
+* Load balancer exposes port 8000 to the outside
+* App container only exposes port 80 internally
+* Services communicate with each other though their name (using Docker Engine embedded DNS name server)
 
+```
+version: '2'
+services:
+  mongo:
+    image: mongo:3.2
+    volumes:
+      - mongo-data:/data/db
+    expose:
+      - "27017"
+ lbapp:
+    image: dockercloud/haproxy
+    links:
+      - app
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8000:80"
+  app:
+    image: message-app
+    expose:
+      - "80"
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URL=mongodb://mongo/messageApp
+volumes:
+  mongo-data:
+```
+
+## Test our application
+
+* Run the new version of compose file
+  * ```docker-compose up```
+  * ```docker-compose scale app=3```
+* Test HTTP REST Api
+
+```
+$ curl -XPOST http://192.168.99.100:8000/message?text=hola
+{
+  "text": "hola",
+  "createdAt": "2016-06-08T13:30:18.298Z",
+  "updatedAt": "2016-06-08T13:30:18.298Z",
+  "id": "57581deacde05a1200877fa2"
+}
+$ curl -XGET http://192.168.99.100:8000/message
+[
+  {
+    "text": "hola",
+    "createdAt": "2016-06-08T13:30:18.298Z",
+    "updatedAt": "2016-06-08T13:30:18.298Z",
+    "id": "57581deacde05a1200877fa2"
+  }
+]
+```
 
