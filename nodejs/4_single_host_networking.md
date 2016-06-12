@@ -1,10 +1,20 @@
 # Container networking on a single Docker host
 
+## Docker host creation
+
+We use [Docker Machine](https://docs.docker.com/machine/) to create the test Docker Host. The virtualbox driver is used so the host is created on the local machine as a virtualbox virtual machine.
+
+```docker-machine create --driver virtualbox node1```
+
+Get the IP of node1 ```docker-machine ip node1``` (⇒ 192.168.99.100)
+
 ## Default networks
 
-* 3 default networks on node1 Docker host
+Let's check the networks attached to the newly created Docker host
 
 ```
+$ eval $(docker-machine env node1)
+
 $ docker network ls
 NETWORK ID          NAME            DRIVER
 d87b8fc4c466        bridge          bridge
@@ -12,11 +22,11 @@ efaf610f57a5        host            host
 f7d0de539edd        none            null
 ```
 
-**By default, Docker engine attaches each container to the bridge network (network id is d87b8fc4c466)**
+**By default (if no --net option is provided), Docker engine will attach each container to the bridge network (id d87b8fc4c466)**
 
 ## Default bridge network
 
-Let's run 2 container using the default bridge network
+Let's run 2 container using the default bridge network (without using --net option)
 
 ```
 $ docker run --name mongo -d mongo:3.2
@@ -45,7 +55,7 @@ $ docker network inspect --format='{{json .Containers}}' d87b8fc4c466 | python -
 }
 ```
 
-**A container cannot be addressed by its name :(**
+**The container cannot be addressed by their names**
 
 ```
 $ docker run -ti busybox /bin/sh
@@ -57,7 +67,9 @@ ping: bad address 'box'
 
 ## User defined bridge network
 
-Create a bridge network with Docker network commands
+When using user defined network, the behaviour is different than for the default bridge network.
+
+Let's create a user defined bridge network with Docker network commands
 
 ````
 $ docker network create mongonet
@@ -71,7 +83,7 @@ ce9ea3b69d6e        mongonet        bridge
 f7d0de539edd        none            null
 ````
 
-Run container in the newly defined network
+Let's now run 2 containers in the newly defined network
 
 ````
 $ docker run --name mongo --net mongonet -d mongo:3.2
@@ -96,7 +108,7 @@ Run db and application containers in the new bridge network
 
 ```
 $ docker run --name mongo --net mongonet -d mongo:3.2
-$ docker run --name app --net mongonet -p “1337:1337” -d -e “MONGO_URL=mongodb://mongo/messageApp” message-app:v1
+$ docker run --name app --net mongonet -p “8000:80” -d -e “MONGO_URL=mongodb://mongo/messageApp” message-app:v1
 ```
 
 (Use mongocontainer’s name in environment variable)
@@ -104,14 +116,14 @@ $ docker run --name app --net mongonet -p “1337:1337” -d -e “MONGO_URL=mon
 Test HTTP Rest API
 
 ```
-$ curl -XPOST http://192.168.99.100:1337/message?text=hello
+$ curl -XPOST http://192.168.99.100:8000/message?text=hello
 {
   "text": "hello",
   "createdAt": "2016-06-06T14:01:05.764Z",
   "updatedAt": "2016-06-06T14:01:05.764Z",
   "id": "57558221a4461312009ce88c"
 }
-$ curl -XGET http://192.168.99.100:1337/message
+$ curl -XGET http://192.168.99.100:8000/message
 [
   {
     "text": "hello",
@@ -122,11 +134,9 @@ $ curl -XGET http://192.168.99.100:1337/message
 ]
 ```
 
-Application container is connected to mongo container using container name
+The application container (named **app**) is connected to mongo container using container name
 
 ## Packaging of the application with Docker Compose
-
-* docker-compose file enables to easily package a multi containers application
 
 ```
 version: '2'
@@ -151,40 +161,36 @@ volumes:
   mongo-data:
 ```
 
-* define one database container and one api container
-* internal port of app container is mapped to a random port on the host
-* application container is connected to mongo container using container name
-* volume used to mount mongodb data folder
+Our compose file:
+* defines one database container and one api container
+* maps internal port of app container to a random port on the host
+* connect application container to mongo container using container name
+* uses a user defined volume for mongodb data folder
 
-# Lifecycle and scalability
+## Lifecycle and scalability
 
-* lifecycle
-  * ```docker-compose  up```  (-d option enables the application to run in background)
-  * ```docker-compose ps```
-  * ```docker-compose stop```
-* scalability
-  * ```docker-compose scale app=3```
+* Start the application ```docker-compose up -d```  (-d option enables the application to run in background)
+* Check the status of each services conposing the application ```docker-compose ps```
+* Stop the application ```docker-compose stop```
+* Scale the app service changing the number of instances ```docker-compose scale app=3```
 
 ![3 api containers](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/single_host_net_1.png)
 
-But how are the new containers found ?
-Need to add a load balancer that will be updated each time a container is created or removed
+Several containers of the app service (our Node.js API) are running but how are the new instanciated containers addressed ?
+
+=> Need to add a load balancer that will be updated each time a container is created or removed
 
 ## Usage of dockercloud/haproxy image
 
-* listen to all Docker Engine events
+* Listens to all Docker Engine events
   * http://docs.docker.com/engine/reference/commandline/events/
-* automatic update of load balancer configuration
-  * when a container is created or removed
-* works on a swarm or on a single Docker host
+* Automatic update of load balancer configuration when container are created or removed
 
 ![load balancer](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/single_host_net_2.png)
 
-# Adding load balancer to docker-compose.yml
+## Adding load balancer to our Compose file
 
-* Load balancer exposes port 8000 to the outside
-* App container only exposes port 80 internally
-* Services communicate with each other though their name (using Docker Engine embedded DNS name server)
+The new version of our docker-compose.yml is
 
 ```
 version: '2'
@@ -217,12 +223,17 @@ volumes:
   mongo-data:
 ```
 
+* The load balancer exposes port 8000 to the outside
+* The app container only exposes port 80 internally
+* Each service can communicate with each other though their name (using Docker Engine embedded DNS name server)
+
 ## Test our application
 
-* Run the new version of compose file
+Run the new version of our compose file
   * ```docker-compose up```
   * ```docker-compose scale app=3```
-* Test HTTP REST Api
+
+Let's just test the creation and retrieval of a message
 
 ```
 $ curl -XPOST http://192.168.99.100:8000/message?text=hola
@@ -243,3 +254,4 @@ $ curl -XGET http://192.168.99.100:8000/message
 ]
 ```
 
+Seems to be good :)
