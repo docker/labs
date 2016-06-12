@@ -2,25 +2,23 @@
 
 ## Prerequisite
 
-* Docker 1.9+
-  * multihost networking available out the box with libnetwork
-* need to setup a Key Value store	
-  * eg: etcd / consul / zookeeper
-  * keeps all the information regarding
-    * networks / subnetworks 
-    * IP addresses of Docker hosts / containers
-    * …
+The multihost networking is available out the box with libnetwork since Docker 1.9
+
+This required to setup a Key Value store	first
+  * several are supported: etcd / consul / zookeeper
+  * keeps all the information regarding (networks / subnetworks, IP addresses of Docker hosts / containers, ...)
 
 ## Creation of a key-value store
 
-* creation of a Docker host
-  * ```docker-machine create -d virtualbox consul```
-* switch to context of newly created machine
-  * ```eval "$(docker-machine env consul)"```
-* run container based on Consul image
-  * ```docker run -d -p "8500:8500" -h "consul" progrium/consul -server -bootstrap```
+Several steps are needed to run the key value store
+
+* Create dedicated Docker host with Machine) ```docker-machine create -d virtualbox consul```
+* Switch to context of the newly created machine ```eval "$(docker-machine env consul)"```
+* Run container based on Consul image ```docker run -d -p "8500:8500" -h "consul" progrium/consul -server -bootstrap```
   
-## Creation of Docker hosts
+## Creation of Docker hosts that will run application containers
+
+As for consul, we use Docker Machine to create 2 test Docker hosts
 
 ### Host 1
 
@@ -54,37 +52,45 @@ b7765c98adbf             bridge                 bridge
 36a3858b68c8             host                    host
 ```
 
-**default networks available on each host: bridge / none / host**
+As we've seen in a previous chapter, 3 default networks are available on each host: bridge / none / host.
+We will create an overlay user defined network and benefit from the embedded cross Docker host DNS name server.
 
 ## Creation of an overlay network
 
-* creation of a network from host1
-  * docker $(docker-machine config host1) network create -d overlay appnet
-* new network also visible from host2
+A user defined network can easily be created (as we seen before). We can create a overlay network from any host, let's create **appnet** network it from host1.
+
+```docker $(docker-machine config host1) network create -d overlay appnet```
+
+This network is also visible from host2 as we can see below.
 
 ```
 $ docker $(docker-machine config host1) network ls
 NETWORK ID          NAME                DRIVER
-acd47b4c062d            appnet                 overlay
-14753b15c63e              bridge                 bridge
-2cc7d35a48e3             none                   null
-ad05eeca763a             host                    host
+acd47b4c062d        appnet              overlay
+14753b15c63e        bridge              bridge
+2cc7d35a48e3        none                null
+ad05eeca763a        host                host
 
 $ docker $(docker-machine config host2) network ls
 NETWORK ID          NAME                DRIVER
-acd47b4c062d            appnet                overlay
-b7765c98adbf             bridge                 bridge
-48244d2fca3b             none                   null
-36a3858b68c8             host                    host
+acd47b4c062d        appnet              overlay
+b7765c98adbf        bridge              bridge
+48244d2fca3b        none                null
+36a3858b68c8        host                host
 ```
 
-## Creation of the containers
+## Check cross host communication
 
-* run mongo container on appnet network from host1
-  * ```docker $(docker-machine config host1) run -d --name mongo --net=appnet mongo:3.0```
-* run busybox container on appnet network from host2
-  * ```docker $(docker-machine config host2) run -ti --name box --net=appnet busybox sh```
-* “box” container can communicate with “mongo” container using its name through the DNS name server embedded in Docker 1.10+
+
+Run the **mongo** container, based on mongo 3.2 offical image, on appnet network from host1
+
+```docker $(docker-machine config host1) run -d --name mongo --net=appnet mongo:3.2```
+
+Run the **box** container, based on busybox) on appnet network from host2
+
+```docker $(docker-machine config host2) run -ti --name box --net=appnet busybox sh```
+
+Even if **box** and **mongo** do not run on the same host, **box** can communicate with **mongo** container using its name through the DNS name server embedded in Docker 1.10+
 
 ```
 / # ping mongo
