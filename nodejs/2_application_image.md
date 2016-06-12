@@ -1,19 +1,23 @@
-# One image for application, on image for database
+# Create the application's image
 
-* avoid to add too many services in a single image
-* usage of 2 images to package the application
+* Usage of 2 images to package the application
   * one image for the database
   * one image for the application
-* application: several possibilities
+* avoid to add too many services in a single image
+
+## Application
+
+* several possibilities to create the image
   * extend official Linux distribution image (Ubuntu, CentOS, ...) with Node.js runtime
   * usage of the official Node.js image (https://hub.docker.com/_/node/)
-* Database
-  * usage of the official MongoDB image
 
-# Dockerfile
+## Database
 
-* text file describing all the commands needed to create an image
-* Dockerfile for our application
+* usage of the official [MongoDB image](https://hub.docker.com/_/mongo/)
+
+## Dockerfile
+
+We'll use the following Dockerfile to build our application's image:
 
 ```
 # Use node 4.4.5 LTS
@@ -37,18 +41,19 @@ EXPOSE 80
 CMD ["npm","start"]
 ````
 
-* flow
-  * usage of the official node:4.4.5 (LTS) image
-  * copy application sources
-  * install dependencies
-  * expose port to the outside from the Docker host
-  * default command ran when instantiating the image
+* usage of the official node:4.4.5 (LTS) image
+* copy application sources
+* install dependencies
+* expose port to the outside from the Docker host
+* default command ran when instantiating the image
+
+## Create image
 
 * Create the image ```docker build -t message-app .```
 
 * List all images available on the Docker host ```docker images```
 
-# Let's instantiate a container
+## Let's instantiate a container
 
 ```
 $ docker run message-app
