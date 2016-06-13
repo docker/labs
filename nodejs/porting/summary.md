@@ -12,4 +12,4 @@
   * on a cluster of Docker hosts
   * on a Docker Swarm
 
-* We also seen several Docker components and how they are^ integrated together
+* We also seen several Docker components and how they are integrated together
