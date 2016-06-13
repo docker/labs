@@ -1,5 +1,7 @@
 # Publish image
 
+The following procedure describes how to create a repository on Docker Hub and publish an image.
+
 ## Create repository on Docker Public Registry
 
 * Docker Hub
@@ -33,7 +35,9 @@ Before publishing an image, authentication must be performed with the following 
 Image can then be published to the user repository
 ```docker push lucj/message-app```
 
-The image can then be used form any Docker host
+## Instantiate the image
+
+The image can then be used form any Docker host (the image is public in this example)
   * ```docker pull lucj/message-app```
   * ```docker run -dP lucj/message-app``` (will start with an error as no database information is provided)
 

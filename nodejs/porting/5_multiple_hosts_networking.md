@@ -4,17 +4,17 @@
 
 The multihost networking is available out the box with libnetwork since Docker 1.9
 
-This required to setup a Key Value store	first
-  * several are supported: etcd / consul / zookeeper
-  * keeps all the information regarding (networks / subnetworks, IP addresses of Docker hosts / containers, ...)
+This required to setup a key-value store first
+* several are supported: etcd / consul / zookeeper
+* keeps all the information regarding (networks / subnetworks, IP addresses of Docker hosts / containers, ...)
 
 ## Creation of a key-value store
 
 Several steps are needed to run the key value store
 
-* Create dedicated Docker host with Machine) ```docker-machine create -d virtualbox consul```
-* Switch to context of the newly created machine ```eval "$(docker-machine env consul)"```
-* Run container based on Consul image ```docker run -d -p "8500:8500" -h "consul" progrium/consul -server -bootstrap```
+* Create dedicated Docker host with Machine ```docker-machine create -d virtualbox consul```
+* Switch to the context of the newly created host ```eval "$(docker-machine env consul)"```
+* Run container based on [progirum/consul image](https://hub.docker.com/r/progrium/consul/) ```docker run -d -p "8500:8500" -h "consul" progrium/consul -server -bootstrap```
   
 ## Creation of Docker hosts that will run application containers
 
@@ -31,9 +31,9 @@ host1
 
 $ docker $(docker-machine config host1) network ls
 NETWORK ID          NAME                DRIVER
-14753b15c63e              bridge                 bridge
-2cc7d35a48e3             none                   null
-ad05eeca763a             host                    host
+14753b15c63e        bridge              bridge
+2cc7d35a48e3        none                null
+ad05eeca763a        host                host
 ````
 
 ### Host 2
@@ -47,17 +47,17 @@ host2
 
 $ docker $(docker-machine config host2) network ls
 NETWORK ID          NAME                DRIVER
-b7765c98adbf             bridge                 bridge
-48244d2fca3b             none                   null
-36a3858b68c8             host                    host
+b7765c98adbf        bridge              bridge
+48244d2fca3b        none                null
+36a3858b68c8        host                host
 ```
 
 As we've seen in a previous chapter, 3 default networks are available on each host: bridge / none / host.
-We will create an overlay user defined network and benefit from the embedded cross Docker host DNS name server.
+We will create an overlay user defined network and benefit from the embedded DNS name server that enables container communication across nodes.
 
 ## Creation of an overlay network
 
-A user defined network can easily be created (as we seen before). We can create a overlay network from any host, let's create **appnet** network it from host1.
+As seen befire, a user defined network can easily be created. Let's create an overlay network, named **appnet**, from host1.
 
 ```docker $(docker-machine config host1) network create -d overlay appnet```
 
@@ -102,7 +102,3 @@ PING mongo.appnet (10.0.0.2): 56 data bytes
 64 bytes from 10.0.0.2: seq=0 ttl=64 time=0.474 ms
 …
 ```
-
-
-
-

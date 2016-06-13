@@ -4,7 +4,9 @@ As for the multi Docker host environment, a Docker Swarm requires a key value st
 
 ## Creation of a key-value store
 
-Several steps are needed to run the key value store
+Note: if you still have the key-value store from the previous chapter do not re-create it and go directly to the creation of the Swarm.
+
+Several steps are needed to run the key-value store
 
 * Create dedicated Docker host with Machine) ```docker-machine create -d virtualbox consul```
 * Switch to context of the newly created machine ```eval "$(docker-machine env consul)"```
@@ -45,15 +47,17 @@ We have created 3 Docker hosts (key-store, Swarm master, Swarm agent)
 ```
 $ docker-machine ls
 
-NAME          ACTIVE   DRIVER         STATE     URL                         SWARM
+NAME     ACTIVE   DRIVER         STATE     URL                         SWARM
 consul   *        virtualbox     Running   tcp://192.168.99.100:2376
-demo0    -        virtualbox     Running   tcp://192.168.99.101:2376        demo0 (master)
-demo1    -        virtualbox     Running   tcp://192.168.99.102:2376        demo1
+demo0    -        virtualbox     Running   tcp://192.168.99.101:2376   demo0 (master)
+demo1    -        virtualbox     Running   tcp://192.168.99.102:2376   demo1
 ```
 
 ## Create a DNS load balancer
 
 In order to load balance the traffic towards several instances of our **app** service, we will add a new service. This one uses the DNS round-robin capability of Docker engine (version 1.11) for containers with the same network alias.
+
+Note: to present the DNS round-robin feature, we do not use the load balancer of the previous chapter (dockercloud/haproxy).
 
 The following Dockerfile uses nginx:1.9 official image and add a custom nginx.conf configuration file.
 
@@ -156,17 +160,17 @@ networks:
     driver: overlay
 ```
 
-There are several important updates here:  
-* usage of the lb-dns load balancer
-* constraints to choose the nodes on which each services will run (needed in our example to illustrate the DNS round robin)
-* creation of a new user defined overlay network to enable each container to communicate with each other through their name
-* definition of network used by each container
+There are several important updates here  
+* usage of the lb-dns image for the load balancer service
+* constraints to choose the nodes on which each service will run (needed in our example to illustrate the DNS round robin)
+* creation of a new user-defined overlay network to enable each container to communicate with each other through their name
+* for each service, definition of the network used
 * definition of network alias for the **app** service (crucial item as this is the one that will enable nginx to proxy requests)
 
 ## Deployment and scaling of the application
 
 In order to run the application in this Swarm, we will issue the following commands
-* switch to the swarm master contexte ```eval $(docker-machine env --swarm demo0)```
+* switch to the swarm master context ```eval $(docker-machine env --swarm demo0)```
 * run the new compose file ```docker-compose up```
 * increase the number of **app** service instances ```docker-compose scale app=5```
 

@@ -3,10 +3,10 @@
 ## Application details
 
 * API HTTP Rest based on Node.js / [Sails.js](sailsjs.org)) and [MongoDB](https://www.mongodb.com/)
-* A couple of prerequisite to run the application locally
+* A couple of prerequisites are needed to run the application locally
   * [Node.js 4.4.5 (LTS)](https://nodejs.org/en/)
   * [mongo 3.2](https://docs.mongodb.org/manual/installation/)
-* CRUD (Create / Read / Update / Delete HTTP verbs) on a “Message” model
+* Provides CRUD (Create / Read / Update / Delete HTTP verbs) on a “Message” model
 
 HTTP verb | URI | Action
 ----------| --- | ------
@@ -18,11 +18,11 @@ DELETE | /message/ID | delete message with ID
 
 ## Setup
 
-* install sailsjs (Sailsjs is for Node.js what RoR is to Ruby): ```sudo npm install sails -g``` (should install 0.12.3)
-* create the  application:  ```sails new messageApp && cd messageApp```
-* link with local MongoDB
+* Install Sails.js (it's to Node.js what RoR is to Ruby): ```sudo npm install sails -g``` (should install 0.12.3)
+* Create the  application:  ```sails new messageApp && cd messageApp```
+* Link application to local MongoDB
   * usage of sails-mongo orm: ```npm install sails-mongo --save```
-  * change configuration
+  * change the 2 following configuration files
 
 ```
 config/model.js:
@@ -31,7 +31,6 @@ connection: mongo,
  migrate: 'safe'
 };
 ```
-
 
 ```
 config/connections.js:
@@ -43,9 +42,9 @@ module.exports.connections = {
 };
 ```
 
-* create API ```sails generate api message```
-* run the application: ```sails lift```
-* API available on localhost:1337
+* Generate the API scafold  ```sails generate api message```
+* Run the application: ```sails lift```
+* The API is available locally on port 1337 (default Sails.js port)
 
 ## Test the application in command line
 

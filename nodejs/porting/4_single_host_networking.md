@@ -2,7 +2,7 @@
 
 ## Docker host creation
 
-We use [Docker Machine](https://docs.docker.com/machine/) to create the test Docker Host. The virtualbox driver is used so the host is created on the local machine as a virtualbox virtual machine.
+We will use [Docker Machine](https://docs.docker.com/machine/) to create our test Docker Host. Driver's option is set to **virtualbox** so the host is created on the local machine as a virtualbox virtual machine.
 
 ```docker-machine create --driver virtualbox node1```
 
@@ -54,8 +54,7 @@ $ docker network inspect --format='{{json .Containers}}' d87b8fc4c466 | python -
     }
 }
 ```
-
-**The container cannot be addressed by their names**
+Both containers appear as being linked to the bridge network but **they cannot address each other by their names**
 
 ```
 $ docker run -ti busybox /bin/sh
@@ -67,7 +66,7 @@ ping: bad address 'box'
 
 ## User defined bridge network
 
-When using user defined network, the behaviour is different than for the default bridge network.
+When using user defined network, the behaviour is different than the default bridge network.
 
 Let's create a user defined bridge network with Docker network commands
 
@@ -100,7 +99,7 @@ PING mongo (172.18.0.2): 56 data bytes
 round-trip min/avg/max = 0.058/0.071/0.085 ms
 ````
 
-Containers can be address by their name through the DNS name server embedded in Docker 1.10+
+Containers can be addressed by their name through the DNS name server embedded in Docker 1.10+
 
 ## Test our application
 
@@ -111,11 +110,12 @@ $ docker run --name mongo --net mongonet -d mongo:3.2
 $ docker run --name app --net mongonet -p “8000:80” -d -e “MONGO_URL=mongodb://mongo/messageApp” message-app:v1
 ```
 
-(Use mongocontainer’s name in environment variable)
+Note: MONGO_URL environment variable directly uses **mongo** container’s name
 
 Test HTTP Rest API
 
 ```
+# Create a  new message
 $ curl -XPOST http://192.168.99.100:8000/message?text=hello
 {
   "text": "hello",
@@ -123,6 +123,8 @@ $ curl -XPOST http://192.168.99.100:8000/message?text=hello
   "updatedAt": "2016-06-06T14:01:05.764Z",
   "id": "57558221a4461312009ce88c"
 }
+
+# Retrieve the list of message and make sure the previous message is present
 $ curl -XGET http://192.168.99.100:8000/message
 [
   {
@@ -134,9 +136,11 @@ $ curl -XGET http://192.168.99.100:8000/message
 ]
 ```
 
-The application container (named **app**) is connected to mongo container using container name
+The application container (named **app**) is connected to mongo container using container name (named **mongo**)
 
 ## Packaging of the application with Docker Compose
+
+The following file (docker-compose.yml) defines the whole application
 
 ```
 version: '2'
@@ -148,7 +152,7 @@ services:
     expose:
       - "27017"
   app:
-    image: message-app:v1
+    image: lucj/message-app
     ports:
       - "80"
     links:
@@ -161,13 +165,19 @@ volumes:
   mongo-data:
 ```
 
-Our compose file:
-* defines one database container and one api container
-* maps internal port of app container to a random port on the host
-* connect application container to mongo container using container name
-* uses a user defined volume for mongodb data folder
+The important part of this file
+* Definition of 2 services
+  * database service: mongo
+  * application service: app
+* Link between **app** and **mongo** services done through the MONGO_URL environment variable (using **mongo** service name)
+* Port mapping
+  * mongo service expose port 27017 (default MongoDB port) only to the other services (not to the Docker host)
+  * app service port is mapped to a random port on the host (as no host port as been defined)
+* Definition of a user defined volume for mongodb data folder
 
 ## Lifecycle and scalability
+
+The following commands are some of the main ones to interact with the application
 
 * Start the application ```docker-compose up -d```  (-d option enables the application to run in background)
 * Check the status of each services conposing the application ```docker-compose ps```
@@ -176,15 +186,14 @@ Our compose file:
 
 ![3 api containers](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/single_host_net_1.png)
 
-Several containers of the app service (our Node.js API) are running but how are the new instanciated containers addressed ?
+Several containers of the app service (our Node.js API) are running and are accessible through random port number of the Docker host. Wow are the new instanciated containers addressed ?
 
-=> Need to add a load balancer that will be updated each time a container is created or removed
+=> Need to add a load balancer that will be updated each time a container is created or removed and that will forward each request to a running instance of the app service.
 
 ## Usage of dockercloud/haproxy image
 
-* Listens to all Docker Engine events
-  * http://docs.docker.com/engine/reference/commandline/events/
-* Automatic update of load balancer configuration when container are created or removed
+[dockercloud/haproxy](https://hub.docker.com/r/dockercloud/haproxy/) is a good candidate to be used in front of our **app** service.
+It will update it's configuration each time a container is started / stopped.
 
 ![load balancer](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/single_host_net_2.png)
 
@@ -223,15 +232,14 @@ volumes:
   mongo-data:
 ```
 
-* The load balancer exposes port 8000 to the outside
-* The app container only exposes port 80 internally
-* Each service can communicate with each other though their name (using Docker Engine embedded DNS name server)
+The load balancer service has been added to the picture.
+Each request coming to port 8000 of the host (mapped with port 80 of lbapi) will go to the api through the load balancer.
 
 ## Test our application
 
-Run the new version of our compose file
-  * ```docker-compose up```
-  * ```docker-compose scale app=3```
+Run the new version of our compose file and specify the number of instances of the **app** service
+* ```docker-compose up```
+* ```docker-compose scale app=3```
 
 Let's just test the creation and retrieval of a message
 

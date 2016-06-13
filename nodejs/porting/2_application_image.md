@@ -1,19 +1,20 @@
 # Create the application's image
 
-* Usage of 2 images to package the application
+* We will use 2 images to package the application
   * one image for the database
   * one image for the application
-* avoid to add too many services in a single image
 
-## Application
+## The application
 
-* several possibilities to create the image
-  * extend official Linux distribution image (Ubuntu, CentOS, ...) with Node.js runtime
-  * usage of the official Node.js image (https://hub.docker.com/_/node/)
+* There are several possibilities to create the image
+  * extend an official Linux distribution image (Ubuntu, CentOS, ...) and install Node.js runtime
+  * use the official Node.js image (https://hub.docker.com/_/node/)
+
+We'll go for the second option as it offers an optimized image.
 
 ## Database
 
-* usage of the official [MongoDB image](https://hub.docker.com/_/mongo/)
+* Usage of the official [MongoDB image](https://hub.docker.com/_/mongo/)
 
 ## Dockerfile
 
@@ -41,13 +42,14 @@ EXPOSE 80
 CMD ["npm","start"]
 ````
 
-* usage of the official node:4.4.5 (LTS) image
+Basically, the Dockerfile performs the following actions
+* use the official node:4.4.5 (LTS) image
 * copy application sources
 * install dependencies
 * expose port to the outside from the Docker host
-* default command ran when instantiating the image
+* define default command ran when instantiating the image
 
-## Create image
+## Image creation
 
 * Create the image ```docker build -t message-app .```
 
