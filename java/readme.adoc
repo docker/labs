@@ -1,36 +1,18 @@
 = Docker for Java Developers
 
-This tutorial offers Java developers an intro-level and hands-on session with Docker.
+This tutorial offers Java developers an intro-level and self-paced hands-on workshop with Docker.
 
-It covers:
-
-- Installation
-- Basic concepts of Docker
-- Create your own image
-- Run a container
-- Run multi-container application using Docker Compose
-- Run multi-host multi-container application using Docker Swarm cluster
-
-link:chapters/ch01-setup-env.adoc[Setup Environments]
-
-link:chapters/ch02-basic-concepts.adoc[Docker Basic Concepts]
-
-link:chapters/ch03-build-image.adoc[Build a Docker Image]
-
-link:chapters/ch04-run-container.adoc[Run a Docker Container]
-
-link:chapters/ch05-compose.adoc[Run Multiple Containers Using Docker Compose]
-
-link:chapters/ch06-swarm.adoc[Run Multiple Containers on Multiple Hosts using Docker Swarm Cluster]
-
-link:chapters/ch07-eclipse.adoc[Docker Tooling in Eclipse]
-
-link:chapters/ch07-intellij.adoc[Docker Tooling in IntelliJ IDEA]
-
-link:chapters/ch08-cloud.adoc[Run a Docker Container using Docker Cloud]
-
-link:chapters/appa-common-commands.adoc[Common Docker Commands]
-
-link:chapters/appb-troubleshooting.adoc[Troubleshooting]
-
-link:chapters/appc-references.adoc[References]
+* link:chapters/ch01-setup.adoc[Setup Environments]
+* link:chapters/ch02-basic-concepts.adoc[Docker Basic Concepts]
+* link:chapters/ch03-build-image.adoc[Build a Docker Image]
+* link:chapters/ch04-run-container.adoc[Run a Docker Container]
+* link:chapters/ch05-compose.adoc[Run Multiple Containers Using Docker Compose]
+* link:chapters/ch06-swarm.adoc[Run Multiple Containers on Multiple Hosts using Docker Swarm Cluster]
+* Java IDEs
+** link:chapters/ch07-netbeans.adoc[Docker Tooling in NetBeans]
+** link:chapters/ch07-intellij.adoc[Docker Tooling in IntelliJ IDEA]
+** link:chapters/ch07-eclipse.adoc[Docker Tooling in Eclipse]
+* link:chapters/ch08-cloud.adoc[Run a Docker Container using Docker Cloud]
+* link:chapters/appa-common-commands.adoc[Common Docker Commands]
+* link:chapters/appb-troubleshooting.adoc[Troubleshooting]
+* link:chapters/appc-references.adoc[References]
