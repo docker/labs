@@ -17,7 +17,7 @@ RUN powershell add-windowsfeature web-asp-net45 \
   && choco install microsoft-build-tools -y \
   && choco install dotnet4.6-targetpack -y \
   && choco install nuget.commandline -y \
-  && nuget install MSBuild.Microsoft.VisualStudio.Web.targets
+  && nuget install MSBuild.Microsoft.VisualStudio.Web.targets -Version 14.0.0
 
 #Secure default root IIS access by removing default page
 RUN powershell remove-item \inetpub\wwwroot\iisstart.*
