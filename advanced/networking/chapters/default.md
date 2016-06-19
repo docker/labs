@@ -8,7 +8,7 @@ Docker containers by default are run on a separate NAT'd network on the Docker h
 
 To better understand the topology in a picture you can see an example below.
 
-<img src="../images/docker-bridge.png" title="Default Docker bridge">
+<img src="../../images/docker-bridge.png" width="200" />
 
 To see this in action inside a container you can run the following commands to view the IP address and route information.
 
