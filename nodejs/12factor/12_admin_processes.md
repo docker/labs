@@ -6,6 +6,6 @@ Usually used for maintenance task, though a REPL, admin process must be executed
 
 ## What does that mean for our application ?
 
-In the docker-compose file we could define an admin service that is ran at the same time as the application and in which we could jump in (`docker exec -ti ADMIN_CONTAINER_ID bash`) to execute some admin tasks. The container is able to access all the other containers of the application.
+In the docker-compose file we could define an admin service that is ran at the same time as the application and in which we could jump (`docker exec -ti ADMIN_CONTAINER_ID bash`) to execute some admin tasks. The container is able to access all the other containers of the application (provided it belongs to the same networks)
 
 [Previous](11_logs.md)

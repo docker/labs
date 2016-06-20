@@ -5,7 +5,7 @@
 If there are several codebase, it's not an application, it's a distributed system containing multiple applications.
 
 One codebase used for several deployments of the application
-* devlopment
+* development
 * staging
 * production
 
@@ -14,7 +14,7 @@ One codebase used for several deployments of the application
 We will use Git versioning system (could have chosen subversion, ...) to handle our source code.
 
 * Create a repo on [Github](https://github.com)
-* Put or code under git
+* Put the code under git
 
 ```
 $ echo "# messageApp" >> README.md

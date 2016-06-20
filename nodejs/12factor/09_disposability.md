@@ -1,22 +1,23 @@
 # 9 - Disposability
 
-The processus of the application must be disposable.
+Each process of an application must be disposable.
 
-Each one must ensure
-* a quick startup
+* it must have a quick startup
   * ease the horizontal scalability
-* a clean shutdown
-  * stop listening on the http port
-  * finish the handling of the current request
-  * usage of a queueing system for long lasting (worker type) processus
+* it must ensure a clean shutdown
+  * stop listening on the port
+  * finish to handle the current request
+  * usage of a queueing system for long lasting (worker type) process
 
 ## What does that mean for our application ?
 
-Our application only exposes HTTP requests easy and quick to perform. If we were to have some long lasting worker processus, the usage of a queueing system, like Apache Kafka, would be a great choice. Kafka stores indexes of events processed by each worker. When a worker is restared, it can provide an index indicating at which point in time it needs to restart the event handling.
+Our application exposes HTTP endPoints that are easy and quick to handle. If we were to have some long lasting worker processes, the usage of a queueing system, like Apache Kafka, would be a great choice.
+
+Kafka stores indexes of events processed by each worker. When a worker is restared, it can provide an index indicating at which point in time it needs to restart the event handling. Doing so no events are lost.
 
 [Docker Hub](https://hub.docker.com) offers several image of Kafka ([Spotify](https://hub.docker.com/r/spotify/kafka/), [Wurstmeister](https://hub.docker.com/r/wurstmeister/kafka/), ...) that can easily be integrated in the docker-compose file of the application.
 
-Below is an example of how Kafka (and zookeeper) could be added to our docker-compose file. Of course, this means the applicatio has been slightly changed to be able to write and read from Kafka.
+Below is an example of how Kafka (and zookeeper) could be added to our docker-compose file. Of course, this means the application has been slightly changed to be able to write and read to/from Kafka.
 
 
 ```

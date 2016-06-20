@@ -41,4 +41,8 @@ volumes:
   redis-data:
 ```
 
+If several instances of the app services needs to be deployed, the configuration above cannot be used as a given port on the host cannot map several ports in the containers.
+
+In this case, we can use a load balancer to which the host will map a port. The load balancer will then be in charge to balance the traffic on the different instances of the services. 
+
 [Previous](06_processes.md) - [Next](08_concurrency.md)

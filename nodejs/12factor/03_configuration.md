@@ -1,7 +1,6 @@
 # 3 - Configuration
 
-Configuration should be stored in the environment Ex:
-credentials, database connection string, ...
+Configuration (credentials, database connection string, ...) should be stored in the environment.
 
 ## What does that mean for our application ?
 

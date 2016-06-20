@@ -2,13 +2,13 @@
 
 Build / Release and Run phases must be kept separated
 
-[Build/Release/Run](https://dl.dropboxusercontent.com/u/2330187/docker/labs/12factor/build_release_run.png)
+![Build/Release/Run](https://dl.dropboxusercontent.com/u/2330187/docker/labs/12factor/build_release_run.png)
 
 A release is deployed on the execution environment and must be immutable.
 
 ## What does that mean for our application ?
 
-We'll use Docker as our deployment strategy thus we will start by adding a Dockerfile that will help define the build phase (during which the dependencies are compiled in _node-modules_ folder)
+We'll use Docker in the whole development pipeline. We will start by adding a Dockerfile that will help define the build phase (during which the dependencies are compiled in _node-modules_ folder)
 
 ```
 FROM node:4.4.5

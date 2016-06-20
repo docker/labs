@@ -4,13 +4,13 @@ Today, a lot of applications are services deployed in the cloud, on infrastructu
 
 Heroku is PaaS (Platform as a Service) that relies on Amazon AWS and which makes the deployment of applications as easy as `git push heroku master` (ran from the root of your application).
 
-With the huge number of applications deployed on Heroku, engineers of the company acquired a great knowledge of what should be done to get ..
+With the huge number of applications deployed on Heroku, engineers of the company acquired a great knowledge of what should be done to get cloud native application.
 
 12 factor methodology is the result of their observations. As the name states, it presents 12 principles that will help application to be cloud ready, horizontally scalable, and portable.
 
 # Organisation of this lab
 
-In this lab, we will start by building a simple Node.js applicationas a HTTP Rest API exposing CRUD (Create / Read / Update / Delete) verbs on a *message* model.
+In this lab, we will start by building a simple Node.js application as an HTTP Rest API exposing CRUD (Create / Read / Update / Delete) verbs on a *message* model.
 
 HTTP verb | URI | Action
 ----------| --- | ------
@@ -50,4 +50,4 @@ We will then follow each one of the 12 factor and see how this can leverage our 
 
 [12 - Admin processes](12_admin_processes.md)
 
-Do not hesitate to provide comments / feedback you may have. Any feedback, positive or negative, is of great value as it helps to improve the lab.
+Do not hesitate to provide comments / feedback you may have in order to improve this lab.

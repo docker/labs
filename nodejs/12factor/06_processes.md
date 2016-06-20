@@ -1,8 +1,8 @@
 # 6 - Processes
 
-An application is made up of several processus.
+An application is made up of several processes.
 
-Each processus must be stateless and must not have local storage (sessions, ...).
+Each process must be stateless and must not have local storage (sessions, ...).
 
 This is required
 * for scalability
@@ -29,7 +29,7 @@ module.exports.session = {
 
 Once done, the app needs to be rebuilt `docker build -t message-app:v0.2 .`
 
-**REDIS_HOST** needs to be added to the docker-compose file as the newt release will run against this kv store.
+**REDIS_HOST** needs to be added to the docker-compose file as the new release will run against this kv store.
 
 ```
 version: '2'
