@@ -1,6 +1,6 @@
-# Test on swarm 1.12
+# Service deployment on a swarm
 
-A quick script that deploys a sample http server on a swarm created with Engine 1.12 on virtualbox
+Script that deploys a sample http server on a swarm created with Engine 1.12 on virtualbox
 
 The http server returns a json object with ip of the container that handled the request and a random city in the world.
 
