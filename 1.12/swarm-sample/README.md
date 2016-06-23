@@ -4,14 +4,6 @@ A quick script that deploys a sample http server on a swarm created with Engine 
 
 The http server returns a json object with ip of the container that handled the request and a random city in the world.
 
-Example:
-```
-$ curl 192.168.99.100:8080
-{"message":"10.255.0.9 suggests to visit Necamudu"}
-curl 192.168.99.100:8080
-{"message":"10.255.0.11 suggests to visit Foejroh"}
-```
-
 Several parameters can be provided:
 * total number of nodes (1 manager + N workers)
 * number of replicas for the deployed service (lucj/randomcity:1.1)
@@ -52,3 +44,23 @@ do86o8k9oncucdxf3f27kod2y  city.2  city     lucj/randomcity:1.1  Running 20 seco
 eik0vqnh8spxaqakx33nq4pps  city.4  city     lucj/randomcity:1.1  Running 20 seconds  Running        worker1
 2a26tfou2sp25jia6jdjyol87  city.5  city     lucj/randomcity:1.1  Running 20 seconds  Running        manager
 ```
+
+Requests are handled in a roundrobin way:
+
+```
+$ curl 192.168.99.100:8080
+{"message":"10.255.0.7 suggests to visit Zebunto"}
+$ curl 192.168.99.100:8080
+{"message":"10.255.0.8 suggests to visit Areugpip"}
+$ curl 192.168.99.100:8080
+{"message":"10.255.0.10 suggests to visit Fozbovsav"}
+$ curl 192.168.99.100:8080
+{"message":"10.255.0.9 suggests to visit Kitunweg"}
+$ curl 192.168.99.100:8080
+{"message":"10.255.0.11 suggests to visit Aviznuk"}
+$ curl 192.168.99.100:8080
+{"message":"10.255.0.7 suggests to visit Nedhikmu"}
+$ curl 192.168.99.100:8080
+{"message":"10.255.0.8 suggests to visit Palmenme"}
+```
+
