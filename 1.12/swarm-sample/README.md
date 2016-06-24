@@ -17,19 +17,22 @@ Several parameters can be provided
 Let's create a swarm cluster with 2 manager and 2 worker nodes
 
 ```
-$ ./swarm.sh --manager 1 --worker 2
--> swarm will start with 1 manager and 2 workers
--> creating Docker host for manager (please wait)
+$ ./swarm.sh --manager 2 --worker 2
+->  about to create a swarm with 2 manager(s) and 2 workers
+-> creating Docker host for manager 1 (please wait)
+-> creating Docker host for manager 2 (please wait)
 -> creating Docker host for worker 1 (please wait)
 -> creating Docker host for worker 2 (please wait)
 -> init swarm
-Swarm initialized: current node (1mjj1lexqflvjibzble3i1jg5) is now a manager.
--> join worker to the swarm
+Swarm initialized: current node (99xi3bzlgobxmeff573qitctg) is now a manager.
+-> join manager 2 to the swarm
+Node f4wocnel60xwfn2z522a645ba accepted in the swarm.
+-> join worker 1 to the swarm
 This node joined a Swarm as a worker.
--> join worker to the swarm
+-> join worker 2 to the swarm
 This node joined a Swarm as a worker.
 -> deploy service with 5 replicas with exposed port 8080
--> waiting for service 4675wvkghv6tdgxzqxbey2l4x to be available
+-> waiting for service 5ny5u5pmfw75mnomleb34a3kp to be available
 ... retrying in 2 seconds
 ... retrying in 2 seconds
 ... retrying in 2 seconds
@@ -41,18 +44,18 @@ This node joined a Swarm as a worker.
 ... retrying in 2 seconds
 -> service available on port 8080 of any node
 ID            NAME  REPLICAS  IMAGE                COMMAND
-4675wvkghv6t  city  5/5       lucj/randomcity:1.1
+5ny5u5pmfw75  city  5/5       lucj/randomcity:1.1
 ID                         NAME    SERVICE  IMAGE                LAST STATE          DESIRED STATE  NODE
-483v64jv89sc5ctu9f94327tq  city.1  city     lucj/randomcity:1.1  Running 20 seconds  Running        manager
-do86o8k9oncucdxf3f27kod2y  city.2  city     lucj/randomcity:1.1  Running 20 seconds  Running        worker2
-6wnygan733i7y6s22k43hao00  city.3  city     lucj/randomcity:1.1  Running 20 seconds  Running        worker1
-eik0vqnh8spxaqakx33nq4pps  city.4  city     lucj/randomcity:1.1  Running 20 seconds  Running        worker1
-2a26tfou2sp25jia6jdjyol87  city.5  city     lucj/randomcity:1.1  Running 20 seconds  Running        manager
+1j157qz7nu4kaqmack4zuwibm  city.1  city     lucj/randomcity:1.1  Running 20 seconds  Running        manager1
+72y2off8y5f8zp4djzmjdzowg  city.2  city     lucj/randomcity:1.1  Running 20 seconds  Running        worker1
+efzaweh8lhj9aalrgdhnx26i0  city.3  city     lucj/randomcity:1.1  Running 20 seconds  Running        manager2
+1f5ccot3wn3yhrhfbqf6vj5d5  city.4  city     lucj/randomcity:1.1  Running 20 seconds  Running        worker2
+f53ummqn8mba0hzy15w08pxj4  city.5  city     lucj/randomcity:1.1  Running 20 seconds  Running        worker2
 ```
 
 # Service details
 
-The test service deployed is a simple http server that returns a json object containing
+The test service deployed is a simple http server that returns a message with
 * the ip of the container that handled the request
 * a random city of the world
 
