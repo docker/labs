@@ -2,17 +2,16 @@
 
 Script that deploys a sample http server on a swarm created with Engine 1.12 on virtualbox
 
-The http server returns a json object with ip of the container that handled the request and a random city in the world.
-
 Several parameters can be provided:
-* total number of nodes (1 manager + N workers)
-* number of replicas for the deployed service (lucj/randomcity:1.1)
-* port exposed by the cluster
+* number of manager (default: 3)
+* number of worker (default: 5)
+* number of replicas for the deployed service (lucj/randomcity:1.1) (default: 5)
+* port exposed by the cluster (default: 8080)
 
 Example of a run without providing parameters
 
 ```
-$ ./swarm.sh
+$ ./swarm.sh --manager 1 --worker 2
 -> swarm will start with 1 manager and 2 workers
 -> creating Docker host for manager (please wait)
 -> creating Docker host for worker 1 (please wait)
@@ -44,6 +43,10 @@ do86o8k9oncucdxf3f27kod2y  city.2  city     lucj/randomcity:1.1  Running 20 seco
 eik0vqnh8spxaqakx33nq4pps  city.4  city     lucj/randomcity:1.1  Running 20 seconds  Running        worker1
 2a26tfou2sp25jia6jdjyol87  city.5  city     lucj/randomcity:1.1  Running 20 seconds  Running        manager
 ```
+
+# Service deplaoyed
+
+The http server returns a json object with ip of the container that handled the request and a random city in the world.
 
 Requests are handled in a roundrobin way:
 

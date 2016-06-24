@@ -1,105 +1,107 @@
-#!/bin/bash
-
-# By default, 1 manager and 2 additional workers
-NODES=3
-
-# IP of manager node
-MANAGER_IP=
-
-# ID of the service deployed
-SERVICE_ID=
-
-# Number of replicas for the test service
-SERVICE_REPLICAS=5
-
-# Service port
+NBR_MANAGER=3
+NBR_WORKER=5
+NBR_REPLICA=5
 EXPOSED_PORT=8080
 
-function usage(){
-  echo Usage: swarm.sh [-n node_number] [-r service_replicas] [-p exposed_port]
-  exit 0
-}
-
-# Get options
-while getopts ":n:r:p:" opt; do
-  case $opt in
-    n)
-      NODES=$OPTARG
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+   "")
+      echo "Usage: $0 [-m|--manager nbr_manager] [-w|--worker nbr_worker] [-r|--replica nbr_replica] [-p|--port exposed_port]"
+      exit 1
       ;;
-    r)
-      SERVICE_REPLICAS=$OPTARG
+   --manager|-m)
+      NBR_MANAGER="$2"
+      shift 2
       ;;
-    p)
-      EXPOSED_PORT=$OPTARG
+   --worker|-w)
+      NBR_WORKER="$2"
+      shift 2
       ;;
-    \?)
-      usage
+   --replica|-r)
+      NBR_REPLICA="$2"
+      shift 2
+      ;;
+   --port|-p)
+      EXPOSED_PORT="$2"
+      shift 2
       ;;
   esac
 done
 
-# Get number of workers
-WORKERS=$((NODES-1))
+echo "->  about to create a swarm with $NBR_MANAGER manager(s) and $NBR_WORKER workers"
 
-echo "-> swarm will start with 1 manager and $WORKERS workers"
-
-# Create Docker host for manager
+# Create Docker host for managers
 function create_manager {
-  echo "-> creating Docker host for manager (please wait)"
-  docker-machine create --driver virtualbox manager 1>/dev/null
-  MANAGER_IP=$(docker-machine ip manager)
+  for i in $(seq 1 $NBR_MANAGER); do
+    echo "-> creating Docker host for manager $i (please wait)"
+    docker-machine create --driver virtualbox manager$i 1>/dev/null
+  done
 }
 
 # Create Docker host for workers
 function create_workers {
-  for i in $(seq 1 $WORKERS); do
+  for i in $(seq 1 $NBR_WORKER); do
     echo "-> creating Docker host for worker $i (please wait)"
     docker-machine create --driver virtualbox worker$i 1>/dev/null
   done
 }
 
-# Init swarm
+# Init swarm from manager1
 function init_swarm {
   echo "-> init swarm"
-  docker-machine ssh manager docker swarm init --listen-addr $MANAGER_IP:2377
+  MANAGER1_IP=$(docker-machine ip manager1)
+  docker-machine ssh manager1 docker swarm init --listen-addr $MANAGER1_IP:2377
 }
 
-# Join worker to the party
+# Join other managers to the cluster
+function join_managers {
+  MANAGER1_IP=$(docker-machine ip manager1)
+  if [ "$((NBR_MANAGER-1))" -ge "1" ];then
+    for i in $(seq 2 $NBR_MANAGER);do
+      echo "-> join manager $i to the swarm"
+      MANAGER_IP=$(docker-machine ip manager$i)
+      cmd=$(docker-machine ssh manager$i docker swarm join --manager --listen-addr $MANAGER_IP:2377 $MANAGER1_IP:2377 2>&1 | grep "docker node" | cut -d'"' -f2)
+      # accept from another manager
+      docker-machine ssh manager1 $cmd 
+    done
+  fi
+}
+
+# Join worker to the cluster
 function join_workers {
-  for i in $(seq 1 $WORKERS);do
-    echo "-> join worker to the swarm"
+  MANAGER1_IP=$(docker-machine ip manager1)
+  for i in $(seq 1 $NBR_WORKER);do
+    echo "-> join worker $i to the swarm"
     WORKER_IP=$(docker-machine ip worker$i)
-    docker-machine ssh worker$i docker swarm join --listen-addr $WORKER_IP:2377 $MANAGER_IP:2377
+    docker-machine ssh worker$i docker swarm join --listen-addr $WORKER_IP:2377 $MANAGER1_IP:2377
   done
 }
 
-# Deploy a small test application (http server) as a service
+# Deploy a test service
 function deploy_service {
-  echo "-> deploy service with $SERVICE_REPLICAS replicas with exposed port $EXPOSED_PORT"
-  SERVICE_ID=$(docker-machine ssh manager docker service create --name city --replicas $SERVICE_REPLICAS --publish "$EXPOSED_PORT:80" lucj/randomcity:1.1)
+  echo "-> deploy service with $NBR_REPLICA replicas with exposed port $EXPOSED_PORT"
+  SERVICE_ID=$(docker-machine ssh manager1 docker service create --name city --replicas $NBR_REPLICA --publish "$EXPOSED_PORT:80" lucj/randomcity:1.1)
 }
 
 # Wait for service to be available
 function wait_service {
   echo "-> waiting for service $SERVICE_ID to be available"
 
-  # TASKS_NBR=$(docker-machine ssh manager docker service tasks city | grep -v 'SERVICE'  | wc -l)
-  TASKS_NBR=$(docker-machine ssh manager docker service ls | grep city | awk '{print $3}' | cut -d '/' -f1)
+  TASKS_NBR=$(docker-machine ssh manager1 docker service ls | grep city | awk '{print $3}' | cut -d '/' -f1)
 
-  while [ "$TASKS_NBR" -lt "$SERVICE_REPLICAS" ]; do 
+  while [ "$TASKS_NBR" -lt "$NBR_REPLICA" ]; do
     echo "... retrying in 2 seconds"
     sleep 2
-    # TASKS_NBR=$(docker-machine ssh manager docker service tasks city | grep -v 'SERVICE'  | wc -l)
-    TASKS_NBR=$(docker-machine ssh manager docker service ls | grep city | awk '{print $3}' | cut -d '/' -f1)
+    TASKS_NBR=$(docker-machine ssh manager1 docker service ls | grep city | awk '{print $3}' | cut -d '/' -f1)
   done
 }
 
 # Display status
 function status {
-  echo "-> service available on http://$MANAGER_IP:$EXPOSED_PORT"
+  echo "-> service available on port $EXPOSED_PORT of any node"
 
-  docker-machine ssh manager docker service ls
-  docker-machine ssh manager docker service tasks city
+  docker-machine ssh manager1 docker service ls
+  docker-machine ssh manager1 docker service tasks city
 
 }
 
@@ -107,6 +109,7 @@ function main {
   create_manager
   create_workers
   init_swarm
+  join_managers
   join_workers
   deploy_service
   wait_service
