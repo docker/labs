@@ -1,14 +1,20 @@
 # Service deployment on a swarm
 
-Script that deploys a sample http server on a swarm created with Engine 1.12 on virtualbox
+Script that deploys a sample service swarm cluster created on virtualbox with Engine 1.12
 
-Several parameters can be provided:
+# Usage
+
+./swarm.sh [-m|--manager nbr_manager] [-w|--worker nbr_worker] [-r|--replica nbr_replica] [-p|--port exposed_port]"
+
+Several parameters can be provided
 * number of manager (default: 3)
 * number of worker (default: 5)
 * number of replicas for the deployed service (lucj/randomcity:1.1) (default: 5)
 * port exposed by the cluster (default: 8080)
 
-Example of a run without providing parameters
+# Example
+
+Let's create a swarm cluster with 2 manager and 2 worker nodes
 
 ```
 $ ./swarm.sh --manager 1 --worker 2
@@ -33,7 +39,7 @@ This node joined a Swarm as a worker.
 ... retrying in 2 seconds
 ... retrying in 2 seconds
 ... retrying in 2 seconds
--> service available on http://192.168.99.100:8080
+-> service available on port 8080 of any node
 ID            NAME  REPLICAS  IMAGE                COMMAND
 4675wvkghv6t  city  5/5       lucj/randomcity:1.1
 ID                         NAME    SERVICE  IMAGE                LAST STATE          DESIRED STATE  NODE
@@ -44,11 +50,15 @@ eik0vqnh8spxaqakx33nq4pps  city.4  city     lucj/randomcity:1.1  Running 20 seco
 2a26tfou2sp25jia6jdjyol87  city.5  city     lucj/randomcity:1.1  Running 20 seconds  Running        manager
 ```
 
-# Service deplaoyed
+# Service details
 
-The http server returns a json object with ip of the container that handled the request and a random city in the world.
+The test service deployed is a simple http server that returns a json object containing
+* the ip of the container that handled the request
+* a random city of the world
 
-Requests are handled in a roundrobin way:
+# Test deployed service
+
+Requests are handled in a roundrobin way
 
 ```
 $ curl 192.168.99.100:8080
