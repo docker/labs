@@ -1,12 +1,22 @@
+# Default cluster:
+# - 3 manager node
+# - 5 worker nodes
+# - 5 replicas for the test service
+# - exposes port 8080
 NBR_MANAGER=3
 NBR_WORKER=5
 NBR_REPLICA=5
 EXPOSED_PORT=8080
 
+# Default driver for docker-machine is virtualbox
+# If --digitalocean_token provided, driver is changed to digitalocean
+DRIVER="virtualbox"
+ADDITIONAL_FLAGS=
+
 while [ "$#" -gt 0 ]; do
   case "$1" in
    "")
-      echo "Usage: $0 [-m|--manager nbr_manager] [-w|--worker nbr_worker] [-r|--replica nbr_replica] [-p|--port exposed_port]"
+      echo "Usage: $0 [--do_token do_token][-m|--manager nbr_manager] [-w|--worker nbr_worker] [-r|--replica nbr_replica] [-p|--port exposed_port]"
       exit 1
       ;;
    --manager|-m)
@@ -25,16 +35,34 @@ while [ "$#" -gt 0 ]; do
       EXPOSED_PORT="$2"
       shift 2
       ;;
+   --digitalocean_token)
+     DO_TOKEN="$2"
+     shift 2
+     DRIVER="digitalocean"
+     ;;
   esac
 done
 
-echo "->  about to create a swarm with $NBR_MANAGER manager(s) and $NBR_WORKER workers"
+
+if [ "$DRIVER" = "digitalocean" ]; then
+  ADDITIONAL_FLAGS="--digitalocean-access-token=${DO_TOKEN} --digitalocean-region=lon1 --digitalocean-size=1gb --digitalocean-image=ubuntu-14-04-x64 --engine-install-url=https://test.docker.com"
+  echo "->  about to create a swarm with $NBR_MANAGER manager(s) and $NBR_WORKER workers on $DRIVER machines (lon1 / 1gb / Ubuntu 14.04)"
+else
+  echo "->  about to create a swarm with $NBR_MANAGER manager(s) and $NBR_WORKER workers on $DRIVER machines"
+fi
+
+echo -n "continue ? ([Y]/N)"
+read build_demo
+
+if [ "$build_demo" = "N" ]; then
+  echo "aborted !"
+fi
 
 # Create Docker host for managers
 function create_manager {
   for i in $(seq 1 $NBR_MANAGER); do
     echo "-> creating Docker host for manager $i (please wait)"
-    docker-machine create --driver virtualbox manager$i 1>/dev/null
+    docker-machine create --driver $DRIVER $ADDITIONAL_FLAGS manager$i 1>/dev/null
   done
 }
 
@@ -42,7 +70,7 @@ function create_manager {
 function create_workers {
   for i in $(seq 1 $NBR_WORKER); do
     echo "-> creating Docker host for worker $i (please wait)"
-    docker-machine create --driver virtualbox worker$i 1>/dev/null
+    docker-machine create --driver $DRIVER $ADDITIONAL_FLAGS worker$i 1>/dev/null
   done
 }
 
@@ -100,9 +128,15 @@ function wait_service {
 function status {
   echo "-> service available on port $EXPOSED_PORT of any node"
 
+  echo "-> list available service"
   docker-machine ssh manager1 docker service ls
+  echo
+  echo "-> list tasks"
+  echo
   docker-machine ssh manager1 docker service tasks city
-
+  echo 
+  echo "-> list machines"
+  docker-machine ls | egrep 'manager|worker'
 }
 
 function main {

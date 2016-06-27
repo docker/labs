@@ -1,16 +1,17 @@
 # Service deployment on a swarm
 
-Script that deploys a sample service swarm cluster created on virtualbox with Engine 1.12
+Script that deploys a sample service swarm cluster created on virtualbox or digitalocean with Engine 1.12
 
 # Usage
 
-./swarm.sh [-m|--manager nbr_manager] [-w|--worker nbr_worker] [-r|--replica nbr_replica] [-p|--port exposed_port]"
+./swarm.sh [--digitalocean_token] [-m|--manager nbr_manager] [-w|--worker nbr_worker] [-r|--replica nbr_replica] [-p|--port exposed_port]"
 
 Several parameters can be provided
 * number of manager (default: 3)
 * number of worker (default: 5)
 * number of replicas for the deployed service (lucj/randomcity:1.1) (default: 5)
 * port exposed by the cluster (default: 8080)
+* digitalocean token (if not provided, virtualbox driver used)
 
 # Example
 
