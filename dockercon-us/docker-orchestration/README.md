@@ -17,7 +17,10 @@ You will complete the following steps in this lab:
 ## Pre-requisites
 
 You will need all of the following in order to complete this lab:
+
 - Three nodes running Docker v1.12.x. Each VM will be referenced as **v112node0**, **v112node1**, and **v112node2**.
+	-  You can install the latest stable version of Docker 1.12 from <a href="http://test.docker.com">http://test.docker.com</a>
+	 
 - A Docker ID. Creating a Docker ID is free, and allows you to push and pull images from Docker Hub. [This link](https://docs.docker.com/mac/step_five/) describes how to create a Docker ID (you only need to complete the procedure up to step 2.3).
 
 
@@ -37,25 +40,11 @@ The application you will deploy is the `cats` application. It is a simple 1-cont
 
 ### Step 1.1 - Log into VMs and verify that Docker is running
 
-1. SSH to your __v112node0__ with the username of `labuser`. You should have the hostnames in an email titled "Docker Labs VMs Ready"
-
-   The command to SSH into **v112node0** will look something like the following:
+1. SSH to __v112node0__ 
 
    ```bash
    ssh labuser@<public-dns-of-v112node0>
    ```
-You will be asked for a password. The password is in the email with the DNS names of the lab VMs.
-
-An example of the sign in ...
-```bash
-ssh labuser@v112node0-9128f1906df54acda5044f56a1a86b07-2.cloudapp.net
-The authenticity of host 'v112node0-9128f1906df54acda5044f56a1a86b07-2.cloudapp.net (40.112.136.129)' can't be established.
-ECDSA key fingerprint is SHA256:3L9UZQTSCOUkzVuyO5z3H7jLedSp8/5AquUtSZ8ydEE.
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added 'v112node0-9128f1906df54acda5044f56a1a86b07-2.cloudapp.net,40.112.136.129' (ECDSA) to the list of known hosts.
-labuser@v112node0-9128f1906df54acda5044f56a1a86b07-2.cloudapp.net's password:
-Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 4.2.0-23-generic x86_64)
-```
 
 2. Verify that Docker is running. This lab is based on a pre-release version of Docker Engine 1.12 so that we can show you the latest Swarm features. We are running version `1.12.0-rc1` on these VMs.
 
@@ -275,7 +264,7 @@ Now that we have verified that our application works we will push the newly crea
 
 Perform the following steps from **v112node0**.
 
-1. Login with your Docker ID.
+1. Login to Docker Hub with your Docker ID.
 
    ```bash
    labuser@v112node0:~/cats$ docker login
@@ -353,7 +342,6 @@ In this part of the demo you will use all three of the nodes in your lab. __v112
 
 1. If you haven't already done so, SSH in to **v112node0**.
 
-   For example (remember to substitute your SSH key and **v112node0** for your lab):
 
    ```
    $ ssh labuser@v112node0-9a7b5b024cf247fb8d851bf173c72619-4.cloudapp.net

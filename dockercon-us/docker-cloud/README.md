@@ -1,8 +1,5 @@
 # Lab 3: Docker Cloud
 
-##IMPORTANT: If you intend to do the Docker Datacenter lab today, you should do that BEFORE completing this lab.
-
-
 > **Difficulty**: Beginner
 
 > **Time**: Approximately 45 minutes
@@ -49,14 +46,15 @@ When you encounter a phrase in between `<` and `>`  you are meant to substitute 
 
 For instance if you see `ssh <username>@<hostname>` you would actually type something like `ssh labuser@v111node0-adaflds023asdf-23423kjl.appnet.com`
 
-You will be asked to SSH into various nodes. These nodes are referred to as **v111node0**, **v111node1** etc. These tags correspond to the very beginning of the hostnames you will find in your welcome email. 
+You will be asked to SSH into various nodes. These nodes are referred to as **v111node0** and **v111node1** (optional) etc. 
 
 ## <a name="prerequisites"></a>Task 0: Prerequisites
 
 In order to complete this lab, you will need the following:
 
 - A Docker ID
-- A management host (you can use your laptop or one of the Azure nodes supplied in your registration email)
+- A management host (you can use your laptop or a virtual machine with Docker Engine 1.11)
+- A managed node which needs to be a virtual machine running Docker Engine 1.11
 - A GitHub account
 - Git installed locally on your machine (if you are using your machine for the *management host*)
 
@@ -92,19 +90,17 @@ You have two options with regards to choosing a *management host*:
 
 - **Option 1 (recommended)**: Use your own laptop
 
-	In order to use your own laptop, you will need to have Docker installed. 
+	In order to use your own laptop, you will need to have Docker installed. You can find instructions on how to install docker on our <a href="https://www.docker.com/products/docker">products page</a>.
 
-	We recommend you install either the Docker for Mac or Docker for Windows beta. If you'd like to do this please refer to the <a href="https://github.com/docker/dcus-hol-2016/tree/master/docker-developer"> Docker for developers lab</a>, and follow the installation instructions there for your operating system 
-
-	> **Note**: You only need to do the installation portion of the Docker for Developers lab, you don't need to complete the whole lab unless you'd like to).
+	We recommend you install either the Docker for Mac or Docker for Windows beta. 
 
 	If you choose this option, you will install the Docker Cloud CLI and execute commands in a terminal or command window on your laptop.
 
-- **Option 2**: Use an Azure-based virtual machine
+- **Option 2**: Use a virtual machine
 	
-	If you do not wish to install any software locally you can use one of the Azure VMs as your *management host*
+	If you do not wish to install any software locally you can use one a VM as your *management host*
 
-	If you choose this option, you will install the Docker Cloud CLI an execute all commands on the **v111node1** virtual machine. 
+	If you choose this option, you will install the Docker Cloud CLI an execute all commands on the virtual machine which we'll refer to as **v111node1**. The VM will need to have Docker 1.11 installed. 
 		
   
 ### GitHub account
@@ -114,7 +110,6 @@ In order to complete the CI/CD portions of this lab, you will need an account on
 Continue with the lab as soon as you have completed the prerequisites.
 
 ### Git installed 
-If you are using your own laptop for you *management host*, you'll need to make sure you have `git` installed (it's already installed if you are using `Second v.1.11 node`). 
 
 Visit <a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">the git website</a> for information how how to install `git`
 
@@ -126,7 +121,7 @@ The Docker Cloud CLI allows you to interact directly with Docker Cloud, and you 
 
 Installing the Docker Cloud CLI differs based on the operating system of your *management host*.
 
-1. Make sure you are logged on to your *management host*: Either a local terminal/command window if using Docker for Mac or Docker for Windows, or an SSH session to **v111node1** if you are using the Azure VM.
+1. Make sure you are logged on to your *management host*: Either a local terminal/command window if using Docker for Mac or Docker for Windows, or an SSH session to **v111node1** if you are using a VM.
 
 2. Install the `docker-cloud` CLI.
 
@@ -162,7 +157,7 @@ In this step you'll deploy the Docker Cloud agent to an existing Docker host (**
 
 > **Note** that this is **v111node0** which is different than **v111node1** that you *may* have used for your *management host* in the previous step.
 
-1. Open a terminal window and SSH into **v111node0** (you can find the hostname and password in your welcome email)
+1. Open a terminal window and SSH into **v111node0** 
 
 		ssh <username>@<v111node0 hostname>
 
@@ -188,7 +183,7 @@ In this step you'll deploy the Docker Cloud agent to an existing Docker host (**
 
 		$ curl -Ls https://get.cloud.docker.com/ | sudo -H sh -s c7a941OHAIac9419e837f940fab9aa4f1
 
- If prompted ender the password from your email for **v111node0**
+ If prompted ender the password for **v111node0**
 	
  > **Note**: Remember to cut and paste the command and token from the Docker Cloud UI and not the one form the example above.
 

@@ -21,6 +21,8 @@ you will be able to quickly familiarize yourself with the features of Docker Uni
 
 - Three VMs with Docker Engine 1.11 Installed
 - Each VM will be referred to as v111node0, v111node1, and v111node2
+	- v111node0 will be the UCP controller
+	- v111node1 and v111node2 will be worker nodes in your UCP cluster	
 
 ## <a name="install-ucp-controller"></a>Install UCP
 
@@ -38,7 +40,7 @@ available, check the [reference documentation](../reference/install.md).
 
 To install UCP:
 
-1. Log in to your first VM (v111node0) where you will install UCP.  v111node0 will act as your controller node. You will find the hostname, username, and password in your email
+1. Log in to your first VM (v111node0) where you will install UCP.  v111node0 will act as your controller node. 
 
 		$ ssh <username>@<v111node0 hostname>
 
@@ -61,11 +63,11 @@ To install UCP:
 
 	- **Password**: enter a password of your choosing
 
-	- **Additional Aliases**: enter your the hostname for **v111node0** which can be found in your email (for example: v111node0-0e23927a6fc9472089bf4c7aeca47ca2-3.cloudapp.net)
+	- **Additional Aliases**: enter your the hostname for **v111node0** 
 
 	> **Note**: The install with finish with a message to log into your UCP controller at an IP address similar to 10.0.0.2. Ignore this, the address supplied is a private IP, and cannot be used to access UCP.
 
-1. Log into your UCP cluster by pointing your browser to `https://<v111node0 hostname>` (you can find your hostname in the email you received)
+1. Log into your UCP cluster by pointing your browser to `https://<v111node0 hostname>` 
 
 	> **Note**: use `https://` not `http://`
 
@@ -107,7 +109,7 @@ To install UCP:
 
 Now that we have our controller-node installed with UCP.  We have to join other nodes to our controller node:
 
-1. Log into your second VM (**v111node1**) (You can find your username, password, and hostname in the email you received)
+1. Log into your second VM (**v111node1**) 
 
 		$ ssh <username>@<v111node1 hostname>
 
@@ -184,7 +186,7 @@ In order to access the NGINX container from your web browser you will need the D
 
 In this particular example, the **nginx_server** container is running on the **v111node1** node with an IP of 10.0.0.55 - However, this is the private IP address of the node and you will not be able to use this address to connect to the web server. Locate the hostname of the node from the lab details you received.
 
-- Go to your web browser and enter the hostname (found in your registration email) of the node that the **nginx_server** container is running on.
+- Go to your web browser and enter the hostname of the node that the **nginx_server** container is running on.
 
 You will see the NGINX welcome page.
 
@@ -263,7 +265,7 @@ web:
 
 5. Point your browser to the application.
 
-  To do this, combine the node's hostname (from your registration email) with port 5000 as follows:
+  To do this, combine the node's hostname with port 5000 as follows:
 
   - `<hostname>:5000`
 
