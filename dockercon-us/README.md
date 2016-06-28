@@ -8,7 +8,7 @@ Some labs will require you to setup virtual machines with Docker installed. You 
 
 
 
-## Lab 01. [Docker for Developers](./docker-developer/README.md)
+## Lab 01. [Docker for Developers](https://github.com/docker/labs/tree/master/dockercon-us/docker-developer)
 
 Docker for Mac and Docker for Windows are faster, more reliable alternatives to Docker Toolbox for running Docker locally on your Windows or Mac
 
@@ -21,7 +21,7 @@ In this lab you will:
 - Install either Docker for Mac or Docker for Windows
 - Deploy a sample Docker application
 
-## Lab 02. [Docker Datacenter](./docker-datacenter/README.md)
+## Lab 02. [Docker Datacenter](https://github.com/docker/labs/tree/master/dockercon-us/docker-datacenter)
 
 Docker Datacenter brings container management and deployment services to enterprises with a production-ready platform supported by Docker and hosted locally behind the firewall.
 
@@ -36,7 +36,7 @@ In this lab you will:
 - Deploy a multi-container application
 - Use users and teams to implement role-based access control
 
-## Lab 03. [Docker Cloud](./docker-cloud/README.md)
+## Lab 03. [Docker Cloud](https://github.com/docker/labs/tree/master/dockercon-us/docker-cloud)
 
 Docker Cloud is Docker's cloud platform to build, ship and run your containerized applications. Docker Cloud enables teams to come together to collaborate on their projects and to automate complex continuous delivery flows. So you can focus on working and improving your app, and leave the rest up to Docker Cloud. Docker Cloud offers a set of services that can be used individually or together for an end-to end solution.
 
@@ -56,7 +56,7 @@ In this lab you will:
 - Build an automated CI/CD pipeline with GitHub and Docker Cloud
 
 
-## Lab 04. [Docker Native Orchestration](./docker-orchestration/README.md)
+## Lab 04. [Docker Native Orchestration](https://github.com/mikegcoleman/labs/tree/master/dockercon-us/docker-orchestration)
 
 In this lab you will try out the new features from Docker engine 1.12 that provide native container orchestration. You will deploy a Dockerized application to a single host and test the application. You will then configure Docker for Swarm Computing and deploy the same app across multiple hosts. You will then see how to scale the application and move the workload across different hosts easily.
 
