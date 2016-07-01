@@ -1,10 +1,24 @@
 # Service deployment on a swarm
 
-Script that deploys a sample service swarm cluster created on virtualbox or digitalocean with Engine 1.12
+Script that create a swarm cluster and deploy a simple service.
+Swarm is created with Swarm mode of Engine 1.12. Can be created on
+* Virtualbox
+* Digitalocean
+* Amazon EC2
+
+Note: currently, if deploying on AWS, only EU (Ireland) region is available. Make sure you use a Key Pairs for this region
 
 # Usage
 
-./swarm.sh [--digitalocean_token] [-m|--manager nbr_manager] [-w|--worker nbr_worker] [-r|--replica nbr_replica] [-p|--port exposed_port]"
+```
+./swarm.sh [--amazonec2-access-key ec2_access_key]
+           [--amazonec2-secret-key ec2_secret_key]
+           [--digitalocean_token]
+           [-m|--manager nbr_manager]
+           [-w|--worker nbr_worker]
+           [-r|--replica nbr_replica]
+           [-p|--port exposed_port]
+```
 
 Several parameters can be provided
 * number of manager (default: 3)
@@ -12,10 +26,11 @@ Several parameters can be provided
 * number of replicas for the deployed service (lucj/randomcity:1.1) (default: 5)
 * port exposed by the cluster (default: 8080)
 * digitalocean token (if not provided, virtualbox driver used)
+* amazon access key and secret key (currently only for EU (Ireland) region)
 
 # Example
 
-Let's create a swarm cluster with 2 manager and 2 worker nodes
+Let's create a swarm cluster with 2 manager and 2 worker nodes locally (with virtualbox)
 
 ```
 $ ./swarm.sh --manager 2 --worker 2
@@ -108,4 +123,29 @@ $ curl http://192.168.99.102:8080
 {"message":"10.255.0.9 suggests to visit Jinonat"}
 ```
 
-The requests are dispatched to the running containers.
+The requests are dispatched in a round robin fashion to the running containers.
+
+# Examples with other drivers
+
+## Run 3 managers and 6 workers on DigitalOcean
+
+```
+./swarm.sh --driver digitalocean --digitalocean_token $DO_TOKEN --manager 3 --worker 6
+```
+
+## Run 3 managers and 6 workers on AmazonEC2
+
+```
+./swarm.sh --driver amazonec2 --amazonec2-access-key $AWS_ACCESS_KEY --amazonec2-secret-key $AWS_SECRET_KEY --amazonec2-security-group default --manager 3 --worker 6
+```
+
+note: make sure the security group provided (default in this example) allow communication between hosts and open the exposed port (8080 by default) to the outside
+
+# Status
+
+- [x] Virtualbox deployment
+- [x] Digitalocean deployment (Ubuntu 14.04 / 1gb / lon1)
+- [x] Amazon deployment (Ubuntu 14.04 / t2.micro / EU (Ireland))
+- [ ] DigitalOcean deployment with image / size / region selection
+- [ ] Amazon deployment with AMI / instance type / region selection
+- [ ] Amazon deployment with automatic opening of exposed port in SecurityGroup
