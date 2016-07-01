@@ -20,6 +20,8 @@ Note: currently, if deploying on AWS, only EU (Ireland) region is available. Mak
            [-w|--worker nbr_worker]
            [-r|--replica nbr_replica]
            [-p|--port exposed_port]
+           [--service_image image_of_the_service_to_deploy]
+           [--service_port port_exposed_by_the_service_to_deploy]
 ```
 
 Several parameters can be provided
@@ -33,10 +35,11 @@ Several parameters can be provided
 
 # Example
 
-Let's create a swarm cluster with 2 manager and 2 worker nodes locally (with virtualbox)
+Let's create a swarm cluster with 2 manager and 2 worker nodes locally (with virtualbox) and using service lucj/randomCity
+Once deployed service will be available on port 8080 (default port)
 
 ```
-$ ./swarm.sh --manager 2 --worker 2
+$ ./swarm.sh --manager 2 --worker 2 --service_image lucj/randomCity --service_port 80
 ->  about to create a swarm with 2 manager(s) and 2 workers on virtualbox machines
 -> creating Docker host for manager 1 (please wait)
 -> creating Docker host for manager 2 (please wait)
@@ -130,19 +133,25 @@ The requests are dispatched in a round robin fashion to the running containers.
 
 # Examples with other drivers
 
-## Run 3 managers and 6 workers on DigitalOcean
+## Run 3 managers and 6 workers on DigitalOcean and use service based on ehazlett/docker-demo image (default image if none specified)
 
 ```
 ./swarm.sh --driver digitalocean --digitalocean_token $DO_TOKEN --manager 3 --worker 6
 ```
 
-## Run 3 managers and 6 workers on AmazonEC2
+Once the service is deployed you got some nice Mobydock :)
+
+![Mobydock](https://dl.dropboxusercontent.com/u/2330187/docker/labs/1.12/swarm-sample/mobydock.png)
+
+Note: beware of the browser cache that prevents the hostname to be updated sometimes
+
+## Run 3 managers and 6 workers on AmazonEC2 based on ehazlett/docker-demo image (default image if none specified)
 
 ```
 ./swarm.sh --driver amazonec2 --amazonec2-access-key $AWS_ACCESS_KEY --amazonec2-secret-key $AWS_SECRET_KEY --amazonec2-security-group default --manager 3 --worker 6
 ```
 
-note: make sure the security group provided (default in this example) allow communication between hosts and open the exposed port (8080 by default) to the outside
+note: make sure the security group provided (**default** in this example) allow communication between hosts and open the exposed port (8080 by default) to the outside
 
 # Status
 

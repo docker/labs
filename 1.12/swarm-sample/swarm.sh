@@ -2,23 +2,29 @@
 # - 3 manager node
 # - 5 worker nodes
 # - 5 replicas for the test service
-# - exposes port 8080
+# - service image: ehazlett/docker-demo
+# - service port: 8080 (port exposed by the service)
+# - exposed port: 8080 (port exposed to the outside)
+DRIVER="virtualbox"
 NBR_MANAGER=3
 NBR_WORKER=5
 NBR_REPLICA=5
+SERVICE_IMAGE="ehazlett/docker-demo"
+SERVICE_PORT=8080
 EXPOSED_PORT=8080
 
-# Default driver for docker-machine is virtualbox
-DRIVER="virtualbox"
+# additional flags depending upon driver selection
 ADDITIONAL_PARAMS=
 PERMISSION=
 PRIVATE=
+
+# Manager and worker prefix
 PREFIX=$(date "+%Y%m%dT%H%M%S")
 MANAGER=${PREFIX}-manager
 WORKER=${PREFIX}-worker
 
 function usage {
-  echo "Usage: $0 [--driver provider] [--amazonec2-access-key ec2_access_key] [--amazonec2-secret-key ec2_secret_key] [--amazonec2-security-group ec2_security_group] [--do_token do_token][-m|--manager nbr_manager] [-w|--worker nbr_worker] [-r|--replica nbr_replica] [-p|--port exposed_port]"
+  echo "Usage: $0 [--driver provider] [--amazonec2-access-key ec2_access_key] [--amazonec2-secret-key ec2_secret_key] [--amazonec2-security-group ec2_security_group] [--do_token do_token][-m|--manager nbr_manager] [-w|--worker nbr_worker] [-r|--replica nbr_replica] [-p|--port exposed_port] [--service_image service_image] [--service_port service_port]"
   exit 1
 }
 
@@ -39,6 +45,14 @@ while [ "$#" -gt 0 ]; do
       ;;
    --worker|-w)
       NBR_WORKER="$2"
+      shift 2
+      ;;
+   --service_image)
+      SERVICE_IMAGE="$2"
+      shift 2
+      ;;
+   --service_port)
+      SERVICE_PORT="$2"
       shift 2
       ;;
    --replica|-r)
@@ -78,7 +92,7 @@ fi
 
 # No additional parameters needed for virtualbox driver
 if [ "$DRIVER" == "virtualbox" ]; then
-  echo "->  about to create a swarm with $NBR_MANAGER manager(s) and $NBR_WORKER workers on $DRIVER machines"
+  echo "-> about to create a swarm with $NBR_MANAGER manager(s) and $NBR_WORKER workers on $DRIVER machines"
 fi
 
 # Make sure mandatory parameter for digitalocean driver
@@ -100,10 +114,13 @@ if [ "$DRIVER" == "amazonec2" ];then
   fi
   PERMISSION="sudo" 
   ADDITIONAL_PARAMS="--amazonec2-access-key ${EC2_ACCESS_KEY} --amazonec2-secret-key ${EC2_SECRET_KEY} --amazonec2-security-group ${EC2_SECURITY_GROUP} --amazonec2-security-group docker-machine --amazonec2-region eu-west-1 --amazonec2-instance-type t2.micro --amazonec2-ami ami-f95ef58a --engine-install-url=https://test.docker.com"
-  echo "->  about to create a swarm with $NBR_MANAGER manager(s) and $NBR_WORKER workers on $DRIVER machines (eu-west-1 / t2.micro / Ubuntu 14.04)"
+  echo "-> about to create a swarm with $NBR_MANAGER manager(s) and $NBR_WORKER workers on $DRIVER machines (eu-west-1 / t2.micro / Ubuntu 14.04)"
 fi
 
-echo -n "continue ? ([Y]/N)"
+echo "-> service is based on image ${SERVICE_IMAGE} exposing port ${SERVICE_PORT}"
+echo "-> once deployed service will be accessible via port ${EXPOSED_PORT} to the outside"
+
+echo -n "is that correct ? ([Y]/N)"
 read build_demo
 
 if [ "$build_demo" = "N" ]; then
@@ -177,22 +194,22 @@ function join_workers {
 # Deploy a test service
 function deploy_service {
   echo "-> deploy service with $NBR_REPLICA replicas with exposed port $EXPOSED_PORT"
-  SERVICE_ID=$(docker-machine ssh ${MANAGER}1 $PERMISSION docker service create --name city --replicas $NBR_REPLICA --publish "$EXPOSED_PORT:80" lucj/randomcity:1.1)
-  if [ "$SERVICE_ID" == "" ]; then
+  SERVICE_ID=$(docker-machine ssh ${MANAGER}1 $PERMISSION docker service create --name demo --replicas $NBR_REPLICA --publish "${EXPOSED_PORT}:${SERVICE_PORT}" ${SERVICE_IMAGE})
+  if [ "${SERVICE_ID}" == "" ]; then
     error "deploying service: no id returned"
   fi
 }
 
 # Wait for service to be available
 function wait_service {
-  echo "-> waiting for service $SERVICE_ID to be available"
+  echo "-> waiting for service ${SERVICE_ID} to be available"
 
-  TASKS_NBR=$(docker-machine ssh ${MANAGER}1 $PERMISSION docker service ls | grep city | awk '{print $3}' | cut -d '/' -f1)
+  TASKS_NBR=$(docker-machine ssh ${MANAGER}1 $PERMISSION docker service ls | grep demo | awk '{print $3}' | cut -d '/' -f1)
 
   while [ "$TASKS_NBR" -lt "$NBR_REPLICA" ]; do
     echo "... retrying in 2 seconds"
     sleep 2
-    TASKS_NBR=$(docker-machine ssh ${MANAGER}1 $PERMISSION docker service ls | grep city | awk '{print $3}' | cut -d '/' -f1)
+    TASKS_NBR=$(docker-machine ssh ${MANAGER}1 $PERMISSION docker service ls | grep demo | awk '{print $3}' | cut -d '/' -f1)
   done
 }
 
@@ -205,7 +222,7 @@ function status {
   echo
   echo "-> list tasks"
   echo
-  docker-machine ssh ${MANAGER}1 $PERMISSION docker service tasks city
+  docker-machine ssh ${MANAGER}1 $PERMISSION docker service tasks demo
   echo 
   echo "-> list machines"
   docker-machine ls | egrep $PREFIX
