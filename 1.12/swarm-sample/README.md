@@ -11,8 +11,10 @@ Note: currently, if deploying on AWS, only EU (Ireland) region is available. Mak
 # Usage
 
 ```
-./swarm.sh [--amazonec2-access-key ec2_access_key]
+./swarm.sh [--driver provider]
+           [--amazonec2-access-key ec2_access_key]
            [--amazonec2-secret-key ec2_secret_key]
+           [--amazonec2-security-group ec2_security_group]
            [--digitalocean_token]
            [-m|--manager nbr_manager]
            [-w|--worker nbr_worker]
@@ -21,12 +23,13 @@ Note: currently, if deploying on AWS, only EU (Ireland) region is available. Mak
 ```
 
 Several parameters can be provided
+* driver used ("virtualbox", "digitalocean", "amazonec2") (default: "virtualbox")
 * number of manager (default: 3)
 * number of worker (default: 5)
 * number of replicas for the deployed service (lucj/randomcity:1.1) (default: 5)
 * port exposed by the cluster (default: 8080)
-* digitalocean token (if not provided, virtualbox driver used)
-* amazon access key and secret key (currently only for EU (Ireland) region)
+* digitalocean token (if digitalocean driver specified)
+* amazon access key, secret key, security group (currently only for EU (Ireland) region) (if amazonec2 driver is specified)
 
 # Example
 
@@ -34,7 +37,7 @@ Let's create a swarm cluster with 2 manager and 2 worker nodes locally (with vir
 
 ```
 $ ./swarm.sh --manager 2 --worker 2
-->  about to create a swarm with 2 manager(s) and 2 workers
+->  about to create a swarm with 2 manager(s) and 2 workers on virtualbox machines
 -> creating Docker host for manager 1 (please wait)
 -> creating Docker host for manager 2 (please wait)
 -> creating Docker host for worker 1 (please wait)
