@@ -17,10 +17,6 @@ PREFIX=$(date "+%Y%m%dT%H%M%S")
 MANAGER=${PREFIX}-manager
 WORKER=${PREFIX}-worker
 
-echo $MANAGER
-echo $WORKER
-
-
 function usage {
   echo "Usage: $0 [--driver provider] [--amazonec2-access-key ec2_access_key] [--amazonec2-secret-key ec2_secret_key] [--amazonec2-security-group ec2_security_group] [--do_token do_token][-m|--manager nbr_manager] [-w|--worker nbr_worker] [-r|--replica nbr_replica] [-p|--port exposed_port]"
   exit 1
