@@ -1,15 +1,15 @@
-# Orchestration with Swarm Computing
+# Orchestration with Docker Engine swarm mode
 
 > **Difficulty**: Beginner
 
 > **Time**: Approximately 40 minutes
 
-In this lab you will deploy a Dockerized application to a single host and test the application. You will then configure Docker for Swarm Computing and deploy the same app across multiple hosts. You will then see how to scale the application and move the workload across different hosts
+In this lab you will deploy a Dockerized application to a single host and test the application. You will then configure Docker swarm mode and deploy the same app across multiple hosts. You will then see how to scale the application and move the workload across different hosts
 
 You will complete the following steps in this lab:
 
 - [Deploy a single host application](#deploy-application)
-- [Configure Docker for Swarm Computing](#start-cluster)
+- [Configure Docker with swarm mode](#start-cluster)
 - [Deploy the application across multiple hosts](#multi-application)
 - [Scale the application](#scale-application)
 - [Drain a node and reschedule the containers](#recover-application)
@@ -46,7 +46,7 @@ The application you will deploy is the `cats` application. It is a simple 1-cont
    ssh labuser@<public-dns-of-v112node0>
    ```
 
-2. Verify that Docker is running. This lab is based on a pre-release version of Docker Engine 1.12 so that we can show you the latest Swarm features. We are running version `1.12.0-rc1` on these VMs.
+2. Verify that Docker is running. This lab is based on a pre-release version of Docker Engine 1.12 so that we can show you the latest orchestration features. We are running version `1.12.0-rc1` on these VMs.
 
 	```bash
 	labuser@v112node0:~$ docker version
