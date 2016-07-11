@@ -15,7 +15,7 @@ docker-machine create \
   --digitalocean-image=${IMAGE} \
   --engine-install-url=https://test.docker.com \
   ${PREFIX}-sw01
-docker-machine ssh ${PREFIX}-sw01 docker swarm init
+docker-machine ssh ${PREFIX}-sw01 docker swarm init --listen-addr $(docker-machine ip ${PREFIX}-sw01):2377
 
 # create another swarm node
 docker-machine create \
@@ -27,7 +27,7 @@ docker-machine create \
   --digitalocean-image=${IMAGE} \
   --engine-install-url=https://test.docker.com \
   ${PREFIX}-sw02
-docker-machine ssh ${PREFIX}-sw02 docker swarm join $(docker-machine ip ${PREFIX}-sw01):2377
+docker-machine ssh ${PREFIX}-sw02 docker swarm join --listen-addr $(docker-machine ip ${PREFIX}-sw02):2377 $(docker-machine ip ${PREFIX}-sw01):2377
 
 # list nodes
 docker-machine ssh ${PREFIX}-sw01 docker node ls
