@@ -218,7 +218,7 @@ Create the Docker image:
 
 [source, text]
 ----
-cd docker-java-sample
+cd docker-java-sample/helloworld
 mvn package -Pdocker
 ----
 
