@@ -6,7 +6,7 @@ There are no specific skills needed for this tutorial beyond a basic comfort wit
 ### Setting up your computer
 Getting all the tooling setup on your computer can be a daunting task, but thankfully getting Docker up and running on your favorite OS has become very easy.
 
-The *getting started* guide on Docker has detailed instructions for setting up Docker on [Mac](http://docs.docker.com/mac/step_one/), [Linux](http://docs.docker.com/linux/step_one/) and [Windows](http://docs.docker.com/windows/step_one/).
+The *getting started* guide on Docker has detailed instructions for setting up Docker on [Mac](https://docs.docker.com/v1.11/engine/installation/mac/), [Linux](https://docs.docker.com/v1.11/engine/installation/linux/) and [Windows](https://docs.docker.com/v1.11/engine/installation/windows/).
 
 Once you are done installing Docker, test your Docker installation by running the following:
 ```
