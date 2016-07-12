@@ -4,6 +4,7 @@ This repo contains [Docker](https://docker.com) labs and tutorials authored both
 
 #### Docker tutorials:
 * [Docker for beginners] (beginner/readme.md)
+* [Docker Swarm Mode](swarm-mode/README.md)
 * [Docker for ASP.NET and Windows containers](windows/readme.md)
 * [Docker for Java Developers](java/readme.adoc)
 
