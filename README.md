@@ -7,6 +7,9 @@ This repo contains [Docker](https://docker.com) labs and tutorials authored both
 * [Docker Swarm Mode](swarm-mode/README.md)
 * [Docker for ASP.NET and Windows containers](windows/readme.md)
 * [Docker for Java Developers](java/readme.adoc)
+* [Dockerize a simple Node.js app](nodejs/porting/README.md)
+* [Building a 12 Factor app with Docker](12factor/README.md)
+
 
 #### Community tutorials
 * [Docker Tutorials from the Community](https://github.com/docker/community/blob/master/tutorials/docker-tutorials.md) - links to a different repository
