@@ -1,45 +1,50 @@
 :imagesdir: images
 
-== Setup Environments
+= Setup Environments
 
-This section describes the software needed for this workshop. This workshop is designed for a BYOL (Brying Your Own Laptop) style hands-on-lab.
+This section describes the hardware and software needed for this workshop, and how to configure them. This workshop is designed for a BYOL (Brying Your Own Laptop) style hands-on-lab.
 
-=== Hardware
+== Hardware
 
-. Operating System: Mac OS X (10.8+), Windows 7+, Ubuntu 12+, CentOS 7+, Fedora 21+
+. Operating System: Mac OS X (10.10+), Windows 10 Pro+, Ubuntu 12+, CentOS 7+
 . Memory: At least 4 GB+, preferred 8 GB
 
-=== Docker Toolbox or Packages
+== Install Docker
 
-Docker runs natively on Linux. Because the Docker daemon uses Linux-specific kernel features, you can’t run Docker natively in OS X or Windows. Instead, you must use `docker-machine` to create and attach to a virtual machine (VM). This machine is a Linux VM that hosts Docker for you on your Mac or Windows.
+Docker runs natively on Mac, Windows and Linux. Follow the instructions to install Docker:
 
-Follow the instructions to install Docker:
-
-. https://www.docker.com/products/docker-toolbox[Docker Toolbox for Mac or Windows]
+. https://www.docker.com/products/docker#/mac[Docker for Mac]
+. https://www.docker.com/products/docker#/windows[Docker for Windows]
 . http://docs.docker.com/engine/installation/ubuntulinux/[Docker on Ubuntu]
 . http://docs.docker.com/engine/installation/centos/[Docker on Centos]
 
+NOTE: Docker for Mac and Windows have requirements for a fairly recent operating system version. If your machine does not meet these requirements, then you need to install https://www.docker.com/products/docker-toolbox[Docker Toolbox]. 
+
 Complete set of operating systems are listed at http://docs.docker.com/engine/installation/[Install Docker Engine].
 
-==== Additional components for Linux
+=== Additional components
+
+Install the following additional components:
 
 . Docker Compose: https://github.com/docker/compose/releases
-. Docker Machine: https://github.com/docker/machine/releases/latest
-. VirtualBox: https://www.virtualbox.org/wiki/Downloads
 
-These are required to create a Docker Swarm cluster.
+=== Docker Toolbox Notes
 
-=== Create Docker Host Mapping
+Skip this section if you are not using Docker Toolbox for Mac or Windows.
 
-To make it easier to start/stop the containers, an entry is added into the host mapping table of your operating system. 
-
-For Mac and Windows, find out the IP address of your machine:
-
+. *Default Docker Machine*: Docker Toolbox creates a Docker Machine named `default`. To make it easier to start/stop the containers, an entry is added into the host mapping table of your operating system. 
++
+Find out IP address of your machine:
++
 ```console
 docker-machine ip default
 ```
-
++
 This will provide the IP address associated with the Docker Machine created by Toolbox.
++
+. *Docker CLI Shell*: Any Docker CLI command needs to be issued from the Terminal or Command Prompt where `eval $(docker-machine env default)` command was issued. This will make sure Docker CLI is configured to talk to the VM created by Docker Toolbox.
+
+=== Setup Host Mapping
 
 For Linux, Docker host is running on local machine and so the IP address would be `127.0.0.1`.
 
@@ -48,17 +53,14 @@ Edit `/etc/hosts` (Mac OS or Linux) or `C:\Windows\System32\drivers\etc\hosts` (
 [source, text]
 ----
 <IP ADDRESS>  dockerhost
+<IP ADDRESS>  localhost
 ----
 
-=== Pre-requisites
+This allows to access Docker containers using `dockerhost` or `localhost`.
+
+=== Download Images
 
 This tutorial uses a few Docker images and software. Let's download them before we start the tutorial.
-
-==== Pull Docker images
-
-Download the Docker images.
-
-IMPORTANT: For Mac and Windows, this commands need to be issued from the Docker shell or Command Prompt where `eval $(docker-machine env default)` command was issued.
 
 Create a new file, name it `docker-compose-pull-images.yml`, and add the following content:
 
@@ -70,8 +72,6 @@ busybox:
   image: busybox
 java:
   image: java
-tomee:
-  image: tomee
 wildfly:
   image: jboss/wildfly
 mysql:
@@ -94,7 +94,7 @@ docker-compose -f docker-compose-pull-images.yml pull
 
 NOTE: For Linux, `docker-compose` and `docker` commands need `sudo` access. So prefix all commands with `sudo`.
 
-==== Software
+=== Other Software
 
 . Download Java IDE based upon your choice and install.
 .. http://bits.netbeans.org/download/trunk/nightly/latest/[NetBeans Nightly] (`"Java EE"` version)

@@ -1,10 +1,10 @@
 :imagesdir: images
 
-## Run a Docker Container
+= Run a Docker Container
 
-The first step in running any application on Docker is to run a container from an image. There are plenty of images available from the official Docker registry (aka https://hub.docker.com[Docker Hub]). To run any of them, you just have to ask the Docker Client to run it. The client will check if the image already exists on Docker Host. If it exists then it'll run it, otherwise the host will download the image and then run it.
+The first step in running any application using Docker is to run a container from an image. There are plenty of images available from the official Docker registry (aka https://hub.docker.com[Docker Hub]). To run any of them, you just have to ask the Docker Client to run it. The client will check if the image already exists on Docker Host. If it exists then it'll run it, otherwise the host will download the image and then run it.
 
-### Pull Image
+== Pull Image
 
 Let's first check, if any images are available:
 
@@ -13,99 +13,88 @@ Let's first check, if any images are available:
 docker images
 ----
 
-At first, this list is empty. Now, let's get a vanilla `tomee` image:
+At first, this list is empty. If you've already downloaded the images as specified in the link:ch01-setup.adoc[Setup Environments] chapter, then all the images will be shown here. Now, let's get a vanilla `jboss/wildfly` image:
 
 [source, text]
 ----
-docker pull tomee
+docker pull jboss/wildfly
 ----
 
 By default, docker images are retrieved from https://hub.docker.com/[Docker Hub].
 
 You can see, that Docker is downloading the image with it's different layers.
 
-[NOTE]
-====
-In a traditional Linux boot, the Kernel first mounts the root File System as read-only, checks its integrity, and then switches the whole rootfs volume to read-write mode.
-When Docker mounts the rootfs, it starts read-only, as in a traditional Linux boot, but then, instead of changing the file system to read-write mode, it takes advantage of a union mount to add a read-write file system over the read-only file system. In fact there may be multiple read-only file systems stacked on top of each other. Consider each one of these file systems as a layer.
-
-At first, the top read-write layer has nothing in it, but any time a process creates a file, this happens in the top layer. And if something needs to update an existing file in a lower layer, then the file gets copied to the upper layer and changes go into the copy. The version of the file on the lower layer cannot be seen by the applications anymore, but it is there, unchanged.
-
-We call the union of the read-write layer and all the read-only layers a _union file system_.
-====
-
-In our particular case, the `latest` tag refers to https://github.com/tomitribe/docker-tomee/blob/592da5738fd23d6c8a483efce1710cf03ee508c6/8-jre-7.0.0-M3-webprofile/Dockerfile[tomee:8-jre-7.0.0-M3-webprofile]. This image extends the https://github.com/docker-library/openjdk/blob/2dd0496901a9c01c78895d0e6618b36c08f78bde/openjdk-8-jre/Dockerfile[java:8-jre] image which adds the OpenJDK 8 JRE on top of the https://hub.docker.com/_/buildpack-deps/[buildpack] image.
-
-When the download is done, you can list the images again using the `docker images` command and will see the following output:
+List of images can be seen again using the `docker images` command. This will see the following output:
 
 [source, text]
 ----
 docker images
-REPOSITORY            TAG                    IMAGE ID            CREATED             SIZE
-tomee                 latest                 06c29ed8a4bc        6 hours ago         352.1 MB
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+hello-java          latest              428f7ac0195d        2 hours ago         669.2 MB
+helloworld          2                   f74665e81a75        2 hours ago         1.093 MB
+helloworld          latest              a85376e122e2        2 hours ago         125 MB
+ubuntu              latest              cf62323fa025        5 days ago          125 MB
+jboss/wildfly       latest              4a2f70767057        12 days ago         580.2 MB
+busybox             latest              2b8fd9751c4c        2 weeks ago         1.093 MB
+java                latest              264282a59a95        4 weeks ago         669.2 MB
 ----
 
-More details about the image can be obtained using `docker history tomee` command:
+More details about the image can be obtained using `docker history jboss/wildfly` command:
 
 [source, text]
 ----
+docker history jboss/wildfly
 IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
-06c29ed8a4bc        6 hours ago         /bin/sh -c #(nop) CMD ["catalina.sh" "run"]     0 B                 
-<missing>           6 hours ago         /bin/sh -c #(nop) EXPOSE 8080/tcp               0 B                 
-<missing>           6 hours ago         /bin/sh -c set -x  && curl -fSL https://dist.   41.02 MB            
-<missing>           6 hours ago         /bin/sh -c set -xe  && for key in $GPG_KEYS;    60.38 kB            
-<missing>           6 hours ago         /bin/sh -c #(nop) ENV GPG_KEYS=BDD0BBEB753192   0 B                 
-<missing>           6 hours ago         /bin/sh -c #(nop) WORKDIR /usr/local/tomee      0 B                 
-<missing>           6 hours ago         /bin/sh -c mkdir -p /usr/local/tomee            0 B                 
-<missing>           6 hours ago         /bin/sh -c #(nop) ENV PATH=/usr/local/tomee/b   0 B                 
-<missing>           29 hours ago        /bin/sh -c /var/lib/dpkg/info/ca-certificates   418.2 kB            
-<missing>           29 hours ago        /bin/sh -c set -x  && apt-get update  && apt-   140 MB              
-<missing>           29 hours ago        /bin/sh -c #(nop) ENV CA_CERTIFICATES_JAVA_VE   0 B                 
-<missing>           29 hours ago        /bin/sh -c #(nop) ENV JAVA_DEBIAN_VERSION=8u7   0 B                 
-<missing>           29 hours ago        /bin/sh -c #(nop) ENV JAVA_VERSION=8u72         0 B                 
-<missing>           29 hours ago        /bin/sh -c #(nop) ENV JAVA_HOME=/usr/lib/jvm/   0 B                 
-<missing>           29 hours ago        /bin/sh -c {   echo '#!/bin/sh';   echo 'set    87 B                
-<missing>           29 hours ago        /bin/sh -c #(nop) ENV LANG=C.UTF-8              0 B                 
-<missing>           29 hours ago        /bin/sh -c echo 'deb http://httpredir.debian.   61 B                
-<missing>           29 hours ago        /bin/sh -c apt-get update && apt-get install    1.177 MB            
-<missing>           2 weeks ago         /bin/sh -c apt-get update && apt-get install    44.32 MB            
-<missing>           2 weeks ago         /bin/sh -c #(nop) CMD ["/bin/bash"]             0 B                 
-<missing>           2 weeks ago         /bin/sh -c #(nop) ADD file:b5391cb13172fb513d   125.1 MB  
+4a2f70767057        12 days ago         /bin/sh -c #(nop) CMD ["/opt/jboss/wildfly/bi   0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) EXPOSE 8080/tcp               0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) ENV LAUNCH_JBOSS_IN_BACKGRO   0 B                 
+<missing>           12 days ago         /bin/sh -c cd $HOME     && curl -O https://do   160.8 MB            
+<missing>           12 days ago         /bin/sh -c #(nop) ENV JBOSS_HOME=/opt/jboss/w   0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) ENV WILDFLY_SHA1=c0dd7552c5   0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) ENV WILDFLY_VERSION=10.0.0.   0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) ENV JAVA_HOME=/usr/lib/jvm/   0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) USER [jboss]                  0 B                 
+<missing>           12 days ago         /bin/sh -c yum -y install java-1.8.0-openjdk-   197.4 MB            
+<missing>           12 days ago         /bin/sh -c #(nop) USER [root]                   0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) MAINTAINER Marek Goldmann <   0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) USER [jboss]                  0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) WORKDIR /opt/jboss            0 B                 
+<missing>           12 days ago         /bin/sh -c groupadd -r jboss -g 1000 && usera   4.349 kB            
+<missing>           12 days ago         /bin/sh -c yum update -y && yum -y install xm   25.21 MB            
+<missing>           12 days ago         /bin/sh -c #(nop) MAINTAINER Marek Goldmann <   0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) CMD ["/bin/bash"]             0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) LABEL name=CentOS Base Imag   0 B                 
+<missing>           12 days ago         /bin/sh -c #(nop) ADD file:170ecf2c9223a8a00d   196.8 MB            
+<missing>           12 days ago         /bin/sh -c #(nop) MAINTAINER https://github.c   0 B                 
 ----
 
-### Run Container
+== Run Container Interactively
 
-#### Interactive Container
-
-Run TomEE container in an interactive mode.
+Run WildFly container in an interactive mode.
 
 [source, text]
 ----
-docker run -it tomee
+docker run -it jboss/wildfly
 ----
 
 This will show the output as:
 
 [source, text]
 ----
-Using CATALINA_BASE:   /usr/local/tomee
-Using CATALINA_HOME:   /usr/local/tomee
-Using CATALINA_TMPDIR: /usr/local/tomee/temp
-Using JRE_HOME:        /usr/lib/jvm/java-8-openjdk-amd64/jre
-Using CLASSPATH:       /usr/local/tomee/bin/bootstrap.jar:/usr/local/tomee/bin/tomcat-juli.jar
-INFO - Server version:        Apache Tomcat (TomEE)/8.0.32 (7.0.0-M3)
-INFO - Server built:          Feb 2 2016 19:34:53 UTC
-INFO - Server number:         8.0.32.0
+=========================================================================
+
+  JBoss Bootstrap Environment
+
+  JBOSS_HOME: /opt/jboss/wildfly
+
+  JAVA: /usr/lib/jvm/java/bin/java
 
 . . .
 
-INFO - Assembling app: /usr/local/tomee/webapps/docs
-INFO - Deployed Application(path=/usr/local/tomee/webapps/docs)
-INFO - At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
-INFO - Deployment of web application directory /usr/local/tomee/webapps/docs has finished in 164 ms
-INFO - Starting ProtocolHandler ["http-nio-8080"]
-INFO - Starting ProtocolHandler ["ajp-nio-8009"]
-INFO - Server startup in 1279 ms
+23:38:38,730 INFO  [org.infinispan.factories.GlobalComponentRegistry] (MSC service thread 1-4) ISPN000128: Infinispan version: Infinispan 'Mahou' 8.1.0.Final
+23:38:39,007 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
+23:38:39,007 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990
+23:38:39,008 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 10.0.0.Final (WildFly Core 2.0.10.Final) started in 4377ms - Started 267 of 553 services (371 services are lazy, passive or on-demand)
 ----
 
 This shows that the server started correctly, congratulations!
@@ -114,14 +103,14 @@ By default, Docker runs in the foreground. `-i` allows to interact with the STDI
 
 Hit Ctrl+C to stop the container.
 
-#### Detached Container
+== Run a Detached Container
 
 Restart the container in detached mode:
 
 [source, text]
 ----
-docker run -d tomee
-827d56aa25855d7187a889b6672ec9632e85f0fecf45377eca438cb74d5aec40
+docker run -d jboss/wildfly
+119c9149e270dd511eff23c2ce14012eea645f2226e1855b5bc4758bdef6357e
 ----
 
 `-d`, instead of `-it`, runs the container in detached mode.
@@ -132,74 +121,72 @@ We can check the status of the container by `docker ps` command:
 
 [source, text]
 ----
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-b349b7e29bfd        tomee               "catalina.sh run"   10 seconds ago      Up 9 seconds        8080/tcp            condescending_darwin
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+119c9149e270        jboss/wildfly       "/opt/jboss/wildfly/b"   20 seconds ago      Up 19 seconds       8080/tcp            elegant_euler
 ----
 
 Also try `docker ps -a` to see all the containers on this machine.
 
-### Run Container with Default Port
-
-`docker-machine ip <machine-name>` gives us the Docker Host IP address and this was already added to the hosts file. So, we can give it another try by accessing: http://dockerhost:8080. However, this will not work either.
+== Run Container with Default Port
 
 If you want containers to accept incoming connections, you will need to provide special options when invoking `docker run`. The container, we just started, can't be accessed by our browser. We need to stop it again and restart with different options.
 
 [source, text]
 ----
-docker stop `docker ps | grep tomee | awk '{print $1}'`
+docker stop `docker ps | grep wildfly | awk '{print $1}'`
 ----
 
 Restart the container as:
 
 [source, text]
 ----
-docker run -d -P tomee
+docker run -d -P jboss/wildfly
 ----
 
 `-P` map any exposed ports inside the image to a random port on Docker host. This can be verified using `docker ps` command:
 
 [source, text]
 ----
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                     NAMES
-91aa4228049b        tomee               "catalina.sh run"   9 seconds ago       Up 8 seconds        0.0.0.0:32768->8080/tcp   prickly_babbage
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                     NAMES
+cc7bb18fc05e        jboss/wildfly       "/opt/jboss/wildfly/b"   6 seconds ago       Up 5 seconds        0.0.0.0:32768->8080/tcp   happy_ptolemy
 ----
 
-The port mapping is shown in the `PORTS` column. Access TomEE server at http://dockerhost:32768. Make sure to use the correct port number as shown in your case.
+The port mapping is shown in the `PORTS` column. Access WildFly server at http://localhost:32768. Make sure to use the correct port number as shown in your case.
 
 NOTE: Exact port number may be different in your case.
 
 The page would look like:
 
-image::tomee-first-run-default-page.png[]
+image::wildfly-first-run-default-page.png[]
 
-### Run Container with Specified Port
+== Run Container with Specified Port
 
 Stop the previously running container as:
 
 [source, text]
 ----
-docker stop `docker ps | grep tomee | awk '{print $1}'`
+docker stop `docker ps | grep wildfly | awk '{print $1}'`
 ----
 
 Restart the container as:
 
 [source, text]
 ----
-docker run -d -p 8080:8080 tomee
+docker run -d -p 8080:8080 jboss/wildfly
 ----
 
 The format is `-p hostPort:containerPort`. This option maps container ports to host ports and allows other containers on our host to access them.
 
-Now we're ready to test http://dockerhost:8080 again. This works with the exposed port, as expected.
+Now we're ready to test http://localhost:8080 again. This works with the exposed port, as expected.
 
 Let's stop the container as:
 
 [source, text]
 ----
-docker stop `docker ps | grep tomee | awk '{print $1}'`
+docker stop `docker ps | grep wildfly | awk '{print $1}'`
 ----
 
-### Deploy a WAR file to Application Server
+== Deploy a WAR file to Application Server
 
 Now that your application server is running, lets see how to deploy a WAR file to it.
 
@@ -207,9 +194,9 @@ Use the following Dockerfile in a new directory:
 
 [source, text]
 ----
-FROM tomee
+FROM jboss/wildfly
 
-RUN curl -L https://github.com/javaee-samples/javaee7-simple-sample/releases/download/v1.10/javaee7-simple-sample-1.10.war -o /usr/local/tomee/webapps/javaee-simple-sample.war
+RUN curl -L https://github.com/javaee-samples/javaee7-simple-sample/releases/download/v1.10/javaee7-simple-sample-1.10.war -o /opt/jboss/wildfly/standalone/deployments/javaee-simple-sample.war
 ----
 
 Create an image:
@@ -230,7 +217,7 @@ Access the endpoint:
 
 [source, text]
 ----
-curl http://dockerhost:8080/javaee7-simple-sample/resources/persons
+curl http://localhost:8080/javaee-simple-sample/resources/persons
 ----
 
 See the output:
@@ -283,7 +270,7 @@ See the output:
 
 Optional: `brew install XML-Coreutils` will install XML formatting utility on Mac. This output can then be piped to `xml-fmt` to display a formatted result.
 
-### Stop Container
+== Stop Container
 
 Stop a specific container:
 
@@ -306,7 +293,7 @@ Stop only the exited containers:
 docker ps -a -f "exited=-1"
 ----
 
-### Remove Container
+== Remove Container
 
 Remove a specific container:
 
@@ -319,7 +306,7 @@ Remove containers meeting a regular expression
 
 [source, text]
 ----
-docker ps -a | grep tomee | awk '{print $1}' | xargs docker rm
+docker ps -a | grep wildfly | awk '{print $1}' | xargs docker rm
 ----
 
 Remove all containers, without any criteria
@@ -329,7 +316,7 @@ Remove all containers, without any criteria
 docker rm $(docker ps -aq)
 ----
 
-##### Additional Ways To Find Port Mapping
+== Additional Ways To Find Port Mapping
 
 The exact mapped port can also be found using `docker port` command:
 
