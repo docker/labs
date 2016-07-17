@@ -47,19 +47,20 @@ Build the image:
 ----
 > docker build -t helloworld .
 Sending build context to Docker daemon 2.048 kB
-Step 0 : FROM ubuntu
-Pulling repository docker.io/library/ubuntu
-a5a467fddcb8: Download complete 
-3fd0c2ae8ed2: Download complete 
-9e19ac89d27c: Download complete 
-ac65c371c3a5: Download complete 
+Step 1 : FROM ubuntu
+latest: Pulling from library/ubuntu
+90d6565b970a: Pull complete 
+40553bdb8474: Pull complete 
+c3129e7479ab: Pull complete 
+091663bd70db: Pull complete 
+Digest: sha256:ba1688fec34f66d8a7ff5b42e6971625d8232c72bf0e38ad06dda10cad157293
 Status: Downloaded newer image for ubuntu:latest
- ---> a5a467fddcb8
-Step 1 : CMD /bin/echo hello world
- ---> Running in 132bb0bf823f
- ---> e81a394f71e3
-Removing intermediate container 132bb0bf823f
-Successfully built e81a394f71e3
+ ---> cf62323fa025
+Step 2 : CMD /bin/echo hello world
+ ---> Running in 3ea56763bbdc
+ ---> f3573ec571c5
+Removing intermediate container 3ea56763bbdc
+Successfully built f3573ec571c5
 ----
 
 `.` in this command is the context for `docker build`.
@@ -69,8 +70,9 @@ List the images available:
 [source, text]
 ----
 > docker images
-REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-helloworld          latest              9c0e7b56cbee        13 minutes ago      187.9 MB
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+helloworld          latest              a85376e122e2        4 seconds ago       125 MB
+ubuntu              latest              cf62323fa025        5 days ago          125 MB
 ----
 
 Run the container:
@@ -85,20 +87,22 @@ If you do not see the expected output, check your Dockerfile, build the image ag
 
 Change the base image from `ubuntu` to `busybox` in `Dockerfile`. Build the image again:
 
-  docker build -t helloworld2 .
+  docker build -t helloworld:2 .
 
 and view the images using `docker images` command:
 
 [source, text]
 ----
-REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-helloworld          latest              e81a394f71e3        26 minutes ago      187.9 MB
-helloworld2         latest              c458787fadcf        3 seconds ago       1.113 MB
-ubuntu              latest              a5a467fddcb8        2 days ago          187.9 MB
-busybox             latest              3d5bcd78e074        4 days ago          1.113 MB
+REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
+helloworld          2                   f74665e81a75        8 seconds ago        1.093 MB
+helloworld          latest              a85376e122e2        About a minute ago   125 MB
+ubuntu              latest              cf62323fa025        5 days ago           125 MB
+busybox             latest              2b8fd9751c4c        2 weeks ago          1.093 MB
 ----
 
-Note how base images for Ubuntu and Busybox are downloaded.
+`helloworld:2` is the format that allows to specify the image name and assign a tag/version to it separated by `:`.
+
+Also note how base images for Ubuntu and Busybox are downloaded as well.
 
 === Create your first Docker image using Java
 
@@ -156,16 +160,16 @@ Check the version of Java:
 [source, text]
 ----
 root@44b355b45ab1:/# java -version
-openjdk version "1.8.0_72-internal"
-OpenJDK Runtime Environment (build 1.8.0_72-internal-b15)
-OpenJDK 64-Bit Server VM (build 25.72-b15, mixed mode)
+openjdk version "1.8.0_91"
+OpenJDK Runtime Environment (build 1.8.0_91-8u91-b14-1~bpo8+1-b14)
+OpenJDK 64-Bit Server VM (build 25.91-b14, mixed mode)
 ----
 
-A different version may be seen in your case.
+A different version may be seen in your case. Exit out of the container by typing `exit` in the shell.
 
 ==== Package and Run Java application as Docker image
 
-Create a new Dockerfile in `helloworld` directory:
+Create a new Dockerfile in `helloworld` directory and use the following content:
 
 [source, text]
 ----
@@ -178,24 +182,17 @@ CMD java -cp /usr/src/helloworld-1.0-SNAPSHOT.jar org.examples.java.App
 
 Build the image:
 
-[source, text]
-----
-docker build -t hello-java .
-----
+    docker build -t hello-java .
 
 Run the image:
 
-[source, text]
-----
-docker run hello-java
-----
+    docker run hello-java
 
 This displays the output:
 
-[source, text]
-----
-Hello World!
-----
+    Hello World!
+
+This shows that the `java` CLI and Docker image are priting the same output.
 
 ==== Package and Run Java Application using Docker Maven Plugin
 
@@ -218,15 +215,14 @@ Create the Docker image:
 
 [source, text]
 ----
-cd docker-java-sample/helloworld
-mvn package -Pdocker
+mvn -f docker-java-sample/helloworld/pom.xml package -Pdocker
 ----
 
 This will show an output like:
 
 [source, text]
 ----
-[INFO] DOCKER> [hello-java] : Built image sha256:09ab7
+[INFO] DOCKER> [hello-java] : Built image sha256:428f7
 ----
 
 The list of images can be checked:
@@ -234,7 +230,7 @@ The list of images can be checked:
 [source, text]
 ----
 docker images | grep hello-java
-hello-java          latest              09ab715ec59d        44 seconds ago      642.4 MB
+hello-java          latest              428f7ac0195d        58 seconds ago      669.2 MB
 ----
 
 Run the Docker container:
@@ -248,14 +244,14 @@ This will show an output like:
 
 [source, text]
 ----
-[INFO] DOCKER> [hello-java] : Start container 11550a8dc086
-[INFO] DOCKER> [hello-java] : Waited on log out 'Hello' 503 ms
+[INFO] DOCKER> [hello-java] : Start container b3b0e4b63174
+[INFO] DOCKER> [hello-java] : Waited on log out 'Hello' 504 ms
 [INFO] 
 [INFO] --- docker-maven-plugin:0.14.2:logs (docker:start) @ helloworld ---
-11550a> Hello World!
+b3b0e4> Hello World!
 ----
 
-This is similar output when running the container using `docker run` command.
+This is similar output when running the Java application using `java` CLI or the Docker container using `docker run` command.
 
 Only one change was required in the project to enable Docker packaging and running. A Maven profile is added in `pom.xml`:
 

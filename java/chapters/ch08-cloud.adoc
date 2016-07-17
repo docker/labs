@@ -1,8 +1,8 @@
 :imagesdir: images
 
-== Docker Cloud
+= Docker Cloud
 
-=== Key Concepts
+== Key Concepts
 
 Docker Cloud is a SaaS that allows you to build, deploy and manage Docker containers in physical servers, virtual machine or cloud providers.
 
@@ -18,7 +18,7 @@ This chapter will show how to use TomEE Docker image and deploy it using Docker 
 
 Install Docker Cloud CLI following the https://docs.docker.com/docker-cloud/tutorials/installing-cli/[instructions].
 
-=== Create new Docker Cloud Node
+== Create new Docker Cloud Node
 
 Create a new node cluster:
 
@@ -33,7 +33,7 @@ Each node in this node cluster will be given the assigned tag. This will be used
 
 Deploying a node can take up to 10 minutes.
 
-=== Create a new Docker Cloud Service
+== Create a new Docker Cloud Service
 
 Create a Docker Cloud Service:
 
@@ -80,7 +80,7 @@ tomee-4eb05078-1 | 2016-03-15T01:15:15.348118092Z INFO - Starting ProtocolHandle
 tomee-4eb05078-1 | 2016-03-15T01:15:15.349340425Z INFO - Server startup in 1162 ms
 ----
 
-=== Access Couchbase Server in Docker Cloud
+== Access Couchbase Server in Docker Cloud
 
 Inspect the Docker Cloud service for the exposed container ports:
 
@@ -101,7 +101,7 @@ Access the main page of TomEE at http://tomee-4eb05078.8d3572ae.svc.dockerapp.io
 
 image::docker-cloud-tomee-landing-page.png[]
 
-=== Terminate the Docker Cloud Service and Node
+== Terminate the Docker Cloud Service and Node
 
 Check the list of Docker Cloud services running:
 

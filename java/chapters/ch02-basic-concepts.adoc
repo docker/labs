@@ -54,33 +54,13 @@ These instructions are stored in a file called a Dockerfile. Docker reads this D
 
 A container consists of an operating system, user-added files, and meta-data. As we've seen, each container is built from an image. That image tells Docker what the container holds, what process to run when the container is launched, and a variety of other configuration data. The Docker image is read-only. When Docker runs a container from an image, it adds a read-write layer on top of the image (using a union file system as we saw earlier) in which your application can then run.
 
-### Docker Machine
+### Docker Engine
 
-Machine makes it really easy to create Docker hosts on your computer, on cloud providers and inside your own data center. It creates servers, installs Docker on them, then configures the Docker client to talk to them.
-
-Once your Docker host has been created, it then has a number of commands for managing containers:
-
-. Start, stop, restart container
-. Upgrade Docker
-. Configure the Docker client to talk to a host
-
-Docker Machine was already installed as part of Docker Toolbox during the setup.
-
-Find out more details at link:https://docs.docker.com/machine/[Docker Machine Website].
-
-Open Docker shell, check if docker machine is working:
-
-  docker-machine -v
-
-It shows the output:
-
-  docker-machine version 0.5.0 (04cfa58)
-
-NOTE: The exact version may differ based upon how recently the installation was performed.
+Docker Host is created as part of installing Docker on your machine. Once your Docker host has been created, it then allows you to manage images and containers. For example, the image can be downloaded and containers can be started, stopped and restarted.
 
 ### Docker Client
 
-The client communicates with the demon process on your host and let's you work with images and containers.
+The client communicates with the Docker Host and let's you work with images and containers.
 
 Check if your client is working using the following command:
 
@@ -88,11 +68,33 @@ Check if your client is working using the following command:
 
 It shows the output:
 
-  Docker version 1.9.0, build 76d6bc9
+  Docker version 1.12.0-rc3, build 91e29e8, experimental
 
 NOTE: The exact version may differ based upon how recently the installation was performed.
 
-The most important options you'll be using frequently are:
+The exact version of Client and Server can be seen using `docker version` command. This shows the output as:
+
+```
+Client:
+ Version:      1.12.0-rc3
+ API version:  1.24
+ Go version:   go1.6.2
+ Git commit:   91e29e8
+ Built:        Sat Jul  2 00:09:24 2016
+ OS/Arch:      darwin/amd64
+ Experimental: true
+
+Server:
+ Version:      1.12.0-rc3
+ API version:  1.24
+ Go version:   go1.6.2
+ Git commit:   876f3a7
+ Built:        Tue Jul  5 02:20:13 2016
+ OS/Arch:      linux/amd64
+ Experimental: true
+ ```
+
+The common commands that'll be used are:
 
 . `run` - runs a container
 . `ps`- lists containers
@@ -107,40 +109,16 @@ A more commonly used list of commands is available at <<Common_Docker_Commands>>
 
 ### Verify Docker Configuration
 
-Open Docker shell, check if your Docker Host is running:
-
-  docker-machine ls
-
-You should see the output similar to:
-
-[source, text]
-----
-NAME        ACTIVE   DRIVER       STATE     URL                         SWARM
-default     *        virtualbox   Running   tcp://192.168.99.100:2376   
-----
-
-This machine is shown in "`Running`" state. If the machine state is stopped, start it with:
-
-  docker-machine start default
-
-After it is started you can find out IP address of your Docker Host with:
-
-  docker-machine ip default
-
-We already did this during the setup document, remember? So, this is a good chance to check, if you already added this IP to your hosts file.
-
-Type:
-
-  ping dockerhost
-
-and see if this resolves to the IP address that the docker-machine command printed out. You should see an output as:
+Verify that host mapping is configured correctly by using the command `ping dockerhost`. This resolves to the IP address of where the Docker Host is running. You should see an output as:
 
 [source, text]
 ----
 > ping dockerhost
-PING dockerhost (192.168.99.101): 56 data bytes
-64 bytes from 192.168.99.101: icmp_seq=0 ttl=64 time=0.394 ms
-64 bytes from 192.168.99.101: icmp_seq=1 ttl=64 time=0.387 ms
+PING dockerhost (127.0.0.1): 56 data bytes
+64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.035 ms
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.078 ms
+64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.059 ms
+64 bytes from 127.0.0.1: icmp_seq=3 ttl=64 time=0.058 ms
 ----
 
 If it does, you're ready to start the workshop.

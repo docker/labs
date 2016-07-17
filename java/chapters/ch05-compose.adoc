@@ -1,7 +1,7 @@
 :imagesdir: images
 
 [[Docker_Compose]]
-== Run Multiple Containers Using Docker Compose
+= Run Multiple Containers Using Docker Compose
 
 [quote, github.com/docker/compose]
 Docker Compose is a tool for defining and running complex applications with Docker. With Compose, you define a multi-container application in a single file, then spin your application up in a single command which does everything that needs to be done to get it running.
@@ -28,17 +28,13 @@ An application using Docker containers will typically consist of multiple contai
 | `migrate-to-labels  Recreate containers to add labels
 |====
 
-Docker Compose applications can use networking introduced in Docker 1.9. Read more details about it at https://docs.docker.com/engine/userguide/networking/.
-
-=== Multi-container application
-
 The application used in this section will show how to query a Couchbase sample data using simple Java EE application deployed on WildFly. The Java EE application will use JAX-RS to publish REST endpoint which will then be invoked using `curl`.
 
 WildFly and Couchbase will be running in two separate containers, and thus making this a multi-container application.
 
-=== Configuration File
+== Configuration File
 
-. Entry point to Compose is `docker-compose.yml`. Lets use the following file:
+. Entry point to Docker Compose is Compose file, usually called `docker-compose.yml`. Create a new directory and a new file `docker-compose.yml` in it. Use the following contents:
 
 [[Docker_Compose_with_WildFly_and_Couchbase]]
 .Docker Compose with WildFly and Couchbase
@@ -47,28 +43,27 @@ WildFly and Couchbase will be running in two separate containers, and thus makin
 ----
 version: '2'
 services:
-  mycouchbase:
-    container_name: "db"
+  db:
     image: arungupta/couchbase
     ports:
       - 8091:8091
       - 8092:8092 
       - 8093:8093 
       - 11210:11210
-  mywildfly:
+  web:
     image: arungupta/wildfly-couchbase-javaee7
     environment:
       - COUCHBASE_URI=db
     ports:
       - 8080:8080
     depends_on:
-      - mycouchbase
+      - db
 ----
 ====
 
 In this Compose file:
 
-. Two services in this Compose are defined by the name `mycouchbase` and `mywildfly` attributes
+. Two services in this Compose are defined by the name `db` and `web` attributes
 . Image name for each service defined using `image` attribute
 . The `arungupta/couchbase` image starts Couchbase server, configures it using http://developer.couchbase.com/documentation/server/current/rest-api/rest-endpoints-all.html[Couchbase REST API], and loads a sample bucket
 . The `arungupta/wildfly-couchbase-javaee7` image starts WildFly and deploys application WAR file built from https://github.com/arun-gupta/couchbase-javaee. This image built using https://github.com/arun-gupta/docker-images/blob/master/wildfly-couchbase-javaee7/Dockerfile.
@@ -77,9 +72,9 @@ In this Compose file:
 . Port forwarding is achieved using `ports` attribute
 . `depends_on` attribute allows to express dependency between services. In this case, Couchbase will be started before WildFly. Application-level health are still user's responsibility.
 
-=== Start Services
+=== Start Application
 
-All services can be started, in detached mode, by giving the command:
+All services in the applicaiton can be started, in detached mode, by giving the command:
 
 [[Start_Compose_Services]]
 .Start Docker Compose Services
@@ -94,6 +89,44 @@ An alternate compose file name can be specified using `-f` option.
 
 An alternate directory where the compose file exists can be specified using `-p` option.
 
+This shows the output as:
+
+[source, text]
+----
+Creating network "javaee_default" with the default driver
+Pulling db (arungupta/couchbase:latest)...
+latest: Pulling from arungupta/couchbase
+56eb14001ceb: Pull complete
+7ff49c327d83: Pull complete
+6e532f87f96d: Pull complete
+3ce63537e70c: Pull complete
+b8145bb24a3f: Pull complete
+e6e203bac6d0: Pull complete
+566dfc7d9e85: Pull complete
+a2c938a8a28b: Pull complete
+c6f4b64cd81f: Pull complete
+9471cd6d0816: Pull complete
+b5dbff584fd2: Pull complete
+cb803d8435bd: Pull complete
+5baa1a8990e4: Pull complete
+a3ed95caeb02: Pull complete
+Digest: sha256:30eb344986be80234b1f64e4554b7b9f57b982a1283c7ef6fc6f7d3db9bee70c
+Status: Downloaded newer image for arungupta/couchbase:latest
+Pulling web (arungupta/wildfly-couchbase-javaee7:latest)...
+latest: Pulling from arungupta/wildfly-couchbase-javaee7
+a3ed95caeb02: Pull complete
+7b4fc7362304: Pull complete
+564fd20c9eba: Pull complete
+f877a8aab935: Pull complete
+939c172e3da6: Pull complete
+e375f0165ab7: Pull complete
+b4c5559c47a9: Pull complete
+Digest: sha256:677716c784347eadd0c11e713ce2a34e1a7bae6cbaec0dc48cde6e82575abb12
+Status: Downloaded newer image for arungupta/wildfly-couchbase-javaee7:latest
+Creating javaee_db_1
+Creating javaee_web_1
+----
+
 Started services can be verified as:
 
 [[Containers_Started_by_Docker_Compose]]
@@ -102,22 +135,23 @@ Started services can be verified as:
 [source, text]
 ----
 docker-compose ps
-             Name                             Command                            State                             Ports              
--------------------------------------------------------------------------------------------------------------------------------------
-attendees_mywildfly_1             /opt/jboss/wildfly/bin/sta ...    Up                                0.0.0.0:8080->8080/tcp,         
-                                                                                                      0.0.0.0:9990->9990/tcp          
-db                                /entrypoint.sh /opt/couchb ...    Up                                11207/tcp,                      
-                                                                                                      0.0.0.0:11210->11210/tcp,       
-                                                                                                      11211/tcp, 18091/tcp,           
-                                                                                                      18092/tcp,                      
-                                                                                                      0.0.0.0:8091->8091/tcp,         
-                                                                                                      0.0.0.0:8092->8092/tcp,         
-                                                                                                      0.0.0.0:8093->8093/tcp                                                       
+           Name                         Command                        State                         Ports            
+---------------------------------------------------------------------------------------------------------------------
+javaee_db_1                   /entrypoint.sh /opt/couchb    Up                            11207/tcp,                  
+                              ...                                                         0.0.0.0:11210->11210/tcp,   
+                                                                                          11211/tcp, 18091/tcp,       
+                                                                                          18092/tcp, 18093/tcp,       
+                                                                                          0.0.0.0:8091->8091/tcp,     
+                                                                                          0.0.0.0:8092->8092/tcp,     
+                                                                                          0.0.0.0:8093->8093/tcp,     
+                                                                                          8094/tcp                    
+javaee_web_1                  /opt/jboss/wildfly/bin/sta    Up                            0.0.0.0:8080->8080/tcp      
+                              ...                                                                                     
 ----
 ====
 
 
-This provides a consolidated view of all the services started, and containers within them.
+This provides a consolidated view of all the started services, and containers within them.
 
 Alternatively, the containers in this application, and any additional containers running on this Docker host can be verified by using the usual `docker ps` command:
 
@@ -127,200 +161,35 @@ Alternatively, the containers in this application, and any additional containers
 [source, text]
 ----
 docker ps
-CONTAINER ID        IMAGE                                 COMMAND                  CREATED              STATUS              PORTS                                                                                               NAMES
-7a0435413a3b        arungupta/couchbase                   "/entrypoint.sh /opt/"   About a minute ago   Up About a minute   0.0.0.0:8091-8093->8091-8093/tcp, 11207/tcp, 11211/tcp, 0.0.0.0:11210->11210/tcp, 18091-18092/tcp   db
-be57cb3d1ad6        arungupta/wildfly-couchbase-javaee7   "/opt/jboss/wildfly/b"   About a minute ago   Up About a minute   0.0.0.0:8080->8080/tcp, 0.0.0.0:9990->9990/tcp                                                      attendees_mywildfly_1
+CONTAINER ID        IMAGE                                 COMMAND                  CREATED             STATUS              PORTS                                                                                                         NAMES
+325b7b05ee17        arungupta/wildfly-couchbase-javaee7   "/opt/jboss/wildfly/b"   3 minutes ago       Up 3 minutes        0.0.0.0:8080->8080/tcp                                                                                        javaee_web_1
+5023a9883de5        arungupta/couchbase                   "/entrypoint.sh /opt/"   3 minutes ago       Up 3 minutes        8094/tcp, 0.0.0.0:8091-8093->8091-8093/tcp, 11207/tcp, 11211/tcp, 0.0.0.0:11210->11210/tcp, 18091-18093/tcp   javaee_db_1
 ----
 ====
 
-Service logs can be seen as:
+Service logs can be seen using `docker-compose logs` command. The logs will show some errors. These are because the Java EE application deployed in WildFly is not able to communicate with Couchbase. Let's understand why.
 
-[[Docker_Compose_Service_Logs]]
-.Docker Compose Service Logs
-====
+`depends_on` attribute in Compose definition file ensures the container start up order. But application-level start up needs to be ensured by the applications running inside container. In our case, WildFly starts up rather quickly but takes a few seconds for the database to start up. This means the Java EE application deployed in WildFly is not able to communicate with the database. 
+
+So we need to restart the WildFly service after ~15 seconds to ensure enough time for the Couchbase database to start. Restart the WildFly service using `docker restart web` command.
+
+Now, the logs will show the application is deployed successfully in WildFly. This can be verified by looking at the logs:
+
 [source, text]
 ----
-docker-compose logs
-Attaching to db, attendees_mywildfly_1
-db          | Starting Couchbase Server -- Web UI available at http://<ip>:8091
-mywildfly_1 | =========================================================================
-mywildfly_1 | 
-mywildfly_1 |   JBoss Bootstrap Environment
-mywildfly_1 | 
-mywildfly_1 |   JBOSS_HOME: /opt/jboss/wildfly
-mywildfly_1 | 
-mywildfly_1 |   JAVA: /usr/lib/jvm/java/bin/java
-mywildfly_1 | 
-mywildfly_1 |   JAVA_OPTS:  -server -XX:+UseCompressedOops  -server -XX:+UseCompressedOops -Xms64m -Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true
-mywildfly_1 | 
-mywildfly_1 | =========================================================================
-mywildfly_1 | 
-mywildfly_1 | OpenJDK 64-Bit Server VM warning: ignoring option MaxPermSize=256m; support was removed in 8.0
-mywildfly_1 | 01:06:57,381 INFO  [org.jboss.modules] (main) JBoss Modules version 1.4.3.Final
-mywildfly_1 | 01:06:57,842 INFO  [org.jboss.msc] (main) JBoss MSC version 1.2.6.Final
-mywildfly_1 | 01:06:57,938 INFO  [org.jboss.as] (MSC service thread 1-2) WFLYSRV0049: WildFly Full 9.0.2.Final (WildFly Core 1.0.2.Final) starting
-mywildfly_1 | 01:07:03,068 INFO  [org.jboss.as.controller.management-deprecated] (ServerService Thread Pool -- 3) WFLYCTL0028: Attribute 'job-repository-type' in the resource at address '/subsystem=batch' is deprecated, and may be removed in future version. See the attribute description in the output of the read-resource-description operation to learn more about the deprecation.
-mywildfly_1 | 01:07:03,088 INFO  [org.jboss.as.controller.management-deprecated] (ServerService Thread Pool -- 7) WFLYCTL0028: Attribute 'enabled' in the resource at address '/subsystem=datasources/data-source=ExampleDS' is deprecated, and may be removed in future version. See the attribute description in the output of the read-resource-description operation to learn more about the deprecation.
-mywildfly_1 | 01:07:03,870 INFO  [org.jboss.as.repository] (ServerService Thread Pool -- 24) WFLYDR0001: Content added at location /opt/jboss/wildfly/standalone/data/content/b6/5e987fe57e1d90e1414ba1c90e542f6311436d/content
-mywildfly_1 | 01:07:03,936 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0039: Creating http management service using socket-binding (management-http)
-mywildfly_1 | 01:07:04,064 INFO  [org.xnio] (MSC service thread 1-1) XNIO version 3.3.1.Final
-mywildfly_1 | 01:07:04,160 INFO  [org.xnio.nio] (MSC service thread 1-1) XNIO NIO Implementation Version 3.3.1.Final
-mywildfly_1 | 01:07:04,463 INFO  [org.wildfly.extension.io] (ServerService Thread Pool -- 37) WFLYIO001: Worker 'default' has auto-configured to 2 core threads with 16 task threads based on your 1 available processors
-mywildfly_1 | 01:07:04,418 INFO  [org.jboss.as.clustering.infinispan] (ServerService Thread Pool -- 38) WFLYCLINF0001: Activating Infinispan subsystem.
-mywildfly_1 | 01:07:04,562 INFO  [org.jboss.as.webservices] (ServerService Thread Pool -- 56) WFLYWS0002: Activating WebServices Extension
-mywildfly_1 | 01:07:04,612 INFO  [org.jboss.as.jsf] (ServerService Thread Pool -- 44) WFLYJSF0007: Activated the following JSF Implementations: [main]
-mywildfly_1 | 01:07:04,567 INFO  [org.jboss.as.security] (ServerService Thread Pool -- 53) WFLYSEC0002: Activating Security Subsystem
-mywildfly_1 | 01:07:04,567 WARN  [org.jboss.as.txn] (ServerService Thread Pool -- 54) WFLYTX0013: Node identifier property is set to the default value. Please make sure it is unique.
-mywildfly_1 | 01:07:04,593 INFO  [org.jboss.as.naming] (ServerService Thread Pool -- 46) WFLYNAM0001: Activating Naming Subsystem
-mywildfly_1 | 01:07:04,881 INFO  [org.jboss.remoting] (MSC service thread 1-1) JBoss Remoting version 4.0.9.Final
-mywildfly_1 | 01:07:05,081 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 55) WFLYUT0003: Undertow 1.2.9.Final starting
-mywildfly_1 | 01:07:05,207 INFO  [org.jboss.as.connector] (MSC service thread 1-2) WFLYJCA0009: Starting JCA Subsystem (IronJacamar 1.2.5.Final)
-mywildfly_1 | 01:07:05,277 INFO  [org.jboss.as.connector.subsystems.datasources] (ServerService Thread Pool -- 33) WFLYJCA0004: Deploying JDBC-compliant driver class org.h2.Driver (version 1.3)
-mywildfly_1 | 01:07:05,315 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-2) WFLYUT0003: Undertow 1.2.9.Final starting
-mywildfly_1 | 01:07:05,686 INFO  [org.jboss.as.security] (MSC service thread 1-2) WFLYSEC0001: Current PicketBox version=4.9.2.Final
-mywildfly_1 | 01:07:05,954 INFO  [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-2) WFLYJCA0018: Started Driver service with driver-name = h2
-mywildfly_1 | 01:07:05,938 INFO  [org.jboss.as.naming] (MSC service thread 1-1) WFLYNAM0003: Starting Naming Service
-mywildfly_1 | 01:07:06,130 INFO  [org.jboss.as.mail.extension] (MSC service thread 1-1) WFLYMAIL0001: Bound mail session [java:jboss/mail/Default]
-mywildfly_1 | 01:07:06,399 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 55) WFLYUT0014: Creating file handler for path /opt/jboss/wildfly/welcome-content
-mywildfly_1 | 01:07:06,888 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-2) WFLYUT0012: Started server default-server.
-mywildfly_1 | 01:07:07,303 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-2) WFLYUT0006: Undertow HTTP listener default listening on /0.0.0.0:8080
-mywildfly_1 | 01:07:07,322 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-2) WFLYUT0018: Host default-host starting
-mywildfly_1 | 01:07:08,014 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-1) WFLYJCA0001: Bound data source [java:jboss/datasources/ExampleDS]
-mywildfly_1 | 01:07:08,430 INFO  [org.jboss.as.server.deployment.scanner] (MSC service thread 1-2) WFLYDS0013: Started FileSystemDeploymentService for directory /opt/jboss/wildfly/standalone/deployments
-mywildfly_1 | 01:07:08,489 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-2) WFLYSRV0027: Starting deployment of "airlines.war" (runtime-name: "airlines.war")
-mywildfly_1 | 01:07:08,605 INFO  [org.jboss.ws.common.management] (MSC service thread 1-1) JBWS022052: Starting JBoss Web Services - Stack CXF Server 5.0.0.Final
-mywildfly_1 | 01:07:11,430 INFO  [org.jboss.weld.deployer] (MSC service thread 1-1) WFLYWELD0003: Processing weld deployment airlines.war
-mywildfly_1 | 01:07:11,730 INFO  [org.hibernate.validator.internal.util.Version] (MSC service thread 1-1) HV000001: Hibernate Validator 5.1.3.Final
-db          | *   Trying 127.0.0.1...
-db          |   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-db          |                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Connected to 127.0.0.1 (127.0.0.1) port 8091 (#0)
-db          | > POST /pools/default HTTP/1.1
-db          | > User-Agent: curl/7.40.0-DEV
-db          | > Host: 127.0.0.1:8091
-db          | > Accept: */*
-db          | > Content-Length: 36
-db          | > Content-Type: application/x-www-form-urlencoded
-db          | > 
-db          | } [36 bytes data]
-db          | * upload completely sent off: 36 out of 36 bytes
-db          | < HTTP/1.1 200 OK
-db          | < Server: Couchbase Server
-db          | < Pragma: no-cache
-db          | < Date: Wed, 23 Dec 2015 01:07:11 GMT
-db          | < Content-Length: 0
-db          | < Cache-Control: no-cache
-db          | < 
-100    36    0     0  100    36      0    690 --:--:-- --:--:-- --:--:--   765
-db          | * Connection #0 to host 127.0.0.1 left intact
-db          | *   Trying 127.0.0.1...
-db          |   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-db          |                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Connected to 127.0.0.1 (127.0.0.1) port 8091 (#0)
-db          | > POST /node/controller/setupServices HTTP/1.1
-db          | > User-Agent: curl/7.40.0-DEV
-db          | > Host: 127.0.0.1:8091
-db          | > Accept: */*
-db          | > Content-Length: 26
-db          | > Content-Type: application/x-www-form-urlencoded
-db          | > 
-db          | } [26 bytes data]
-db          | * upload completely sent off: 26 out of 26 bytes
-db          | < HTTP/1.1 200 OK
-db          | < Server: Couchbase Server
-db          | < Pragma: no-cache
-db          | < Date: Wed, 23 Dec 2015 01:07:11 GMT
-db          | < Content-Length: 0
-db          | < Cache-Control: no-cache
-db          | < 
-100    26    0     0  100    26      0    348 --:--:-- --:--:-- --:--:--   448
-db          | * Connection #0 to host 127.0.0.1 left intact
-db          | *   Trying 127.0.0.1...
-db          |   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-db          |                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Connected to 127.0.0.1 (127.0.0.1) port 8091 (#0)
-db          | > POST /settings/web HTTP/1.1
-db          | > User-Agent: curl/7.40.0-DEV
-db          | > Host: 127.0.0.1:8091
-db          | > Accept: */*
-db          | > Content-Length: 50
-db          | > Content-Type: application/x-www-form-urlencoded
-db          | > 
-db          | } [50 bytes data]
-db          | * upload completely sent off: 50 out of 50 bytes
-db          | < HTTP/1.1 200 OK
-db          | < Server: Couchbase Server
-db          | <{"newBaseUri":"http://127.0.0.1:8091/"} Pragma: no-cache
-db          | < Date: Wed, 23 Dec 2015 01:07:12 GMT
-db          | < Content-Type: application/json
-db          | < Content-Length: 39
-db          | < Cache-Control: no-cache
-db          | < 
-db          | { [39 bytes data]
-100    89  100    39  100    50    268    344 --:--:-- --:--:-- --:--:--   420
-db          | * Connection #0 to host 127.0.0.1 left intact
-db          | *   Trying 127.0.0.1...
-db          |   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-db          |                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Connected to 127.0.0.1 (127.0.0.1) port 8091 (#0)
-db          | * Server auth using Basic with user 'Administrator'
-db          | > POST /sampleBuckets/install HTTP/1.1
-db          | > Authorization: Basic QWRtaW5pc3RyYXRvcjpwYXNzd29yZA==
-db          | > User-Agent: curl/7.40.0-DEV
-db          | > Host: 127.0.0.1:8091
-db          | > Accept: */*
-db          | > Content-Length: 17
-db          | > Content-Type: application/x-www-form-urlencoded
-db          | > 
-db          | } [17 bytes data]
-db          | * upload completely sent off: 17 out of 17 bytes
-mywildfly_1 | 01:07:12,169 INFO  [org.jboss.as.ejb3.deployment.processors.EjbJndiBindingsDeploymentUnitProcessor] (MSC service thread 1-1) JNDI bindings for session bean named Database in deployment unit deployment "airlines.war" are as follows:
-mywildfly_1 | 
-mywildfly_1 |   java:global/airlines/Database!org.couchbase.sample.javaee.Database
-mywildfly_1 |   java:app/airlines/Database!org.couchbase.sample.javaee.Database
-mywildfly_1 |   java:module/Database!org.couchbase.sample.javaee.Database
-mywildfly_1 |   java:global/airlines/Database
-mywildfly_1 |   java:app/airlines/Database
-mywildfly_1 |   java:module/Database
-mywildfly_1 | 
-db          | < HTTP/1.1 202 Accepted
-db          | < Server: Couchbase Server
-db          | < Pragma: no-cache
-db          | < Date: Wed, 23 Dec 2015 01:07:12 GMT
-db          | < Content-Type: application/json
-db          | < Content-Length: 2
-db          | < Cache-Control: no-cache
-db          | < 
- 89    19    0     0  100    17      0     40 --:--:-- --:--:-- --:--:--    46{ [2 b[]ytes data]
-100    19  100     2  100    17      4     40 --:--:-- --:--:-- --:--:--    45
-db          | * Connection #0 to host 127.0.0.1 left intact
-db          | /entrypoint.sh couchbase-server
-mywildfly_1 | 01:07:13,117 INFO  [org.jboss.weld.deployer] (MSC service thread 1-2) WFLYWELD0006: Starting Services for CDI deployment: airlines.war
-mywildfly_1 | 01:07:13,333 INFO  [org.jboss.weld.Version] (MSC service thread 1-2) WELD-000900: 2.2.16 (SP1)
-mywildfly_1 | 01:07:13,609 INFO  [org.jboss.weld.deployer] (MSC service thread 1-2) WFLYWELD0009: Starting weld service for deployment airlines.war
-mywildfly_1 | 01:07:17,929 INFO  [com.couchbase.client.core.env.CoreEnvironment] (ServerService Thread Pool -- 65) ioPoolSize is less than 3 (1), setting to: 3
-mywildfly_1 | 01:07:17,931 INFO  [com.couchbase.client.core.env.CoreEnvironment] (ServerService Thread Pool -- 65) computationPoolSize is less than 3 (1), setting to: 3
-mywildfly_1 | 01:07:18,389 INFO  [com.couchbase.client.core.CouchbaseCore] (ServerService Thread Pool -- 65) CouchbaseEnvironment: {sslEnabled=false, sslKeystoreFile='null', sslKeystorePassword='null', queryEnabled=false, queryPort=8093, bootstrapHttpEnabled=true, bootstrapCarrierEnabled=true, bootstrapHttpDirectPort=8091, bootstrapHttpSslPort=18091, bootstrapCarrierDirectPort=11210, bootstrapCarrierSslPort=11207, ioPoolSize=3, computationPoolSize=3, responseBufferSize=16384, requestBufferSize=16384, kvServiceEndpoints=1, viewServiceEndpoints=1, queryServiceEndpoints=1, ioPool=NioEventLoopGroup, coreScheduler=CoreScheduler, eventBus=DefaultEventBus, packageNameAndVersion=couchbase-jvm-core/1.2.1 (git: 1.2.1), dcpEnabled=false, retryStrategy=BestEffort, maxRequestLifetime=75000, retryDelay=ExponentialDelay{growBy 1.0 MICROSECONDS; lower=100, upper=100000}, reconnectDelay=ExponentialDelay{growBy 1.0 MILLISECONDS; lower=32, upper=4096}, observeIntervalDelay=ExponentialDelay{growBy 1.0 MICROSECONDS; lower=10, upper=100000}, keepAliveInterval=30000, autoreleaseAfter=2000, bufferPoolingEnabled=true, tcpNodelayEnabled=true, mutationTokensEnabled=false, socketConnectTimeout=1000, queryTimeout=75000, viewTimeout=75000, kvTimeout=2500, connectTimeout=5000, disconnectTimeout=25000, dnsSrvEnabled=false}
-mywildfly_1 | 01:07:20,059 INFO  [com.couchbase.client.core.node.Node] (cb-io-1-1) Connected to Node db
-mywildfly_1 | 01:07:21,273 INFO  [com.couchbase.client.core.config.ConfigurationProvider] (cb-computations-3) Opened bucket travel-sample
-mywildfly_1 | 01:07:24,932 INFO  [org.jboss.resteasy.spi.ResteasyDeployment] (ServerService Thread Pool -- 65) Deploying javax.ws.rs.core.Application: class org.couchbase.sample.javaee.MyApplication
-mywildfly_1 | 01:07:25,193 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 65) WFLYUT0021: Registered web context: /airlines
-mywildfly_1 | 01:07:25,440 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 34) WFLYSRV0010: Deployed "airlines.war" (runtime-name : "airlines.war")
-mywildfly_1 | 01:07:25,995 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
-mywildfly_1 | 01:07:25,997 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990
-mywildfly_1 | 01:07:25,999 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 9.0.2.Final (WildFly Core 1.0.2.Final) started in 29405ms - Started 313 of 493 services (221 services are lazy, passive or on-demand)
+web_1  | 00:06:16,820 INFO  [com.couchbase.client.core.node.Node] (cb-io-1-1) Connected to Node db
+web_1  | 00:06:17,096 INFO  [com.couchbase.client.core.config.ConfigurationProvider] (cb-computations-1) Opened bucket travel-sample
+web_1  | 00:06:17,968 INFO  [org.jboss.resteasy.spi.ResteasyDeployment] (ServerService Thread Pool -- 59) Deploying javax.ws.rs.core.Application: class org.couchbase.sample.javaee.MyApplication
+web_1  | 00:06:18,042 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 59) WFLYUT0021: Registered web context: /airlines
+web_1  | 00:06:18,077 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 34) WFLYSRV0010: Deployed "airlines.war" (runtime-name : "airlines.war")
+web_1  | 00:06:18,157 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
+web_1  | 00:06:18,157 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990
+web_1  | 00:06:18,158 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 9.0.2.Final (WildFly Core 1.0.2.Final) started in 7958ms - Started 313 of 493 services (221 services are lazy, passive or on-demand)
 ----
-====
-
-The log shows:
-
-. WildFly Application server has started
-. Couchbase is configured using the REST API
-. `airlines.war` application is deployed
 
 === Verify Application
 
-Access the application by invoking the REST API using `curl http://dockerhost:8080/airlines/resources/airline`. This will show the following output:
+Access the application by invoking the REST API using `curl http://localhost:8080/airlines/resources/airline`. This will show the following output:
 
 [source, text]
 ----
@@ -329,26 +198,42 @@ Access the application by invoking the REST API using `curl http://dockerhost:80
 
 Complete set of REST APIs for this application are explained at https://github.com/arun-gupta/couchbase-javaee.
 
-=== Stop Services
+== Stop Application
 
-Stop the services as:
+The application can be stopped using `docker-compose stop` command. This will remove the containers for each service defined in the Compose file, networks defined in the `networks` section of the Compose file, and the default network, if one is used.
+
+Remove the application as:
+
+[source, text]
+----
+docker-compose up -d
+Creating network "javaee_default" with the default driver
+Creating javaee_db_1
+Creating javaee_web_1
+javaee > docker-compose down
+Stopping javaee_web_1 ... done
+Stopping javaee_db_1 ... done
+Removing javaee_web_1 ... done
+Removing javaee_db_1 ... done
+Removing network javaee_default
+----
+
+Alternatively, services can be stopped using `docker-compose stop` command:
 
 [source, text]
 ----
 docker-compose stop
-Stopping db ... done
-Stopping attendees_mywildfly_1 ... done
+Stopping javaee_web_1 ... done
+Stopping javaee_db_1 ... done
 ----
 
-=== Remove Containers
-
-Stop the services as:
+The containers can be removed using `docker-compose rm` command:
 
 [source, text]
 ----
 docker-compose rm -f
-Going to remove db, attendees_mywildfly_1
-Removing db ... done
-Removing attendees_mywildfly_1 ... done
+Going to remove javaee_web_1, javaee_db_1
+Removing javaee_web_1 ... done
+Removing javaee_db_1 ... done
 ----
 
