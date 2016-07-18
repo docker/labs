@@ -171,7 +171,7 @@ Service logs can be seen using `docker-compose logs` command. The logs will show
 
 `depends_on` attribute in Compose definition file ensures the container start up order. But application-level start up needs to be ensured by the applications running inside container. In our case, WildFly starts up rather quickly but takes a few seconds for the database to start up. This means the Java EE application deployed in WildFly is not able to communicate with the database. 
 
-So we need to restart the WildFly service after ~15 seconds to ensure enough time for the Couchbase database to start. Restart the WildFly service using `docker restart web` command.
+So we need to restart the WildFly service after ~15 seconds to ensure enough time for the Couchbase database to start. Restart the WildFly service using `docker-compose restart web` command.
 
 Now, the logs will show the application is deployed successfully in WildFly. This can be verified by looking at the logs:
 

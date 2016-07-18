@@ -237,7 +237,7 @@ Run the Docker container:
 
 [source, text]
 ----
-mvn install -Pdocker
+mvn -f docker-java-sample/helloworld/pom.xml install -Pdocker
 ----
 
 This will show an output like:
