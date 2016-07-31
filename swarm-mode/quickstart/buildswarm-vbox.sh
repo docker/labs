@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Swarm mode using Docker Machine
 
 managers=3
