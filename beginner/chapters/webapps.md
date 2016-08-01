@@ -6,44 +6,56 @@ Great! So you have now looked at `docker run`, played with a docker container an
 
 Let's start by taking baby-steps. First, we'll use Docker to run a dead-simple static website. You're going to pull a Docker image from the Docker Hub, run the container and see how easy it is to set up a web server.
 
-The image that you are going to use is a single-page website that was already created for this demo and is available on the Docker Hub as [`seqvence/static-site`](https://hub.docker.com/r/seqvence/static-site/). You can download and run the image directly in one go using `docker run`.
+The image that you are going to use is a single-page website that was already created for this demo and is available on the Docker Hub as [`seqvence/static-site`](https://hub.docker.com/r/seqvence/static-site/). You can download and run the image directly in one go using `docker run` as follows.
 
 ```
-$ docker run seqvence/static-site
+$ docker run -d seqvence/static-site
 ```
-Since the image doesn't exist on your Docker host, the Docker daemon first fetches the image from the registry and then runs the image.
 
-* Okay, now that the server is running, do you see the website?
-* What port is it running on?
-* And more importantly, how do you access the container directly from our host machine?
+>**Note:** The current version of this image doesn't run without the `-d` flag, although it should. The `-d` flag enables **detached mode**, which detaches the  running container from the terminal/shell and returns your prompt after the container starts. We are debugging the problem with this image but for now, use `-d` even for this first example.
 
-In this case, the client didn't tell the Docker Engine to publish any of the ports, so you need to re-run the `docker run` command. We'll take the oportunity to publish ports and pass your name to the container to customize the message displayed. While we are at it, you should also find a way so that our terminal is not attached to the running container. So that you can happily close your terminal and keep the container running. This is called the **detached** mode.
+So, what happens when you run this command?
 
-Before we look at the **detached** mode, we should first find out a way to stop the container that you have just launched.
+Since the image doesn't exist on your Docker host, the Docker daemon first fetches the it from the registry and then runs it as a container.
 
-First up, launch another terminal (command window) and execute the following command. If you're using docker-machine you need to run `eval $(docker-machine env <YOUR_DOCKER_MACHINE_NAME>)` in each new terminal otherwise you'll get the error "Cannot connect to the Docker daemon. Is the docker daemon running on this host?".
+Now that the server is running, do you see the website? What port is it running on? And more importantly, how do you access the container directly from our host machine?
+
+Actually, you probably won't be able to answer any of these questions yet! &#9786; In this case, the client didn't tell the Docker Engine to publish any of the ports, so you need to re-run the `docker run` command to add this instruction.
+
+Let's re-run the command with some new flags to publish ports and pass your name to the container to customize the message displayed. We'll use the *-d* option again to run the container in detached mode.
+
+First, stop the container that you have just launched. In order to do this, we need the container ID.
+
+Since we ran the container in detached mode, we don't have to launch another terminal to do this. Run `docker ps` to view the running containers.
+
 ```
 $ docker ps
 CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS               NAMES
 a7a0e504ca3e        seqvence/static-site   "/bin/sh -c 'cd /usr/"   28 seconds ago      Up 26 seconds       80/tcp, 443/tcp     stupefied_mahavira
 ```
 
-Check out the `CONTAINER ID` column. You will need to use this `CONTAINER ID` value, a long sequence of characters and first stop the running container and then remove the running container as given below. The example below provides the `CONTAINER ID` on our system, you should use the value that you see in your terminal.
+Check out the `CONTAINER ID` column. You will need to use this `CONTAINER ID` value, a long sequence of characters, to identify the container you want to stop, and then to remove it. The example below provides the `CONTAINER ID` on our system; you should use the value that you see in your terminal.
 ```
 $ docker stop a7a0e504ca3e
 $ docker rm   a7a0e504ca3e
 ```
 
-Note: A cool feature is that you do not need to specify the entire `CONTAINER ID`. You can just specify a few starting characters and if it is unique among all the containers that you have launched, the Docker client will intelligently pick it up.
+>**Note:** A cool feature is that you do not need to specify the entire `CONTAINER ID`. You can just specify a few starting characters and if it is unique among all the containers that you have launched, the Docker client will intelligently pick it up.
 
-Now, let us launch a container in **detached** mode as shown below:
+Now, let's launch a container in **detached** mode as shown below:
 
 ```
 $ docker run --name static-site -e AUTHOR="Your Name" -d -P seqvence/static-site
 e61d12292d69556eabe2a44c16cbd54486b2527e2ce4f95438e504afb7b02810
 ```
 
-In the above command, `-d` will create a container with the process detached from our terminal, `-P` will publish all the exposed container ports to random ports on the Docker host, `-e` is how you pass environment variables to the container, and finally `--name` allows you to specify a container name. `AUTHOR` is the environment variable name and `Your Name` is the value that you can pass.
+In the above command:
+
+*  `-d` will create a container with the process detached from our terminal
+* `-P` will publish all the exposed container ports to random ports on the Docker host
+* `-e` is how you pass environment variables to the container
+* `--name` allows you to specify a container name
+* `AUTHOR` is the environment variable name and `Your Name` is the value that you can pass
 
 Now you can see the ports by running the `docker port` command.
 
@@ -53,13 +65,15 @@ $ docker port static-site
 80/tcp -> 0.0.0.0:32773
 ```
 
-If you're on Linux, you can open [http://localhost:32773](http://localhost:32773) (replace 32773 with your port for 80/tcp) in your browser. If you're on Windows or a Mac, you need to find the IP of the hostname.
+If you are running [Docker for Mac](https://docs.docker.com/docker-for-mac/), [Docker for Windows](https://docs.docker.com/docker-for-windows/), or Docker on Linux, you can open `http://localhost:YOUR_PORT_FOR 80/tcp`. For our example this is `http://localhost:32773`.
+
+If you are using Docker Machine on Mac or Windows, you can find the hostname on the command line using `docker-machine` as follows (assuming you are using the `default` machine).
 
 ```
 $ docker-machine ip default
 192.168.99.100
 ```
-You can now open [http://192.168.99.100:32773](http://192.168.99.100:32773) (replace 32773 with your port for 80/tcp) to see your site live!
+You can now open `http://<YOUR_IPADDRESS>:YOUR_PORT_FOR 80/tcp` to see your site live! For our example, this is: `http://192.168.99.100:32773`.
 
 You can also run a second webserver at the same time, specifying a custom host port mapping to the container's webserver.
 
@@ -68,13 +82,27 @@ $ docker run --name static-site-2 -e AUTHOR="Your Name" -d -p 8888:80 seqvence/s
 ```
 <img src="../images/static.png" title="static">
 
-I'm sure you agree that was super simple. To deploy this on a real server you would just need to install docker, and run the above docker command.
+I'm sure you agree that was super simple. To deploy this on a real server you would just need to install Docker, and run the above `docker` command.
 
-Now that you've seen how to run a webserver inside a docker image, you must be wondering - how do I create my own docker image? This is the question we'll be exploring in the next section. But first, let's stop and remove the containers since you won't be using them anymore.
+Now that you've seen how to run a webserver inside a Docker image, you must be wondering - how do I create my own Docker image? This is the question we'll explore in the next section.
+
+But first, let's stop and remove the containers since you won't be using them anymore.
 
 ```
-$ docker stop static-site static-site-2
-$ docker rm static-site static-site-2
+$ docker stop static-site static-site
+$ docker rm static-site static-site
+```
+
+Let's use a shortcut to remove the second site:
+
+```
+$ docker rm -f static-site static-site-2
+```
+
+Run `docker ps` to make sure the containers are gone.
+```
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
 ```
 
 ### 2.2 Docker Images
