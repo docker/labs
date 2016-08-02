@@ -1,13 +1,74 @@
 #!/bin/bash
-URL=https://github.com/boot2docker/boot2docker/releases/download/v1.12.0-rc2/boot2docker.iso
 
-# create swarm manager
-docker-machine create -d virtualbox --virtualbox-boot2docker-url $URL sw01
-docker-machine ssh sw01 docker swarm init --listen-addr $(docker-machine ip sw01):2377
+# Swarm mode using Docker Machine
 
-# create another swarm node
-docker-machine create -d virtualbox --virtualbox-boot2docker-url $URL sw02
-docker-machine ssh sw02 docker swarm join --listen-addr $(docker-machine ip sw02):2377 $(docker-machine ip sw01):2377
+managers=3
+workers=3
 
-# list nodes
-docker-machine ssh sw01 docker node ls
+# create manager machines
+echo "======> Creating $managers manager machines ...";
+for node in $(seq 1 $managers);
+do
+	echo "======> Creating manager$node machine ...";
+	docker-machine create -d virtualbox manager$node;
+done
+
+# create worker machines
+echo "======> Creating $workers worker machines ...";
+for node in $(seq 1 $workers);
+do
+	echo "======> Creating worker$node machine ...";
+	docker-machine create -d virtualbox worker$node;
+done
+
+# list all machines
+docker-machine ls
+
+# initialize swarm mode and create a manager
+echo "======> Initializing first swarm manager ..."
+docker-machine ssh manager1 "docker swarm init --listen-addr $(docker-machine ip manager1) --advertise-addr $(docker-machine ip manager1)"
+
+# get manager and worker tokens
+export manager_token=`docker-machine ssh manager1 "docker swarm join-token manager -q"`
+export worker_token=`docker-machine ssh manager1 "docker swarm join-token worker -q"`
+
+echo "manager_token: $manager_token"
+echo "worker_token: $worker_token"
+
+# other masters join swarm
+for node in $(seq 2 $managers);
+do
+	echo "======> manager$node joining swarm as manager ..."
+	docker-machine ssh manager$node \
+		"docker swarm join \
+		--token $manager_token \
+		--listen-addr $(docker-machine ip manager$node) \
+		--advertise-addr $(docker-machine ip manager$node) \
+		$(docker-machine ip manager1)"
+done
+
+# show members of swarm
+docker-machine ssh manager1 "docker node ls"
+
+# workers join swarm
+for node in $(seq 1 $workers);
+do
+	echo "======> worker$node joining swarm as worker ..."
+	docker-machine ssh worker$node \
+	"docker swarm join \
+	--token $worker_token \
+	--listen-addr $(docker-machine ip worker$node) \
+	--advertise-addr $(docker-machine ip worker$node) \
+	$(docker-machine ip manager1):2377"
+done
+
+# show members of swarm
+docker-machine ssh manager1 "docker node ls"
+
+# Cleanup
+# # Stop machines
+# docker-machine stop worker1 worker2 worker3 manager1 manager2 manager3
+
+# # remove machines
+# docker-machine rm worker1 worker2 worker3 manager1 manager2 manager3
+
