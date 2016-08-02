@@ -3,6 +3,7 @@
 Script that create a swarm cluster and deploy a simple service.
 Swarm is created with Swarm mode of Engine 1.12. Can be created on
 * Virtualbox
+* Microsoft Azure
 * Digitalocean
 * Amazon EC2
 
@@ -12,6 +13,7 @@ Note: currently, if deploying on AWS, only EU (Ireland) region is available. Mak
 
 ```
 ./swarm.sh [--driver provider]
+           [--azure-subscription-id azure_subscription_id]
            [--amazonec2-access-key ec2_access_key]
            [--amazonec2-secret-key ec2_secret_key]
            [--amazonec2-security-group ec2_security_group]
@@ -25,11 +27,12 @@ Note: currently, if deploying on AWS, only EU (Ireland) region is available. Mak
 ```
 
 Several parameters can be provided
-* driver used ("virtualbox", "digitalocean", "amazonec2") (default: "virtualbox")
+* driver used ("azure", "virtualbox", "digitalocean", "amazonec2") (default: "virtualbox")
 * number of manager (default: 3)
 * number of worker (default: 5)
 * number of replicas for the deployed service (lucj/randomcity:1.1) (default: 5)
 * port exposed by the cluster (default: 8080)
+* azure subscription id (if azure driver selected)
 * digitalocean token (if digitalocean driver specified)
 * amazon access key, secret key, security group (currently only for EU (Ireland) region) (if amazonec2 driver is specified)
 
@@ -133,6 +136,12 @@ The requests are dispatched in a round robin fashion to the running containers.
 
 # Examples with other drivers
 
+## Run 3 managers and 6 workers on Microsoft Azure based on ehazlett/docker-demo image (default image if none specified)
+
+```
+./swarm.sh --driver azure --azure-subscription-id $AZURE_SUBSCRIPTION_ID --manager 3 --worker 6
+```
+
 ## Run 3 managers and 6 workers on DigitalOcean and use service based on ehazlett/docker-demo image (default image if none specified)
 
 ```
@@ -155,9 +164,7 @@ note: make sure the security group provided (**default** in this example) allow 
 
 # Status
 
-- [x] Virtualbox deployment
-- [x] Digitalocean deployment (Ubuntu 14.04 / 1gb / lon1)
-- [x] Amazon deployment (Ubuntu 14.04 / t2.micro / EU (Ireland))
+- [ ] Azure deployment with image / size / region selection
 - [ ] DigitalOcean deployment with image / size / region selection
 - [ ] Amazon deployment with AMI / instance type / region selection
 - [ ] Amazon deployment with automatic opening of exposed port in SecurityGroup
