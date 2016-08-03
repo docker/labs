@@ -91,7 +91,7 @@ done
 
 # Value of driver parameter's value must be among "azure", "digitalocean", "amazonec2", "virtualbox" (if no value is provided, "virtualbox" driver is used)
 if [ "$DRIVER" != "virtualbox" -a "$DRIVER" != "digitalocean" -a "$DRIVER" != "amazonec2"  -a "$DRIVER" != "azure" ];then
-  error "driver value must be among digitalocean, amazonec2, virtualbox"
+  error "driver value must be among azure, digitalocean, amazonec2, virtualbox"
 fi
 
 # No additional parameters needed for virtualbox driver
