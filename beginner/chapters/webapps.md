@@ -12,7 +12,7 @@ The image that you are going to use is a single-page website that was already cr
 $ docker run -d seqvence/static-site
 ```
 
->**Note:** The current version of this image doesn't run without the `-d` flag, although it should. The `-d` flag enables **detached mode**, which detaches the  running container from the terminal/shell and returns your prompt after the container starts. We are debugging the problem with this image but for now, use `-d` even for this first example.
+>**Note:** The current version of this image doesn't run without the `-d` flag. The `-d` flag enables **detached mode**, which detaches the  running container from the terminal/shell and returns your prompt after the container starts. We are debugging the problem with this image but for now, use `-d` even for this first example.
 
 So, what happens when you run this command?
 
@@ -65,7 +65,7 @@ $ docker port static-site
 80/tcp -> 0.0.0.0:32773
 ```
 
-If you are running [Docker for Mac](https://docs.docker.com/docker-for-mac/), [Docker for Windows](https://docs.docker.com/docker-for-windows/), or Docker on Linux, you can open `http://localhost:YOUR_PORT_FOR 80/tcp`. For our example this is `http://localhost:32773`.
+If you are running [Docker for Mac](https://docs.docker.com/docker-for-mac/), [Docker for Windows](https://docs.docker.com/docker-for-windows/), or Docker on Linux, you can open `http://localhost:[YOUR_PORT_FOR 80/tcp]`. For our example this is `http://localhost:32773`.
 
 If you are using Docker Machine on Mac or Windows, you can find the hostname on the command line using `docker-machine` as follows (assuming you are using the `default` machine).
 
@@ -73,7 +73,7 @@ If you are using Docker Machine on Mac or Windows, you can find the hostname on 
 $ docker-machine ip default
 192.168.99.100
 ```
-You can now open `http://<YOUR_IPADDRESS>:YOUR_PORT_FOR 80/tcp` to see your site live! For our example, this is: `http://192.168.99.100:32773`.
+You can now open `http://<YOUR_IPADDRESS>:[YOUR_PORT_FOR 80/tcp]` to see your site live! For our example, this is: `http://192.168.99.100:32773`.
 
 You can also run a second webserver at the same time, specifying a custom host port mapping to the container's webserver.
 
@@ -82,9 +82,9 @@ $ docker run --name static-site-2 -e AUTHOR="Your Name" -d -p 8888:80 seqvence/s
 ```
 <img src="../images/static.png" title="static">
 
-I'm sure you agree that was super simple. To deploy this on a real server you would just need to install Docker, and run the above `docker` command.
+To deploy this on a real server you would just need to install Docker, and run the above `docker` command.
 
-Now that you've seen how to run a webserver inside a Docker image, you must be wondering - how do I create my own Docker image? This is the question we'll explore in the next section.
+Now that you've seen how to run a webserver inside a Docker image, how do you create your own Docker image? This is the question we'll explore in the next section.
 
 But first, let's stop and remove the containers since you won't be using them anymore.
 
@@ -130,13 +130,11 @@ The above gives a list of images that I've pulled from the registry and the ones
 
 For simplicity, you can think of an image akin to a git repository - images can be [committed](https://docs.docker.com/engine/reference/commandline/commit/) with changes and have multiple versions. When you do not provide a specific version number, the client defaults to `latest`.
 
-For example, you can pull a specific version of `ubuntu` image as follows:
+For example you could pull a specific version of `ubuntu` image as follows:
 
 ```
 $ docker pull ubuntu:12.04
 ```
-
-**NOTE**: Do not execute the above command. It is only for your reference.
 
 If you do not specify the version number of the image, then as mentioned the Docker client will default to a version named `latest`.
 
@@ -146,7 +144,7 @@ So for example, the `docker pull` command given below will pull an image named `
 $ docker pull ubuntu
 ```
 
-To get a new Docker image you can either get it from a registry (such as the docker hub) or create your own. There are tens of thousands of images available on [Docker hub](https://hub.docker.com). You can also search for images directly from the command line using `docker search`.
+To get a new Docker image you can either get it from a registry (such as the docker hub) or create your own. There are hundreds of thousands of images available on [Docker hub](https://hub.docker.com). You can also search for images directly from the command line using `docker search`.
 
 An important distinction to be aware of when it comes to images is between base and child images.
 
@@ -398,7 +396,7 @@ $ docker run -p 8888:5000 --name myfirstapp YOUR_USERNAME/myfirstapp
  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 ```
 
-Head over to `http://<DOCKER_HOST-IP-ADDRESS>:8888` and your app should be live. You may need to open up another terminal and determine the container ip address using `docker-machine ip default`.
+Head over to `http://localhost:8888` and your app should be live. **note** If you are using Docker Machine, you may need to open up another terminal and determine the container ip address using `docker-machine ip default`.
 
 <img src="../images/catgif.png" title="static">
 

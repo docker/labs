@@ -2,7 +2,9 @@
 This portion of the tutorial will guide you through the creation and customization of a voting app. It's important that you follow the steps in order, and make sure to customize the portions that are customizable.
 
 **Important.**
-To complete the submission, you will need to have Docker and Docker Compose installed on your machine as mentioned in the [Setup](./setup.md) section. You'll also need to have a [Docker Id](https://hub.docker.com/register/). Once you do run login from the commandline:
+To complete this section, you will need to have Docker and Docker Compose installed on your machine as mentioned in the [Setup](./setup.md) section. You'll also need have git installed. There are many options for installing it. For instance, you can get it from [GitHub](https://help.github.com/articles/set-up-git/).
+
+You'll also need to have a [Docker Id](https://hub.docker.com/register/). Once you do run login from the commandline:
 
 ```
 $ docker login
@@ -10,13 +12,11 @@ $ docker login
 
 And follow the login directions. Now you can push images to Docker Hub.
 
-> Note: If you encounter an error response from daemon while attempting to login, you may need to restart your machine by running `docker-machine restart <YOUR_DOCKER_MACHINE_NAME>`.
-
 
 ### 3.1 Get the voting-app
 You now know how to build your own Docker image, so let's take it to the next level and glue things together. For this app you have to run multiple containers and Docker Compose is the best way to do that.
 
-Start by quickly reading the documentation available [here](https://docs.docker.com/compose/overview/).
+Start by quickly reading the documentation [here](https://docs.docker.com/compose/overview/).
 
 Clone the voting-app repository already available at [Github Repo](https://github.com/docker/example-voting-app.git).
 
@@ -116,15 +116,7 @@ To launch your app navigate to the example-voting-app directory and run the foll
 $ docker-compose up -d
 ```
 
-This tells Compose to start all the containers specified in the `docker-compose.yml` file. The `-d` tells it to run them in daemon mode, in the background.
-
-Last you'll need to figure out the ip address of your Docker host. If you're running Linux, it's just localhost, or 127.0.0.1. If you're using Docker Machine on Mac or Windows, you'll need to run:
-
-```
-$ docker-machine ip default
-```
-
-It'll return an IP address. If you only have one Docker Machine running, most likely, that's 192.168.99.100. We'll call that `<YOUR_IP_ADDRESS>`. Navigate to `http://<YOUR_IP_ADDRESS>:5000` in your browser, and you'll see the voting app, something like this:
+This tells Compose to start all the containers specified in the `docker-compose.yml` file. The `-d` tells it to run them in daemon mode, in the background. Navigate to `http://localhost:5000` in your browser, and you'll see the voting app, something like this:
 
 <img src="../images/vote.png" title="vote">
 
