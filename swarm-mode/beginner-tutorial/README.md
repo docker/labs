@@ -10,7 +10,7 @@ You need to have Docker and Docker Machine installed on your machine. [Download 
 * Provision and manage multiple remote Docker hosts
 * Provision Swarm clusters 
 
-But it can also be used to create multiple nodes on your local machine. There's a [bash script](swarm-node.vbox-setup.sh) in this repository that does just that and creates a swarm. Let's walk through the different steps of this script.
+But it can also be used to create multiple nodes on your local machine. There's a [bash script](https://github.com/ManoMarks/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-vbox-setup.sh) in this repository that does just that and creates a swarm. Let's walk through the different steps of this script.
 
 This first step creates three machines, and names the machines manager1, manager2, and manager3 
 ```
@@ -338,7 +338,7 @@ web
 ```
 
 ## Cleanup 
-There's also a [bash script](swarm-node.vbox-teardown.sh) that will clean up your machine by removing all the Docker Machines.
+There's also a [bash script](https://github.com/ManoMarks/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-vbox-teardown.sh) that will clean up your machine by removing all the Docker Machines.
 
 ```
 $ ./swarm-node-vbox-teardown.sh 
