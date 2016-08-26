@@ -1,3 +1,0 @@
-[submodule "developer-tools/java-debugging"]
-	path = developer-tools/java-debugging
-	url = https://github.com/spara/java-debugging.git
