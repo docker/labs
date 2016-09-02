@@ -2,23 +2,29 @@
 Docker Engine 1.12 includes swarm mode for natively managing a cluster of Docker Engines called a swarm. You can use the Docker CLI to create a swarm, deploy application services to a swarm, and manage swarm behavior. This tutorial uses [Docker Machine](https://docs.docker.com/machine/) to create multiple nodes on your desktop. If you prefer you can create those nodes in your own cloud or on multiple machines.
 
 ## Preparation
-You need to have Docker and Docker Machine installed on your machine. [Download Docker](https://docker.com/getdocker) and install it.
+You need to have Docker and Docker Machine installed on your system. [Download Docker](https://docker.com/getdocker) for your platform and install it.
+
+>**Tips:**
+>
+* If you are using Docker for Mac or Docker for Windows, you already have Docker Machine, as it is installed with those applications. See [Download Docker for Mac](https://docs.docker.com/docker-for-mac/#/download-docker-for-mac) and [Download Docker for Windows](https://docs.docker.com/docker-for-windows/#/download-docker-for-windows) for install options and details on what gets installed.
+>
+* If you are using Docker directly on a Linux system, you will need to [install Docker Machine](https://docs.docker.com/machine/install-machine/) (after installing [Docker Engine](https://docs.docker.com/engine/installation/linux/)).
 
 ## Creating the nodes and Swarm
 [Docker Machine](https://docs.docker.com/machine/overview/) can be used to:
 * Install and run Docker on Mac or Windows
 * Provision and manage multiple remote Docker hosts
-* Provision Swarm clusters 
+* Provision Swarm clusters
 
 But it can also be used to create multiple nodes on your local machine. There's a [bash script](https://github.com/ManoMarks/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-vbox-setup.sh) in this repository that does just that and creates a swarm. Let's walk through the different steps of this script.
 
-This first step creates three machines, and names the machines manager1, manager2, and manager3 
+This first step creates three machines, and names the machines manager1, manager2, and manager3
 ```
 #!/bin/bash
 
 # Swarm mode using Docker Machine
 
-#This configures the number of workers and managers in the swarm 
+#This configures the number of workers and managers in the swarm
 managers=3
 workers=3
 
@@ -271,7 +277,7 @@ ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
 7eljvvg0icxlw20od5f51oq8t    manager2  Ready   Active        Reachable
 8awcmkj3sd9nv1pi77i6mdb1i    worker1   Ready   Drain         
 avu80ol573rzepx8ov80ygzxz    worker2   Ready   Active        
-bxn1iivy8w7faeugpep76w50j    worker3   Ready   Active 
+bxn1iivy8w7faeugpep76w50j    worker3   Ready   Active
 ```
 
 You can also scale down the service
@@ -299,7 +305,7 @@ aivwszsjhhpky43t3x7o8ezz9  web.10      nginx:latest  worker2   Shutdown       Sh
 7zg9eki4610maigr1xwrx7zqk  web.14      nginx:latest  manager3  Shutdown       Shutdown 54 seconds ago  
 4z2c9j20gwsasosvj7mkzlyhc  web.15      nginx:latest  manager2  Shutdown       Shutdown 54 seconds ago  
 ```
-	
+
 Now bring `worker1` back online and show it's new availability
 ```
 $ docker-machine ssh manager1 "docker node update --availability active worker1"
@@ -340,7 +346,7 @@ ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
 7eljvvg0icxlw20od5f51oq8t *  manager2  Ready   Active        Leader
 8awcmkj3sd9nv1pi77i6mdb1i    worker1   Ready   Active        
 avu80ol573rzepx8ov80ygzxz    worker2   Ready   Active        
-bxn1iivy8w7faeugpep76w50j    worker3   Ready   Active 
+bxn1iivy8w7faeugpep76w50j    worker3   Ready   Active
 ```
 You see that `manager1` is Down and Unreachable and `manager2` has been elected leader. It's also easy to remove a service:
 ```
@@ -348,11 +354,11 @@ $ docker-machine ssh manager2 "docker service rm web"
 web
 ```
 
-## Cleanup 
+## Cleanup
 There's also a [bash script](https://github.com/ManoMarks/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-vbox-teardown.sh) that will clean up your machine by removing all the Docker Machines.
 
 ```
-$ ./swarm-node-vbox-teardown.sh 
+$ ./swarm-node-vbox-teardown.sh
 Stopping "manager3"...
 Stopping "manager2"...
 Stopping "worker1"...
