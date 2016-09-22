@@ -33,15 +33,15 @@ In the folder ```example-voting-app/voting-app``` you need to edit the app.py an
 Edit the following lines:
 
 ```
-option_a = os.getenv('OPTION_A', "Java")
-option_b = os.getenv('OPTION_B', "Python")
+option_a = os.getenv('OPTION_A', "Cats")
+option_b = os.getenv('OPTION_B', "Dogs")
 ```
 
 substituting two options of your choice. For instance:
 
 ```
-option_a = os.getenv('OPTION_A', "Cats")
-option_b = os.getenv('OPTION_B', "Dogs")
+option_a = os.getenv('OPTION_A', "Java")
+option_b = os.getenv('OPTION_B', ".NET")
 ```
 #### 3.2.2 Running your app
 Now, run your application. To do that, we'll use [Docker Compose](https://docs.docker.com/compose). Docker Compose is a tool for defining and running multi-container Docker applications. With Compose, you define a `.yml` file that describes all the containers and volumes that you want, and the networks between them. In the example-voting-app directory, you'll see a `docker-compose.yml file`:
@@ -71,9 +71,7 @@ services:
       - back-tier
 
   worker:
-    image: manomarks/worker
-    networks:
-      - back-tier
+    build: ./worker
 
   redis:
     image: redis:alpine
@@ -103,10 +101,10 @@ This Compose file defines
 - A voting-app container based on a Python image
 - A result-app container based on a Node.js image
 - A redis container based on a redis image, to temporarily store the data.
-- A Java based worker app based on a Java image
+- A .NET based worker app based on a .NET image
 - A Postgres container based on a postgres image
 
-Note that three of the containers are built from Dockerfiles, while the other two are images on Docker Hub. To learn more about how they're built, you can examine each of the Dockerfiles in the two directories: `voting-app`, `result-app`. We included the code for the Java worker in `worker` but pre-built the image to save on downloads.
+Note that three of the containers are built from Dockerfiles, while the other two are images on Docker Hub. To learn more about how they're built, you can examine each of the Dockerfiles in the three directories: `vote`, `result`, `worker`. 
 
 The Compose file also defines two networks, front-tier and back-tier. Each container is placed on one or two networks. Once on those networks, they can access other services on that network in code just by using the name of the service. To learn more about networking check out the [Networking with Compose documentation](https://docs.docker.com/compose/networking/).
 

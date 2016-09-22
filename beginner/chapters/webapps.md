@@ -89,8 +89,8 @@ Now that you've seen how to run a webserver inside a Docker image, how do you cr
 But first, let's stop and remove the containers since you won't be using them anymore.
 
 ```
-$ docker stop static-site static-site
-$ docker rm static-site static-site
+$ docker stop static-site
+$ docker rm static-site
 ```
 
 Let's use a shortcut to remove the second site:
