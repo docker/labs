@@ -1,3 +1,4 @@
+# This will run in bash on Linux, Mac, and Windows 10 Anniverary Edition
 # Default cluster:
 # - 3 manager node
 # - 5 worker nodes
@@ -5,6 +6,7 @@
 # - service image: ehazlett/docker-demo
 # - service port: 8080 (port exposed by the service)
 # - exposed port: 8080 (port exposed to the outside)
+
 DRIVER="virtualbox"
 NBR_MANAGER=3
 NBR_WORKER=5
@@ -82,7 +84,7 @@ while [ "$#" -gt 0 ]; do
    --azure-subscription-id)
      AZURE_SUBSCRIPTION_ID="$2"
      shift 2
-     ;;     
+     ;;
    -h|--help)
       usage
       ;;
@@ -116,7 +118,7 @@ if [ "$DRIVER" == "amazonec2" ];then
   if [ "$EC2_SECURITY_GROUP" == "" ];then
     error "--amazonec2-security-group must be provided (+ make sure this one allows inter hosts communication and is has opened port $EXPOSED_PORT to the outside"
   fi
-  PERMISSION="sudo" 
+  PERMISSION="sudo"
   ADDITIONAL_PARAMS="--amazonec2-access-key ${EC2_ACCESS_KEY} --amazonec2-secret-key ${EC2_SECRET_KEY} --amazonec2-security-group ${EC2_SECURITY_GROUP} --amazonec2-security-group docker-machine --amazonec2-region eu-west-1 --amazonec2-instance-type t2.micro --amazonec2-ami ami-f95ef58a --engine-install-url=https://test.docker.com"
   echo "-> about to create a swarm with $NBR_MANAGER manager(s) and $NBR_WORKER workers on $DRIVER machines (eu-west-1 / t2.micro / Ubuntu 14.04)"
 fi
@@ -126,12 +128,12 @@ if [ "$DRIVER" == "azure" ];then
   if [ "$AZURE_SUBSCRIPTION_ID" == "" ];then
     error "--azure-subscription-id must be provided"
   fi
-  # For Azure Storage Container the Manager and Worker prefix must be lowercase 
+  # For Azure Storage Container the Manager and Worker prefix must be lowercase
   PREFIX=$(date "+%Y%m%dt%H%M%S")
   MANAGER=${PREFIX}-manager
   WORKER=${PREFIX}-worker
 
-  PERMISSION="sudo" 
+  PERMISSION="sudo"
   ADDITIONAL_PARAMS="--driver azure --azure-subscription-id  ${AZURE_SUBSCRIPTION_ID} --azure-open-port ${EXPOSED_PORT}"
   echo "-> about to create a swarm with $NBR_MANAGER manager(s) and $NBR_WORKER workers on $DRIVER machines (westus / Standard_A2 / Ubuntu 15.10)"
 fi
@@ -153,7 +155,7 @@ function getIP {
     echo $(docker-machine inspect -f '{{ .Driver.PrivateIPAddress }}' $1)
   elif [ "$DRIVER" == "azure" ]; then
     echo $(docker-machine ssh $1 ifconfig eth0 | awk '/inet addr/{print substr($2,6)}')
-  else 
+  else
     echo $(docker-machine inspect -f '{{ .Driver.IPAddress }}' $1)
   fi
 }
@@ -176,10 +178,10 @@ function get_worker_token {
 function create_manager {
   for i in $(seq 1 $NBR_MANAGER); do
     echo "-> creating Docker host for manager $i (please wait)"
-    # Azure needs Stdout for authentication. Workaround: Show Stdout on first Manager. 
+    # Azure needs Stdout for authentication. Workaround: Show Stdout on first Manager.
     if [ "$DRIVER" == "azure" ] && [ "$i" -eq 1 ];then
       docker-machine create --driver $DRIVER $ADDITIONAL_PARAMS ${MANAGER}$i
-    else 
+    else
       docker-machine create --driver $DRIVER $ADDITIONAL_PARAMS ${MANAGER}$i 1>/dev/null
     fi
   done
@@ -204,7 +206,7 @@ function join_other_managers {
   if [ "$((NBR_MANAGER-1))" -ge "1" ];then
     for i in $(seq 2 $NBR_MANAGER);do
       echo "-> ${MANAGER}$i requests membership to the swarm"
-      docker-machine ssh ${MANAGER}$i $PERMISSION docker swarm join --token $(get_manager_token) --listen-addr $(getIP ${MANAGER}$i):2377 --advertise-addr $(getIP ${MANAGER}$i):2377 $(getIP ${MANAGER}1):2377 2>&1 
+      docker-machine ssh ${MANAGER}$i $PERMISSION docker swarm join --token $(get_manager_token) --listen-addr $(getIP ${MANAGER}$i):2377 --advertise-addr $(getIP ${MANAGER}$i):2377 $(getIP ${MANAGER}1):2377 2>&1
     done
   fi
 }
@@ -249,7 +251,7 @@ function status {
   echo "-> list tasks"
   echo
   docker-machine ssh ${MANAGER}1 $PERMISSION docker service ps demo
-  echo 
+  echo
   echo "-> list machines"
   docker-machine ls | egrep $PREFIX
   echo
