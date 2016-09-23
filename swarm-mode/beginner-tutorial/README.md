@@ -382,4 +382,5 @@ Successfully removed manager3
 ```  
 
 ## Next steps
-Next, check out the documentation on [Docker Swarm Mode](https://docs.docker.com/engine/swarm/) for more information.
+We have a similar tutorial using Docker Machine to do [Service deployment on a swarm in the Cloud](../cloud-quick-start/README.md).
+Also check out the documentation on [Docker Swarm Mode](https://docs.docker.com/engine/swarm/) for more information.

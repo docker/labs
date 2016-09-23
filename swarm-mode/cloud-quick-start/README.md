@@ -1,4 +1,4 @@
-# Service deployment on a swarm
+# Service deployment on a swarm in the Cloud
 
 Script that create a swarm cluster and deploy a simple service.
 Swarm is created with Swarm mode of Engine 1.12. Can be created on
