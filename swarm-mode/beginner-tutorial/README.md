@@ -18,7 +18,7 @@ You need to have Docker and Docker Machine installed on your system. [Download D
 * Provision and manage multiple remote Docker hosts
 * Provision Swarm clusters
 
-But it can also be used to create multiple nodes on your local machine. There's a [bash script](https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-vbox-setup.sh) in this repository that does just that and creates a swarm. There's also [a powershell Hyper-V version](https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-hyperv-setup.sh) as well. On this page we're walking through the bash script, but the steps, aside from set-up, are a basically the same for the Hyper-V version.
+But it can also be used to create multiple nodes on your local machine. There's a [bash script](https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-vbox-setup.sh) in this repository that does just that and creates a swarm. There's also [a powershell Hyper-V version](https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-hyperv-setup.sh). On this page we're walking through the bash script, but the steps, aside from set-up, are a basically the same for the Hyper-V version.
 
 This first step creates three machines, and names the machines manager1, manager2, and manager3
 ```
