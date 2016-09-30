@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Stop machines
-docker-machine stop worker1 worker2 worker3 manager1 manager2 manager3
+docker-machine stop $(docker-machine ls -q)
 
 # remove machines
-docker-machine rm worker1 worker2 worker3 manager1 manager2 manager3
+docker-machine rm $(docker-machine ls -q)
