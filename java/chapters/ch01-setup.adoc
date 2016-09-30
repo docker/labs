@@ -70,8 +70,8 @@ ubuntu:
   image: ubuntu
 busybox:
   image: busybox
-java:
-  image: java
+openjdk:
+  image: openjdk
 wildfly:
   image: jboss/wildfly
 mysql:
