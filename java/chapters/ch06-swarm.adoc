@@ -215,7 +215,6 @@ composeswarm_db_1                           /entrypoint.sh couchbase-s ...      
 composeswarm_web_1                          /opt/jboss/wildfly/bin/sta ...              Up                                          0.0.0.0:8080->8080/tcp,                   
                                                                                                                                     0.0.0.0:9990->9990/tcp    
 ----
-====
 
 == Configure Couchbase server
 
