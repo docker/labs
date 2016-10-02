@@ -200,7 +200,7 @@ Complete set of REST APIs for this application are explained at https://github.c
 
 == Stop Application
 
-The application can be stopped using `docker-compose stop` command. This will remove the containers for each service defined in the Compose file, networks defined in the `networks` section of the Compose file, and the default network, if one is used.
+The application can be stopped using `docker-compose down` command. This will remove the containers for each service defined in the Compose file. It will also remove the networks defined in the `networks` section of the Compose file.
 
 Remove the application as:
 
@@ -218,7 +218,7 @@ Removing javaee_db_1 ... done
 Removing network javaee_default
 ----
 
-Alternatively, services can be stopped using `docker-compose stop` command:
+Alternatively, only services can be stopped using `docker-compose stop` command:
 
 [source, text]
 ----

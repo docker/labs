@@ -17,55 +17,7 @@ Initialize Swarm mode using the following command:
 
 This starts a Swarm Manager. By default, manager node are also worker but can be configured to be manager-only.
 
-Find some information about this one-node cluster as `docker swarm inspect`
-
-[source, json]
-----
-[
-    {
-        "ID": "1j4c4vjtg3av5cd1g9cy74x09",
-        "Version": {
-            "Index": 11
-        },
-        "CreatedAt": "2016-07-15T20:51:55.579236936Z",
-        "UpdatedAt": "2016-07-15T20:51:55.814661065Z",
-        "Spec": {
-            "Name": "default",
-            "AcceptancePolicy": {
-                "Policies": [
-                    {
-                        "Role": "worker",
-                        "Autoaccept": true,
-                        "Secret": "$2a$10$hWcg9QOi9Bsf2tWHf1bs5eK5URRqbiTSaqXCXm7sJBnGurHkLLnm6"
-                    },
-                    {
-                        "Role": "manager",
-                        "Autoaccept": false,
-                        "Secret": "$2a$10$hWcg9QOi9Bsf2tWHf1bs5eK5URRqbiTSaqXCXm7sJBnGurHkLLnm6"
-                    }
-                ]
-            },
-            "Orchestration": {
-                "TaskHistoryRetentionLimit": 10
-            },
-            "Raft": {
-                "SnapshotInterval": 10000,
-                "LogEntriesForSlowFollowers": 500,
-                "HeartbeatTick": 1,
-                "ElectionTick": 3
-            },
-            "Dispatcher": {
-                "HeartbeatPeriod": 5000000000
-            },
-            "CAConfig": {
-                "NodeCertExpiry": 7776000000000000
-            }
-        }
-    }
-]
-----
-
-Get information about the cluster using the `docker info` command:
+Find some information about this one-node cluster using the command `docker info`
 
 [source, text]
 ----
@@ -73,41 +25,52 @@ Containers: 0
  Running: 0
  Paused: 0
  Stopped: 0
-Images: 11
-Server Version: 1.12.0-rc4
+Images: 38
+Server Version: 1.12.1
 Storage Driver: aufs
  Root Dir: /var/lib/docker/aufs
  Backing Filesystem: extfs
- Dirs: 227
+ Dirs: 321
  Dirperm1 Supported: true
 Logging Driver: json-file
 Cgroup Driver: cgroupfs
 Plugins:
  Volume: local
- Network: bridge overlay null host
+ Network: host bridge overlay null
 Swarm: active
- NodeID: cr3bg6fkm6konsecfs4vchun6
- IsManager: Yes
+ NodeID: 3sfo3bo6n8vhqzh0r18c2m6f4
+ Is Manager: true
+ ClusterID: 9nt6u2xaqsq2j5sb4jzmk4rea
  Managers: 1
  Nodes: 1
- CACertHash: sha256:4b43440f4138461747970ac7cd5234d1b7f9c29a01fdc2eaf04356572828974f
+ Orchestration:
+  Task History Retention Limit: 5
+ Raft:
+  Snapshot Interval: 10000
+  Heartbeat Tick: 1
+  Election Tick: 3
+ Dispatcher:
+  Heartbeat Period: 5 seconds
+ CA Configuration:
+  Expiry Duration: 3 months
+ Node Address: 192.168.65.2
 Runtimes: runc
 Default Runtime: runc
 Security Options: seccomp
-Kernel Version: 4.4.15-moby
+Kernel Version: 4.4.20-moby
 Operating System: Alpine Linux v3.4
 OSType: linux
 Architecture: x86_64
 CPUs: 4
-Total Memory: 1.954 GiB
+Total Memory: 1.952 GiB
 Name: moby
-ID: OV7G:VQ4V:XVE6:VRRZ:OYIK:2ATM:R7E7:2MKC:43ZV:NUA2:TVVL:7W26
+ID: EZSJ:SFEA:65NS:CWJI:NHP4:TFHE:HF43:X6KR:FD2T:GHUQ:QN6T:N72P
 Docker Root Dir: /var/lib/docker
 Debug Mode (client): false
 Debug Mode (server): true
- File Descriptors: 37
- Goroutines: 136
- System Time: 2016-07-15T21:25:31.648058268Z
+ File Descriptors: 35
+ Goroutines: 121
+ System Time: 2016-09-30T20:54:22.545443508Z
  EventsListeners: 1
 No Proxy: *.local, 169.254/16
 Username: arungupta
@@ -215,7 +178,6 @@ composeswarm_db_1                           /entrypoint.sh couchbase-s ...      
 composeswarm_web_1                          /opt/jboss/wildfly/bin/sta ...              Up                                          0.0.0.0:8080->8080/tcp,                   
                                                                                                                                     0.0.0.0:9990->9990/tcp    
 ----
-====
 
 == Configure Couchbase server
 
