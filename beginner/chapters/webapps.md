@@ -16,7 +16,7 @@ $ docker run -d seqvence/static-site
 
 So, what happens when you run this command?
 
-Since the image doesn't exist on your Docker host, the Docker daemon first fetches the it from the registry and then runs it as a container.
+Since the image doesn't exist on your Docker host, the Docker daemon first fetches it from the registry and then runs it as a container.
 
 Now that the server is running, do you see the website? What port is it running on? And more importantly, how do you access the container directly from our host machine?
 
