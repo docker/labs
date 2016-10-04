@@ -309,6 +309,44 @@ Only one change was required in the project to enable Docker packaging and runni
 </profiles>
 ----
 
+==== Package Java Application using Docker Gradle Plugin
+
+The https://github.com/Transmode/gradle-docker[Gradle Docker Plugin] is an alternative to the Maven Docker Plugin for Gradle users. Add the following configuration to your Gradle file:
+
+[source, text]
+----
+apply plugin: 'docker'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
+}
+
+docker {
+    baseImage "java"
+}
+
+task buildDocker(type: Docker) {
+    applicationName "gradle-docker"
+    addFile {
+        from jar
+        rename {'app.jar'}
+    }
+    entryPoint(['java', '-jar', '/app.jar'])
+}
+----
+
+The new task `buildDocker` will build the jar file and the docker image, named with the `applicationName`.
+
+[source, text]
+----
+gradle buildDocker
+----
+
 === Dockerfile Command Design Patterns
 
 ==== Difference between CMD and ENTRYPOINT
