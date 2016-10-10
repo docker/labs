@@ -1,0 +1,474 @@
+
+#submitted-on {
+    position: relative;
+}
+#the-comment-list .author .akismet-user-comment-count {
+    display: inline;
+}
+#the-comment-list .author a span {
+    text-decoration: none;
+    color: #999;
+}
+#the-comment-list .author a span.akismet-span-link {
+	text-decoration: inherit;
+	color: inherit;
+}
+#the-comment-list .remove_url {
+    margin-left: 3px;
+    color: #999;
+    padding: 2px 3px 2px 0;
+}
+#the-comment-list .remove_url:hover {
+    color: #A7301F;
+    font-weight: bold;
+    padding: 2px 2px 2px 0;
+}
+#dashboard_recent_comments .akismet-status {
+    display: none;
+}
+.akismet-status {
+    float: right;
+}
+.akismet-status a {
+    color: #AAA;
+    font-style: italic;
+}
+table.comments td.comment p a {
+    text-decoration: underline;
+}
+table.comments td.comment p a:after {
+    content: attr(href);
+    color: #aaa;
+    display: inline-block; /* Show the URL without the link's underline extending under it. */
+    padding: 0 1ex; /* Because it's inline block, we can't just use spaces in the content: attribute to separate it from the link text. */
+}
+.mshot-arrow {
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #5C5C5C;
+    position: absolute;
+    left: -6px;
+    top: 91px;
+}
+.mshot-container {
+    background: #5C5C5C;
+    position: absolute;
+    top: -94px;
+    padding: 7px;
+    width: 450px;
+    height: 338px;
+    z-index: 20000;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-border-radius: 6px;
+}
+.akismet-mshot {
+    position: absolute;
+    z-index: 100;
+}
+.akismet-mshot .mshot-image {
+    margin: 0;
+    height: 338px;
+    width: 450px;
+}
+h2.ak-header {
+    padding: 30px;
+    background: #649316 url('img/logo-full-2x.png') no-repeat 20px center;
+    background-size: 185px 33px;
+    height: 33px;
+    text-indent: -9999em;
+    margin-right: 10px;
+}
+.checkforspam {
+    display: inline-block !important;
+}
+.checkforspam-spinner {
+    display: inline-block;
+    margin-top: 7px;
+}
+
+.config-wrap {
+	margin-top: 2em;
+    max-width: 700px;
+}
+
+.activate-option {
+    background: #e3e3e3;
+    border-radius: 3px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    padding: 20px;
+}
+.activate-option.clicked {
+	background: #649316;
+	color: #fff;
+}
+.activate-option.clicked:hover {
+	background: #68802E;
+	color: #fff;
+}
+
+.activate-option .button.button-secondary {
+	margin: 15px 0;
+}
+
+.activate-option p {
+	margin: 10px 0 10px;
+}
+
+.activate-highlight {
+	background: #fff;
+	padding: 30px;
+	margin-right: 10px;
+}
+
+.activate-highlight.secondary {
+	background: #ddd;
+	padding: 20px 30px;
+}
+
+.activate-highlight h3 {
+	margin: 0 0 0.3em;
+}
+.activate-highlight p {
+	color: #777;
+}
+.activate-highlight .button-primary {
+	margin-top: 15px;
+}
+
+#akismet-enter-api-key .regular-text {
+	width: 18em;
+	margin-top: 15px;
+}
+
+.right {
+	float: right;
+}
+
+.alert-text {
+	color: #dd3d36;
+}
+.success {
+	color: #649316;
+}
+.option-description {
+    float: left;
+    font-size: 16px;
+}
+.option-description span {
+    color: #666;
+    display: block;
+    font-size: 14px;
+    margin-top: 5px;
+}
+.option-action {
+    float: right;
+}
+.key-config-link {
+    font-size: 14px;
+    margin-left: 20px;
+}
+.jetpack-account {
+    float: left;
+    font-size: 18px;
+    margin-right: 40px;
+}
+.small-heading {
+    color: #777;
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+.inline-label {
+    background: #ddd;
+    border-radius: 3px;
+    font-size: 11px;
+    padding: 3px 8px;
+    text-transform: uppercase;
+}
+.inline-label.alert {
+    background: #e54747;
+    color: #fff;
+}
+.jetpack-account .inline-label {
+    margin-left: 5px;
+}
+.option-action .manual-key {
+    margin-top: 7px;
+}
+
+.alert {
+	border: 1px solid #e5e5e5;
+	padding: 0.4em 1em 1.4em 1em;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.alert h3.key-status {
+	color: #fff;
+	margin: 1em 0 0.5em 0;
+}
+
+.alert.critical {
+	background-color: #993300;
+}
+
+.alert.active {
+	background-color: #649316;
+}
+
+.alert p.key-status {
+	font-size: 24px;
+}
+
+.alert p.description {
+	color:#fff;
+	font-size: 14px;
+    margin: 0 0;
+	font-style: normal;
+}
+
+.alert p.description a,
+.alert p.description a,
+.alert p.description a,
+.alert p.description a {
+	color: #fff;
+}
+
+.new-snapshot {
+	margin-top: 1em;
+	padding: 1em;
+	text-align: center;
+}
+
+.new-snapshot.stats {
+	background: #fff;
+	border: 1px solid #e5e5e5;
+}
+
+.new-snapshot h3 {
+    background: #f5f5f5;
+	color: #888;
+	font-size: 11px;
+    margin: 0;
+    padding: 3px;
+}
+
+.new-snapspot ul {
+	font-size: 12px;
+	width: 100%;
+}
+
+.new-snapshot ul li {
+    color: #999;
+	float: left;
+    font-size: 11px;
+	padding: 0 20px;
+    text-transform: uppercase;
+	width: 33%;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+}
+
+.new-snapshot.stats ul li:first-child,
+.new-snapshot.stats ul li:nth-child(2) {
+	border-right:1px dotted #ccc;
+}
+
+.new-snapshot.account ul li:nth-child(2) {
+	border-right: none;
+}
+
+.new-snapshot ul li span {
+    color: #52accc;
+	display: block;
+	font-size: 32px;
+	font-weight: lighter;
+	line-height: 1.5em;
+}
+
+.new-snapshot.stats {
+}
+
+.new-snapshot.account,
+.new-snapshot.settings {
+	float: left;
+	padding: 0;
+	text-align: left;
+	width: 50%;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+}
+
+.account-container {
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	margin-right: 0.5em;
+}
+
+.settings-container {
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	margin-left: 0.5em;
+}
+
+.new-snapshot.account ul li {
+	width:100%
+}
+
+.new-snapshot.account ul li span {
+	font-size: 14px;
+	font-weight: normal;
+}
+
+
+.new-snapshot.settings ul li {
+	border: none;
+	display: block;
+	width:100%
+}
+
+.new-snapshot.settings ul li span {
+	display: block;
+	font-size: 14px;
+	font-weight: normal;
+}
+
+.new-snapshot.settings p.submit {
+	margin: 0;
+	text-align: center;
+}
+
+.akismet-settings th:first-child {
+	vertical-align: top;
+	padding-top: 15px;
+}
+
+.akismet-settings th.akismet-api-key {
+	vertical-align: middle;
+	padding-top: 0;
+}
+
+.akismet-settings input[type=text] {
+	width: 75%;
+}
+
+.akismet-settings span.note{
+	float: left;
+	padding-left: 23px;
+	font-size: 75%;
+	margin-top: -10px;
+}
+
+.clearfix {
+	clear:both;
+}
+
+/**
+ * For the activation notice on the plugins page.
+ */
+.akismet_activate {
+	min-width: 825px;
+	border: 1px solid #4F800D;
+	padding: 5px;
+	margin: 15px 0;
+	background: #83AF24;
+	background-image: -webkit-gradient(linear, 0% 0, 80% 100%, from(#83AF24), to(#4F800D));
+	background-image: -moz-linear-gradient(80% 100% 120deg, #4F800D, #83AF24);
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	position: relative;
+	overflow: hidden;
+}
+
+.akismet_activate .aa_a {
+	position: absolute;
+	top: -5px;
+	right: 10px;
+	font-size: 140px;
+	color: #769F33;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	z-index: 1;
+}
+
+.akismet_activate .aa_button {
+	font-weight: bold;
+	border: 1px solid #029DD6;
+	border-top: 1px solid #06B9FD;
+	font-size: 15px;
+	text-align: center;
+	padding: 9px 0 8px 0;
+	color: #FFF;
+	background: #029DD6;
+	background-image: -webkit-gradient(linear, 0% 0, 0% 100%, from(#029DD6), to(#0079B1));
+	background-image: -moz-linear-gradient(0% 100% 90deg, #0079B1, #029DD6);
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	-webkit-border-radius: 2px;
+	width: 100%;
+	cursor: pointer;
+	margin: 0;
+}
+
+.akismet_activate .aa_button:hover {
+	text-decoration: none !important;
+	border: 1px solid #029DD6;
+	border-bottom: 1px solid #00A8EF;
+	font-size: 15px;
+	text-align: center;
+	padding: 9px 0 8px 0;
+	color: #F0F8FB;
+	background: #0079B1;
+	background-image: -webkit-gradient(linear, 0% 0, 0% 100%, from(#0079B1), to(#0092BF));
+	background-image: -moz-linear-gradient(0% 100% 90deg, #0092BF, #0079B1);
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	-webkit-border-radius: 2px;
+}
+
+.akismet_activate .aa_button_border {
+	border: 1px solid #006699;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	-webkit-border-radius: 2px;
+	background: #029DD6;
+	background-image: -webkit-gradient(linear, 0% 0, 0% 100%, from(#029DD6), to(#0079B1));
+	background-image: -moz-linear-gradient(0% 100% 90deg, #0079B1, #029DD6);
+}
+
+.akismet_activate .aa_button_container {
+	display: inline-block;
+	background: #DEF1B8;
+	padding: 5px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	-webkit-border-radius: 2px;
+	width: 266px;
+}
+
+.akismet_activate .aa_description {
+	position: absolute;
+	top: 22px;
+	left: 285px;
+	margin-left: 25px;
+	color: #E5F2B1;
+	font-size: 15px;
+	z-index: 1000;
+}
+
+.akismet_activate .aa_description strong {
+	color: #FFF;
+	font-weight: normal;
+}
