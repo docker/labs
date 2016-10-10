@@ -60,40 +60,35 @@ services:
       - front-tier
       - back-tier
 
-  result-app:
-    build: ./result-app/.
+version: "2"
+
+services:
+  vote:
+    build: ./vote
+    command: python app.py
     volumes:
-      - ./result-app:/app
+     - ./vote:/app
     ports:
-      - "5001:80"
-    networks:
-      - front-tier
-      - back-tier
+      - "5000:80"
+
+  redis:
+    image: redis:alpine
+    ports: ["6379"]
 
   worker:
     build: ./worker
 
-  redis:
-    image: redis:alpine
-    container_name: redis
-    ports: ["6379"]
-    networks:
-      - back-tier
-
   db:
     image: postgres:9.4
-    container_name: db
+
+  result:
+    build: ./result
+    command: nodemon --debug server.js
     volumes:
-      - "db-data:/var/lib/postgresql/data"
-    networks:
-      - back-tier
-
-volumes:
-  db-data:
-
-networks:
-  front-tier:
-  back-tier:
+      - ./result:/app
+    ports:
+      - "5001:80"
+      - "5858:5858"
 ```
 
 This Compose file defines
