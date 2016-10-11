@@ -85,6 +85,7 @@ web_1  | Debugger listening on port 5858
 web_1  | HTTP server listening on port 80
 ```
 
+The app is now running. Open up [http://localhost:8000/](http://localhost:8000) to see it in action, and take a moment to appreciate the poetry.
 
 ![Image of Browser with quotations from app](images/browser-broken.gif "Image of a green background with quotes cycling through. Last image is just two quotation marks")
 
