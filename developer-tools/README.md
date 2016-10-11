@@ -12,3 +12,6 @@ In order to take advantage of this feature in an IDE, there is some set-up requi
 + Eclipse
 + IntelliJ
 + Netbeans
+
+### [Node.js Developer Tools](https://github.com/docker/labs/blob/master/developer-tools/nodejs-debugging/README.md) including:
++ Visual Studio Code
