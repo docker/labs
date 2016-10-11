@@ -85,7 +85,6 @@ web_1  | Debugger listening on port 5858
 web_1  | HTTP server listening on port 80
 ```
 
-The app is now running. Open up http://localhost:8000/ to see it in action, and take a moment to appreciate the poetry. 
 
 ![Image of Browser with quotations from app](images/browser-broken.gif "Image of a green background with quotes cycling through. Last image is just two quotation marks")
 
@@ -100,7 +99,7 @@ Create a boilerplate debugger config by clicking the gear icon and selecting “
 
 ![Image of VS Code with gear icon highlighted](images/gear-icon.png "Image of Visual Studio Code with gear icon highlighted")
 
-![Image of VS Code dropdown list](images/dropdown-icon.png "Image of Visual Studio Code dropdown list")
+![Image of VS Code dropdown list](images/dropdown.png "Image of Visual Studio Code dropdown list")
 
 A JSON file will be created and displayed. Replace its contents with the following:
 ```
