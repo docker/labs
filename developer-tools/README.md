@@ -1,6 +1,6 @@
 #Developer Tools Tutorials
 
-This directory contains tutorials on how to set-up and use common developer tools with Docker. We encourage you to [contribute](../contribute.md) your own tutorials here.
+This directory contains tutorials on how to set-up and use common developer tools and programming languages with Docker. We encourage you to [contribute](../contribute.md) your own tutorials here.
 
 ## IDEs
 
@@ -15,3 +15,9 @@ In order to take advantage of this feature in an IDE, there is some set-up requi
 
 ### [Node.js Developer Tools](https://github.com/docker/labs/blob/master/developer-tools/nodejs-debugging/README.md) including:
 + Visual Studio Code
+
+## Programming languages
+This is a more comprehensive section detailing how to set-up and optimize your experience using Docker with particular programming languages.
+
++ [Java](java/)
++ [Node.js](nodejs/porting/)
