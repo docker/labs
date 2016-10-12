@@ -92,7 +92,7 @@ Server:
  Built:        Tue Jul  5 02:20:13 2016
  OS/Arch:      linux/amd64
  Experimental: true
- ```
+```
 
 The common commands that'll be used are:
 
