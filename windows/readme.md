@@ -2,5 +2,5 @@
 
 We have two Windows and .NET tutorials
 
-* [Run .NET Core in a Linux Container](dotnet-core/index.md)
-* [Running a Heterogeneous Azure-hosted Swarm Cluster](dotnet-linux-het/readme.md)
+* [Beginning ASP.NET Web application](aspnet-web/README.md)
+* [Hello Dotnetbot App](hello-dotnetbot/README.md)
