@@ -10,8 +10,8 @@ This repo contains [Docker](https://docker.com) labs and tutorials authored both
     * [Live Debugging Java with Docker](developer-tools/java-debugging)
     * [Docker for Java Developers](developer-tools/java/)
   * Node.js
-    * [Live Debuggins a Node.js application in Docker](developer-tools/nodejs-debuggins)
-    * [Dockerizing a Node.js application](developer-tools/nodejs/)
+    * [Live Debugging a Node.js application in Docker](developer-tools/nodejs-debugging)
+    * [Dockerizing a Node.js application](developer-tools/nodejs/porting/)
 * [Docker for ASP.NET and Windows containers](windows/readme.md)
 * [Building a 12 Factor app with Docker](12factor/README.md)
 * [Docker Security](security/README.md)
