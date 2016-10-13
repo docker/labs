@@ -33,7 +33,7 @@ Install-WindowsFeature containers
 Restart-Computer -Force
 
 # Download, install and configure Docker Engine
-Invoke-WebRequest "https://download.docker.com/components/engine/windows-server/cs-1.12/docker.zip" -OutFile "$env:TEMP\docker.zip" -UseBasicParsing
+Invoke-WebRequest "https://download.docker.com/components/engine/windows-server/cs-1.12/docker-1.12.2.zip" -OutFile "$env:TEMP\docker.zip" -UseBasicParsing
 
 Expand-Archive -Path "$env:TEMP\docker.zip" -DestinationPath $env:ProgramFiles
 
@@ -55,13 +55,13 @@ Docker Engine is now running as a Windows service, listening on the default Dock
 netsh advfirewall firewall add rule name="docker engine" dir=in action=allow protocol=TCP localport=2375
 
 # Configure Docker daemon to listen on both pipe and TCP (replaces docker --register-service invocation above)
-dockerd.exe -H npipe:////./pipe/docker_engine -H 0.0.0.0:2375 --register-service
+dockerd.exe -H npipe:// -H 0.0.0.0:2375 --register-service
 ```
 
 The Windows Server 2016 Docker engine can now be used from the VM host by setting `DOCKER_HOST`:
 `$env:DOCKER_HOST = "<ip-address-of-vm>:2375"`
 
-See the [Microsoft documentation for more comprehensive instructions](See the Microsoft documentation for more comprehensive instructions "Microsoft documentation").
+See the [Microsoft documentation for more comprehensive instructions](https://msdn.microsoft.com/virtualization/windowscontainers/containers_welcome "Microsoft documentation").
 
 ##Running Windows containers
 
@@ -70,28 +70,28 @@ First, make sure the Docker installation is working:
 ```
 > docker version
 Client:
-Version:      1.12.1
-API version:  1.24
-Go version:   go1.6.3
-Git commit:   23cf638
-Built:        Thu Aug 18 17:32:24 2016
-OS/Arch:      windows/amd64
-Experimental: true
+ Version:      1.12.2
+ API version:  1.24
+ Go version:   go1.6.3
+ Git commit:   bb80604
+ Built:        Tue Oct 11 05:27:08 2016
+ OS/Arch:      windows/amd64
+ Experimental: true
 
 Server:
-Version:      1.12.2-cs2-ws-beta-rc1
-API version:  1.25
-Go version:   go1.7.1
-Git commit:   62d9ff9
-Built:        Fri Sep 23 20:50:29 2016
-OS/Arch:      windows/amd64
+ Version:      1.12.2-cs2-ws-beta
+ API version:  1.25
+ Go version:   go1.7.1
+ Git commit:   050b611
+ Built:        Tue Oct 11 02:35:40 2016
+ OS/Arch:      windows/amd64
 ```
 
 Next, pull a base image that’s compatible with the evaluation build, re-tag it and to a test-run:
 
 ```
-docker pull microsoft/windowsservercore:10.0.14393.206
-docker tag microsoft/windowsservercore:10.0.14393.206 microsoft/windowsservercore
+docker pull microsoft/windowsservercore:10.0.14393.321
+docker tag microsoft/windowsservercore:10.0.14393.321 microsoft/windowsservercore
 docker run microsoft/windowsservercore hostname
 69c7de26ea48
 ```
