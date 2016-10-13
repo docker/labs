@@ -41,7 +41,7 @@ Expand-Archive -Path "$env:TEMP\docker.zip" -DestinationPath $env:ProgramFiles
 $env:path += ";c:\program files\docker"
 
 # For persistent use, will apply even after a reboot. 
-[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\Docker", [EnvironmentVariableTarget]::Machine)
+[Environment]::SetEnvironmentVariable("Path", $env:Path, [EnvironmentVariableTarget]::Machine)
 
 # Start a new PowerShell prompt before proceeding
 dockerd --register-service
