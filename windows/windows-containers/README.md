@@ -28,26 +28,10 @@ For Microsoft Ignite 2016 conference attendees, USB flash drives with Windows Se
 Once Windows Server 2016 is running, log in, run Windows Update to ensure you have all the latest updates and install the Windows-native Docker Engine directly (that is, not using “Docker for Windows”). Run the following in an Administrative PowerShell prompt:
 
 ```
-# Add the containers feature and restart
-Install-WindowsFeature containers
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+Install-Module -Name DockerMsftProvider -Force
+Install-Package -Name docker -ProviderName DockerMsftProvider -Force
 Restart-Computer -Force
-
-# Install the OneGet Powershell module
-Install-Module -Name DockerMsftProvider -Repository PSGallery -Force
-
-# Install Docker and restart the computer
-Install-Package -Name docker -ProviderName DockerMsftProvider
-Restart-Computer -Force
-
-# For quick use, does not require shell to be restarted.
-$env:path += ";c:\program files\docker"
-
-# For persistent use, will apply even after a reboot. 
-[Environment]::SetEnvironmentVariable("Path", $env:Path, [EnvironmentVariableTarget]::Machine)
-
-# Start a new PowerShell prompt before proceeding
-dockerd --register-service
-Start-Service docker
 ```
 
 Docker Engine is now running as a Windows service, listening on the default Docker named pipe. For development VMs running (for example) in a Hyper-V VM on Windows 10, it might be advantageous to make the Docker Engine running in the Windows Server 2016 VM available to the Windows 10 host:
@@ -57,7 +41,10 @@ Docker Engine is now running as a Windows service, listening on the default Dock
 netsh advfirewall firewall add rule name="docker engine" dir=in action=allow protocol=TCP localport=2375
 
 # Configure Docker daemon to listen on both pipe and TCP (replaces docker --register-service invocation above)
-dockerd.exe -H npipe:// -H 0.0.0.0:2375 --register-service
+Stop-Service docker
+dockerd --unregister-service
+dockerd -H npipe:// -H 0.0.0.0:2375 --register-service
+Start-Service docker
 ```
 
 The Windows Server 2016 Docker engine can now be used from the VM host by setting `DOCKER_HOST`:
