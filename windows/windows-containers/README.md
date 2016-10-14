@@ -32,10 +32,12 @@ Once Windows Server 2016 is running, log in, run Windows Update to ensure you ha
 Install-WindowsFeature containers
 Restart-Computer -Force
 
-# Download, install and configure Docker Engine
-Invoke-WebRequest "https://download.docker.com/components/engine/windows-server/cs-1.12/docker-1.12.2.zip" -OutFile "$env:TEMP\docker.zip" -UseBasicParsing
+# Install the OneGet Powershell module
+Install-Module -Name DockerMsftProvider -Repository PSGallery -Force
 
-Expand-Archive -Path "$env:TEMP\docker.zip" -DestinationPath $env:ProgramFiles
+# Install Docker and restart the computer
+Install-Package -Name docker -ProviderName DockerMsftProvider
+Restart-Computer -Force
 
 # For quick use, does not require shell to be restarted.
 $env:path += ";c:\program files\docker"
