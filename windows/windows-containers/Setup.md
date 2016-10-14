@@ -63,4 +63,5 @@ The Windows Server 2016 Docker engine can now be used from the VM host by settin
 
 ## Next Steps
 See the [Microsoft documentation for more comprehensive instructions](https://msdn.microsoft.com/virtualization/windowscontainers/containers_welcome "Microsoft documentation").
+
 Continue to Step 2: [Getting Started with Windows Containers](WindowsContainers.md "Getting Started with Windows Containers")
