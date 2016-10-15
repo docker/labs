@@ -105,7 +105,7 @@ This pulls in the right dependencies to the project.
 ADD samples samples
 RUN dotnet build .\samples\MusicStore.Standalone
 ```
-This add the rest of the app source code to the container, and compiles the project
+This adds the rest of the app source code to the container, and compiles the project.
 ```
 EXPOSE 5000
 ENV ASPNETCORE_URLS http://0.0.0.0:5000
