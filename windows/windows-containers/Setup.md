@@ -1,4 +1,4 @@
-## Setup
+﻿## Setup
 This chapter explores setting up your Windows environment to properly use Windows containers. You have two choices for environment at this point.
 
 + Windows 10 with the Anniversary Update
@@ -19,9 +19,7 @@ Switch to Windows containers and skip the next section.
 
 ### Windows Server 2016
 
-Windows Server 2016 is the where Docker Windows containers should be deployed for production. For developers planning to do lots of Docker Windows container development, it may also be worth setting up a Windows Server 2016 dev system (in a VM, for example), at least until Windows 10 and Docker for Windows support for Windows containers matures.
-
-For Microsoft Ignite 2016 conference attendees, USB flash drives with Windows Server 2016 preloaded are available at the expo. Not at ignite? Download a [free evaluation version](https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2016 "free evaluation version") and install it on bare metal or in a VM running on Hyper-V, VirtualBox or similar. Running a VM with Windows Server 2016 is also a great way to do Docker Windows container development on macOS and older Windows versions.
+Windows Server 2016 is the where Docker Windows containers should be deployed for production. For developers planning to do lots of Docker Windows container development, it may also be worth setting up a Windows Server 2016 dev system (in a VM, for example), at least until Windows 10 and Docker for Windows support for Windows containers matures. Running a VM with Windows Server 2016 is also a great way to do Docker Windows container development on macOS and older Windows versions.
 
 Once Windows Server 2016 is running, log in, run Windows Update to ensure you have all the latest updates and install the Windows-native Docker Engine directly (that is, not using “Docker for Windows”). Run the following in an Administrative PowerShell prompt:
 

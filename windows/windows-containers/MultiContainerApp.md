@@ -11,7 +11,7 @@ To develop with Docker Compose on a Windows Server 2016 system, install compose 
 Invoke-WebRequest https://dl.bintray.com/docker-compose/master/docker-compose-Windows-x86_64.exe -UseBasicParsing -OutFile $env:ProgramFiles\docker\docker-compose.exe
 ```
 
-To try out Compose on Windows, clone a variant of the ASP.NET Core MVC MusicStore app, backed by a SQL Server Express 2016 database. A correctly tagged `microsoft/windowsservercore` image is required before starting.
+To try out Compose on Windows, clone a variant of the ASP.NET Core MVC MusicStore app, backed by a SQL Server Express 2016 database.
 
 ```
 git clone https://github.com/friism/Musicstore
@@ -90,12 +90,12 @@ Temporary workaround for Windows DNS client weirdness
 RUN New-Item -Path \MusicStore\samples\MusicStore.Standalone -Type Directory
 WORKDIR MusicStore
 ```
-This creates a new directory in the contaienr and makes it the working directory. Everything else that happens after this point will use MusicStore as the base directory.
+This creates a new directory in the container and makes it the working directory. Everything else that happens after this point will use MusicStore as the base directory.
 ```
 ADD samples/MusicStore.Standalone/project.json samples/MusicStore.Standalone/project.json
 ADD NuGet.config .
 ```
-This adds the music store project file to the container and runs `NuGet` to configure the packages.
+The command adds the project file (detailing NuGet package dependencies) and the NuGet config file.
 ```
 RUN dotnet restore --no-cache .\samples\MusicStore.Standalone
 ```
@@ -105,7 +105,7 @@ This pulls in the right dependencies to the project.
 ADD samples samples
 RUN dotnet build .\samples\MusicStore.Standalone
 ```
-This adds the base files from your computer to the container.
+This add the rest of the app source code to the container, and compiles the project
 ```
 EXPOSE 5000
 ENV ASPNETCORE_URLS http://0.0.0.0:5000
