@@ -82,7 +82,7 @@ $ docker run --name static-site-2 -e AUTHOR="Your Name" -d -p 8888:80 seqvence/s
 ```
 <img src="../images/static.png" title="static">
 
-To deploy this on a real server you would just need to install Docker, and run the above `docker` command.
+To deploy this on a real server you would just need to install Docker, and run the above `docker` command(as in this case you can see the `AUTHOR` is Docker which we passed as an environment variable).
 
 Now that you've seen how to run a webserver inside a Docker image, how do you create your own Docker image? This is the question we'll explore in the next section.
 
@@ -177,7 +177,7 @@ We'll do this by first pulling together the components for a random cat picture 
 
 For the purposes of this workshop, we've created a fun little Python Flask app that displays a random cat `.gif` every time it is loaded - because, you know, who doesn't like cats?
 
-Start by creating a folder called ```flask-app``` where we'll create the following files:
+Start by creating a directory called ```flask-app``` where we'll create the following files:
 
 - [app.py](#apppy)
 - [requirements.txt](#requirementstxt)
@@ -290,7 +290,7 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
   COPY templates/index.html /usr/src/app/templates/
   ```
 
-4. Specify is the port number which needs to be exposed. Since our flask app is running on `5000` that's what we'll expose.
+4. Specify the port number which needs to be exposed. Since our flask app is running on `5000` that's what we'll expose.
   ```
   EXPOSE 5000
   ```
@@ -333,7 +333,7 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
 
 Now that you have your `Dockerfile`, you can build your image. The `docker build` command does the heavy-lifting of creating a docker image from a `Dockerfile`.
 
-When you run the `docker build` command given below, make sure to replace `<YOUR_USERNAME>` with your username. This username should be the same one you created when you registered on [Docker hub](https://hub.docker.com). If you haven't done that yet, please go ahead and create an account.
+When you run the `docker build` command given below, make sure to replace `<YOUR_USERNAME>` with your username. This username should be the same one you created when registered on [Docker hub](https://hub.docker.com). If you haven't done that yet, please go ahead and create an account.
 
 The `docker build` command is quite simple - it takes an optional tag name with `-t` flag and a location of the directory containing the `Dockerfile` - the `.` indicates the current directory:
 
