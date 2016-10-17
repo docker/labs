@@ -50,19 +50,6 @@ Now, run your application. To do that, we'll use [Docker Compose](https://docs.d
 version: "2"
 
 services:
-  voting-app:
-    build: ./voting-app/.
-    volumes:
-     - ./voting-app:/app
-    ports:
-      - "5000:80"
-    networks:
-      - front-tier
-      - back-tier
-
-version: "2"
-
-services:
   vote:
     build: ./vote
     command: python app.py
@@ -100,8 +87,6 @@ This Compose file defines
 - A Postgres container based on a postgres image
 
 Note that three of the containers are built from Dockerfiles, while the other two are images on Docker Hub. To learn more about how they're built, you can examine each of the Dockerfiles in the three directories: `vote`, `result`, `worker`. 
-
-The Compose file also defines two networks, front-tier and back-tier. Each container is placed on one or two networks. Once on those networks, they can access other services on that network in code just by using the name of the service. To learn more about networking check out the [Networking with Compose documentation](https://docs.docker.com/compose/networking/).
 
 To launch your app navigate to the example-voting-app directory and run the following command:
 
