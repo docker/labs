@@ -24,7 +24,7 @@ Windows Server 2016 is the where Docker Windows containers should be deployed fo
 Once Windows Server 2016 is running, log in, run Windows Update to ensure you have all the latest updates and install the Windows-native Docker Engine directly (that is, not using “Docker for Windows”). You have two options for that:
 
 #### Option 1
-GitHub user @PlagueHQ has set-up a [Powershell script[(https://www.powershellgallery.com/packages/Install-DockerOnWS2016UsingDSC/1.0.1/DisplayScript "DockerOnWS2016UsingDSC Script") in the Powershell Gallery. You can run it in two steps:
+GitHub user @PlagueHQ has set-up a [Powershell script](https://www.powershellgallery.com/packages/Install-DockerOnWS2016UsingDSC/1.0.1/DisplayScript "DockerOnWS2016UsingDSC Script") in the Powershell Gallery. You can run it in two steps:
 
 ```
 Install-Script -Name Install-DockerOnWS2016UsingDSC
