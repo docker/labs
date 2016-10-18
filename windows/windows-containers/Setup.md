@@ -1,8 +1,10 @@
 ﻿# Setup
-This chapter explores setting up your Windows environment to properly use Windows containers. You have two choices for environment at this point.
+
+This chapter explores setting up a Windows environment to properly use Windows containers. There are three options for running Windows containers:
 
 + Windows 10 with the Anniversary Update
-+ Windows Server 2016
++ Windows Server 2016 on Azure
++ Windows Server 2016 on bare metal or in VM
 
 ## Windows 10 with Anniversary Update
 
@@ -14,13 +16,31 @@ With the public beta installed, the Docker for Windows tray icon has an option t
 
 ![Image of switching between Linux and Windows development environments](images/docker-for-windows-switch.gif "Image of switching between Linux and Windows development environments")
 
-Switch to Windows containers and skip the next section.
+Switch to Windows containers and skip the next sections.
 
-## Windows Server 2016
+## Windows Server 2016 on Azure
+
+It's very easy to setup a fully configured Microsoft Azure VM with Docker Engine running, and base images pre-loaded:
+
+ 1. Create a [Windows Server 2016 Datacenter - with Containers VM](https://azure.microsoft.com/en-us/marketplace/partners/microsoft/windowsserver2016datacenterwithcontainers/). This VM image has Docker pre-installed and the Windows base layers pre-loaded.
+ 2. Select "Classic" deployment model and hit "Create"
+ 3. Input setup parameters. Default settings are good
+ 4. Check the Summary and hit "OK". Setup will take a couple of minutes
+ 5. Once the VM is running, select "Connect" to open a remote desktop connection. If using macOS, get the free [Remote Desktop app in the Mac App Store](https://itunes.apple.com/us/app/microsoft-remote-desktop/id715768417?mt=12).
+ 6. Login with the username and password configured during setup
+ 7. Start PowerShell
+ 8. `Start-Service docker`
+ 9. Check that Docker is running with `docker version`
+
+![Creating Azure Virtual Machine](images/Azure-ws2016-Create-Virtual-Machine.PNG)
+
+![Connecting to Azure Virtual Machine](images/Azure-ws2016-Connect.PNG)
+
+## Windows Server 2016 on bare metal or in VM
 
 Windows Server 2016 is where Docker Windows containers should be deployed for production. For developers planning to do lots of Docker Windows container development, it may also be worth setting up a Windows Server 2016 dev system (in a VM, for example), at least until Windows 10 and Docker for Windows support for Windows containers matures. Running a VM with Windows Server 2016 is also a great way to do Docker Windows container development on macOS and older Windows versions.
 
-Once Windows Server 2016 is running, log in, run Windows Update (use `sconfig` on Windows Server Core) to ensure you have all the latest updates and install the Windows-native Docker Engine (that is, don't use "Docker for Windows"). You have two options: Install using a Powershell Package (recommended) or with DSC.
+Once Windows Server 2016 is running, log in, run Windows Update (use `sconfig` on Windows Server Core) to ensure all the latest updates are installed and install the Windows-native Docker Engine (that is, don't use "Docker for Windows"). There are two options: Install using a Powershell Package (recommended) or with DSC.
 
 ### PowerShell Package Provider (recommended)
 
@@ -36,7 +56,7 @@ Restart-Computer -Force
 
 ### PowerShell Desired State Configuration
 
-If you're interested in experimenting with [Windows PowerShell Desired State Configuration](https://msdn.microsoft.com/en-us/powershell/dsc/overview), Daniel Scott-Raynsford has built a [prototype script that uses DSC to install Docker Engine](https://www.powershellgallery.com/packages/Install-DockerOnWS2016UsingDSC/1.0.1/DisplayScript). 
+If interested in experimenting with [Windows PowerShell Desired State Configuration](https://msdn.microsoft.com/en-us/powershell/dsc/overview), Daniel Scott-Raynsford has built a [prototype script that uses DSC to install Docker Engine](https://www.powershellgallery.com/packages/Install-DockerOnWS2016UsingDSC/1.0.1/DisplayScript). 
 
 Here's how to use it:
 
