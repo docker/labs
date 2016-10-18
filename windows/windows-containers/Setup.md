@@ -16,7 +16,6 @@ With the public beta installed, the Docker for Windows tray icon has an option t
 
 Switch to Windows containers and skip the next section.
 
-
 ### Windows Server 2016
 
 Windows Server 2016 is where Docker Windows containers should be deployed for production. For developers planning to do lots of Docker Windows container development, it may also be worth setting up a Windows Server 2016 dev system (in a VM, for example), at least until Windows 10 and Docker for Windows support for Windows containers matures. Running a VM with Windows Server 2016 is also a great way to do Docker Windows container development on macOS and older Windows versions.
