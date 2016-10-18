@@ -32,7 +32,7 @@ $workertoken = docker-machine ssh manager1 "docker swarm join-token worker -q"
 # other masters join swarm
 for ($node=2;$node -le $managers;$node++) {
 	echo "======> manager$node joining swarm as manager ..."
-  $nodeip = docker-machine ip manager$node
+	$nodeip = docker-machine ip manager$node
 	docker-machine ssh "manager$node" "docker swarm join --token $managertoken --listen-addr $nodeip --advertise-addr $nodeip $manager1ip"
 }
 # show members of swarm
@@ -40,9 +40,9 @@ docker-machine ssh manager1 "docker node ls"
 
 # workers join swarm
 for ($node=1;$node -le $workers;$node++) {
-	echo "======> "worker$node" joining swarm as worker ..."
-
-  docker-machine ssh "worker$node" "docker swarm join --token $workertoken --listen-addr $nodeip --advertise-addr $nodeip $manager1ip"
+	echo "======> worker$node joining swarm as worker ..."
+	$nodeip = docker-machine ip worker$node
+	docker-machine ssh "worker$node" "docker swarm join --token $workertoken --listen-addr $nodeip --advertise-addr $nodeip $manager1ip"
 }
 
 # show members of swarm
