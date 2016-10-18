@@ -21,7 +21,7 @@ Switch to Windows containers and skip the next section.
 
 Windows Server 2016 is where Docker Windows containers should be deployed for production. For developers planning to do lots of Docker Windows container development, it may also be worth setting up a Windows Server 2016 dev system (in a VM, for example), at least until Windows 10 and Docker for Windows support for Windows containers matures. Running a VM with Windows Server 2016 is also a great way to do Docker Windows container development on macOS and older Windows versions.
 
-Once Windows Server 2016 is running, log in, run Windows Update to ensure you have all the latest updates and install the Windows-native Docker Engine (that is, don't use "Docker for Windows"). You have two options: Install using a Powershell Package (recommended) or with DSC.
+Once Windows Server 2016 is running, log in, run Windows Update (use `sconfig` on Windows Server Core) to ensure you have all the latest updates and install the Windows-native Docker Engine (that is, don't use "Docker for Windows"). You have two options: Install using a Powershell Package (recommended) or with DSC.
 
 #### PowerShell Package Provider (recommended)
 
