@@ -50,19 +50,6 @@ Now, run your application. To do that, we'll use [Docker Compose](https://docs.d
 version: "2"
 
 services:
-  voting-app:
-    build: ./voting-app/.
-    volumes:
-     - ./voting-app:/app
-    ports:
-      - "5000:80"
-    networks:
-      - front-tier
-      - back-tier
-
-version: "2"
-
-services:
   vote:
     build: ./vote
     command: python app.py
@@ -70,16 +57,9 @@ services:
      - ./vote:/app
     ports:
       - "5000:80"
-
-  redis:
-    image: redis:alpine
-    ports: ["6379"]
-
-  worker:
-    build: ./worker
-
-  db:
-    image: postgres:9.4
+    networks:
+      - front-tier
+      - back-tier
 
   result:
     build: ./result
@@ -89,12 +69,42 @@ services:
     ports:
       - "5001:80"
       - "5858:5858"
+    networks:
+      - front-tier
+      - back-tier
+
+  worker:
+    build: ./worker
+    networks:
+      - back-tier
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports: ["6379"]
+    networks:
+      - back-tier
+
+  db:
+    image: postgres:9.4
+    container_name: db
+    volumes:
+      - "db-data:/var/lib/postgresql/data"
+    networks:
+      - back-tier
+
+volumes:
+  db-data:
+
+networks:
+  front-tier:
+  back-tier:
 ```
 
 This Compose file defines
 
-- A voting-app container based on a Python image
-- A result-app container based on a Node.js image
+- A vote container based on a Python image
+- A result container based on a Node.js image
 - A redis container based on a redis image, to temporarily store the data.
 - A .NET based worker app based on a .NET image
 - A Postgres container based on a postgres image
