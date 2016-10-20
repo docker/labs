@@ -20,16 +20,16 @@ Switch to Windows containers and skip the next sections.
 
 ## Windows Server 2016 on Azure
 
-It's very easy to setup a fully configured Microsoft Azure VM with Docker Engine running, and base images pre-loaded:
+Microsoft Azure has a pre-baked VM image with Docker engine and base images pre-loaded. To get started (requires Azure account):
 
- 1. Create a [Windows Server 2016 Datacenter - with Containers VM](https://azure.microsoft.com/en-us/marketplace/partners/microsoft/windowsserver2016datacenterwithcontainers/). This VM image has Docker pre-installed and the Windows base layers pre-loaded.
+ 1. Create a [Windows Server 2016 Datacenter - with Containers](https://azure.microsoft.com/en-us/marketplace/partners/microsoft/windowsserver2016datacenterwithcontainers/) VM. This VM image has Docker pre-installed and the Windows base layers pre-loaded.
  2. Select "Classic" deployment model and hit "Create"
  3. Input setup parameters
     - Default settings are good
     - Creating a new resource group is fine
     - `DS2_V2` instance type has good performance for development and testing
  4. Check the Summary and hit "OK". Setup will take a couple of minutes
- 5. Once the VM is running, select "Connect" to open a remote desktop connection. If using macOS, get the free [Remote Desktop app in the Mac App Store](https://itunes.apple.com/us/app/microsoft-remote-desktop/id715768417?mt=12).
+ 5. Once the VM is running, select "Connect" to open a remote desktop connection. If using macOS, get the free [Remote Desktop app in the Mac App Store](https://itunes.apple.com/us/app/microsoft-remote-desktop/id715768417?mt=12)
  6. Login with the username and password configured during setup
  7. Start PowerShell
  8. `Start-Service docker`
@@ -38,6 +38,23 @@ It's very easy to setup a fully configured Microsoft Azure VM with Docker Engine
 ![Creating Azure Virtual Machine](images/Azure-ws2016-Create-Virtual-Machine.PNG)
 
 ![Connecting to Azure Virtual Machine](images/Azure-ws2016-Connect.PNG)
+
+## Windows Server 2016 on AWS
+
+AWS has a pre-baked AMI with Docker Engine already installed. To start an instance, do the following (requires AWS account):
+
+1. Open the [EC2 launch-instance wizard](https://us-west-1.console.aws.amazon.com/ec2/v2/home#LaunchInstanceWizard)
+2. Select the "Microsoft Windows Server 2016 Base with Containers" AMI
+3. Input setup parameters
+    - `c4.large` has good performance for development and testing
+    - The default AWS security group settings will let you connect with Remote Desktop
+4. Select "Review and Launch"
+5. Once the VM is up, hit "Connect". If using macOS, get the free [Remote Desktop app in the Mac App Store](https://itunes.apple.com/us/app/microsoft-remote-desktop/id715768417?mt=12)
+6. See details on [getting the initial Windows Administrator password for your AWS instance](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/connecting_to_windows_instance.html)
+7. Start PowerShell
+8. Check that Docker is running with `docker version`
+
+![Connecting to AWS Virtual Machine](images/aws-connect.PNG)
 
 ## Windows Server 2016 on bare metal or in VM
 
