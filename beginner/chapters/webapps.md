@@ -283,7 +283,7 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
   RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt
   ```
 
-  Copy the files you have created earlier our image by using [COPY](https://docs.docker.com/engine/reference/builder/#copy)  command.
+  Copy the files you have created earlier into our image by using [COPY](https://docs.docker.com/engine/reference/builder/#copy)  command.
 
   ```
   COPY app.py /usr/src/app/
@@ -333,9 +333,9 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
 
 Now that you have your `Dockerfile`, you can build your image. The `docker build` command does the heavy-lifting of creating a docker image from a `Dockerfile`.
 
-When you run the `docker build` command given below, make sure to replace `<YOUR_USERNAME>` with your username. This username should be the same one you created when registered on [Docker hub](https://hub.docker.com). If you haven't done that yet, please go ahead and create an account.
+When you run the `docker build` command given below, make sure to replace `<YOUR_USERNAME>` with your username. This username should be the same one you created when registering on [Docker hub](https://hub.docker.com). If you haven't done that yet, please go ahead and create an account.
 
-The `docker build` command is quite simple - it takes an optional tag name with `-t` flag and a location of the directory containing the `Dockerfile` - the `.` indicates the current directory:
+The `docker build` command is quite simple - it takes an optional tag name with the `-t` flag, and the location of the directory containing the `Dockerfile` - the `.` indicates the current directory:
 
 ```
 $ docker build -t <YOUR_USERNAME>/myfirstapp .
@@ -438,7 +438,7 @@ $ docker rm -f myfirstapp
 
 Here's a quick summary of the few basic commands we used in our Dockerfile.
 
-* `FROM` starts the Dockerfile. It is a requiremnet that the Dockerfile must start with the `FROM` command. Images are created in layers, which means you can use another image as the base image for your own. The `FROM` command defines  your base layer. As arguments, it takes the name of the image. Optionally, you can add the Docker Hub username of the maintainer and image version, in the format `username/imagename:version`.
+* `FROM` starts the Dockerfile. It is a requirement that the Dockerfile must start with the `FROM` command. Images are created in layers, which means you can use another image as the base image for your own. The `FROM` command defines your base layer. As arguments, it takes the name of the image. Optionally, you can add the Docker Hub username of the maintainer and image version, in the format `username/imagename:version`.
 
 * `RUN` is used to build up the Image you're creating. For each `RUN` command, Docker will run the command then create a new layer of the image. This way you can roll back your image to previous states easily. The syntax for a `RUN` instruction is to place the full text of the shell command after the `RUN` (e.g., `RUN mkdir /user/local/foo`). This will automatically run in a `/bin/sh` shell. You can define a different shell like this: `RUN /bin/bash -c 'mkdir /user/local/foo'`
 
