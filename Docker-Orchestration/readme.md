@@ -1,6 +1,6 @@
 ## Advanced Docker Orchestration by Jérôme Petazzoni
 
-- [Slides](http://view.dckr.info:8080/#6)
+- [Slides](https://jpetazzo.github.io/orchestration-workshop)
 - [Orchestration Workshop](https://github.com/docker/orchestration-workshop)
 
 
