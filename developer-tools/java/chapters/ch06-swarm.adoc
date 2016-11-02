@@ -84,6 +84,8 @@ This cluster has 1 node, and that is a manager.
 
 == Start Application using Docker Compose
 
+This section describes how to use docker-compose: docker-compose does not work with Swarm mode, so the effect of these commands will be to schedule containers on the Swarm master that you target. Docker-compose works to schedule containers across a Swarm 1.0 cluster, and if you use the latest version of Docker DataCenter, it includes both Swarm 1.0 and Docker 1.12 swarm mode. If you want to schedule containers across a Swarm mode cluster, go to the Swarm mode section at the end to learn how to use `docker service create`.
+
 Create a new directory and `cd` to it:
 
     mkdir compose-swarm
@@ -393,3 +395,47 @@ Removing network composeswarm_default
 ----
 
 This stops and removes the container in each service. It also deletes any networks that were created as part of this application.
+
+== Scheduling containers across a Swarm mode cluster with docker service create
+
+If you use Swarm mode, you cannot use docker-compose, and need to use docker service create. Here is how to to schedule the example application services.
+
+```
+docker network create --driver overlay javaee
+
+docker service create --name db \
+--network javaee \
+arungupta/couchbase 
+
+docker service create --name javaee \
+--network javaee \
+--publish 8090:8080 \
+--replicas 3 \
+--env COUCHBASE_URI=db \
+chanezon/wildfly-couchbase-javaee7
+```
+
+This creates an overlay network over the cluster named javaee. Then schedules the db service and the javaee service on that network. The name of the service, db, will be used as a dns alias to talk to that service over the javaee service. We don't need to expose the db ports outside of the network. The javaee service will schedule 3 replicas on random ports and hosts in the cluster, and Swarm buil-in routing mesh will expose port 8090 on each node in the cluster for that service. This means that the 3 containers running our web application will be load balanced from any node in the cluster on port 8090. You can verify that on your local installation with:
+
+In order to list the services and get details about the javaee service
+```
+docker service ls
+docker service inspect javaee
+```
+
+And you can still use `docker ps` and `docker logs` on the containers implementing the tasks for the services to watch their logs.
+
+In order to test if the application started successfully:
+
+```
+curl http://localhost:8090/airlines/resources/airline
+```
+
+If you use https://beta.docker.com/docs/[Docker for AWS or Docker for Azure beta], the published port will be exposed by the external load balancer of your cluster automatically.
+
+
+When you are done, remove the services with
+
+```
+docker service rm javaee db
+```
