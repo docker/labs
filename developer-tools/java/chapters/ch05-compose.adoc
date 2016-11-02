@@ -51,7 +51,7 @@ services:
       - 8093:8093 
       - 11210:11210
   web:
-    image: arungupta/wildfly-couchbase-javaee7
+    image: chanezon/wildfly-couchbase-javaee7
     environment:
       - COUCHBASE_URI=db
     ports:
@@ -66,7 +66,7 @@ In this Compose file:
 . Two services in this Compose are defined by the name `db` and `web` attributes
 . Image name for each service defined using `image` attribute
 . The `arungupta/couchbase` image starts Couchbase server, configures it using http://developer.couchbase.com/documentation/server/current/rest-api/rest-endpoints-all.html[Couchbase REST API], and loads a sample bucket
-. The `arungupta/wildfly-couchbase-javaee7` image starts WildFly and deploys application WAR file built from https://github.com/arun-gupta/couchbase-javaee. This image built using https://github.com/arun-gupta/docker-images/blob/master/wildfly-couchbase-javaee7/Dockerfile.
+. The `chanezon/wildfly-couchbase-javaee7` image starts WildFly and deploys application WAR file built from https://github.com/arun-gupta/couchbase-javaee. Clone that project if you want to build your own image.
 . Environment variable for WildFly container is defined in `environment` attribute
 . Couchbase container is linked with WildFly container using `COUCHBASE_URI`. This is used in the application code as shown at https://github.com/arun-gupta/couchbase-javaee/blob/master/src/main/java/org/couchbase/sample/javaee/Database.java#L44.
 . Port forwarding is achieved using `ports` attribute
@@ -167,13 +167,11 @@ CONTAINER ID        IMAGE                                 COMMAND               
 ----
 ====
 
-Service logs can be seen using `docker-compose logs` command. The logs will show some errors. These are because the Java EE application deployed in WildFly is not able to communicate with Couchbase. Let's understand why.
+Service logs can be seen using `docker-compose logs` command.
 
-`depends_on` attribute in Compose definition file ensures the container start up order. But application-level start up needs to be ensured by the applications running inside container. In our case, WildFly starts up rather quickly but takes a few seconds for the database to start up. This means the Java EE application deployed in WildFly is not able to communicate with the database. 
+`depends_on` attribute in Compose definition file ensures the container start up order. But application-level start up needs to be ensured by the applications running inside container. In our case, WildFly starts up rather quickly but takes a few seconds for the database to start up. This means the Java EE application deployed in WildFly is not able to communicate with the database. This outlines a best practice when building micro services applications: you must code defensively and ensure in your application initialization that the micro services you depend on have started, without assuming startup order. This is shown in the wildfly-couchbase-javaee7 Database initialization code, that https://github.com/arun-gupta/couchbase-javaee/blob/master/src/main/java/org/couchbase/sample/javaee/Database.java#L52[catches Timeout Exceptions and waits indefinitely until the Couchbase bucket it depends on is ready].
 
-So we need to restart the WildFly service after ~15 seconds to ensure enough time for the Couchbase database to start. Restart the WildFly service using `docker-compose restart web` command.
-
-Now, the logs will show the application is deployed successfully in WildFly. This can be verified by looking at the logs:
+The logs will show the application is deployed successfully in WildFly. This can be verified by looking at the logs:
 
 [source, text]
 ----
