@@ -84,7 +84,9 @@ This cluster has 1 node, and that is a manager.
 
 == Start Application using Docker Compose
 
-This section describes how to use docker-compose: docker-compose does not work with Swarm mode, so the effect of these commands will be to schedule containers on the Swarm master that you target. Docker-compose works to schedule containers across a Swarm 1.0 cluster, and if you use the latest version of Docker DataCenter, it includes both Swarm 1.0 and Docker 1.12 swarm mode. If you want to schedule containers across a Swarm mode cluster, go to the Swarm mode section at the end to learn how to use `docker service create`.
+This section describes how to use docker-compose: since docker-compose does not work with Swarm mode yet, the effect of these commands will be to schedule containers on the Swarm master that you target. However docker-compose works to schedule containers across a Swarm 1.0 cluster.
+
+If you want to schedule containers across a Swarm mode cluster, go to the Swarm mode section at the end to learn how to use `docker service create`.
 
 Create a new directory and `cd` to it:
 
