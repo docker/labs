@@ -166,4 +166,4 @@ $ docker pull <YOUR_DOCKER_ID>/votingapp_worker
 ```
 
 ### 3.3 Next steps
-Now that you've built some images and pushed them to hub, and learned about Docker Compose, you can explore more of Docker by checking out [the documentation](https://docs.docker.com). And if you need any help, check out the [Docker Forums](forums.docker.com) or [StackOverflow](https://stackoverflow.com/tags/docker/).
+Now that you've built some images and pushed them to docker hub, and learned about Docker Compose, you can explore more of Docker by checking out [the documentation](https://docs.docker.com). And if you need any help, check out the [Docker Forums](forums.docker.com) or [StackOverflow](https://stackoverflow.com/tags/docker/).
