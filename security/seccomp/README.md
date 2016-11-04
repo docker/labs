@@ -26,7 +26,7 @@ The following commands show you how to check if seccomp is enabled in your syste
 
    Check from Docker 1.12 or higher
    ```
-   $ docker version | grep seccomp
+   $ docker info | grep seccomp
    Security Options: apparmor seccomp   
    ```
    If the above output does not return a line with `seccomp` then your system does not have seccomp enabled in its kernel.
