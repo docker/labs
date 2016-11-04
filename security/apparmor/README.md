@@ -332,7 +332,7 @@ In the next few steps you'll apply a new Apparmor profile to a new WordPress con
    Run this command from the shell of your Docker Host, not the shell of the `wordpress` container.
 
    ```
-   $ sudo docker-compose down
+   $ sudo docker-compose stop
    Stopping wordpress_wordpress_1 ...
    Stopping wordpress_mysql_1 ...
    <SNIP>
@@ -412,7 +412,7 @@ In the next few steps you'll apply a new Apparmor profile to a new WordPress con
 16. Bring the application down.
 
    ```
-   $ sudo docker-compose down
+   $ sudo docker-compose stop
    ```
 
 Congratulations!  You've secured a WordPress instance against adding malicious plugins :)
