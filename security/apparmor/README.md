@@ -28,7 +28,7 @@ The following command shows you how to check if AppArmor is enabled in your syst
 
    Check from Docker 1.12 or higher
    ```
-   $ docker version | grep apparmor
+   $ docker info | grep apparmor
    Security Options: apparmor seccomp   
    ```
    If the above output does not return a line with `apparmor` then your system does not have AppArmor enabled in its kernel.
