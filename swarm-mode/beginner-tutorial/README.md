@@ -312,7 +312,7 @@ Now bring `worker1` back online and show it's new availability
 ```
 $ docker-machine ssh manager1 "docker node update --availability active worker1"
 worker1
-Manos-MacBook-Pro:beginner-tutorial manomarks$ docker-machine ssh manager1 "docker node inspect worker1 --pretty"
+$ docker-machine ssh manager1 "docker node inspect worker1 --pretty"
 ID:			8awcmkj3sd9nv1pi77i6mdb1i
 Hostname:		worker1
 Joined at:		2016-08-23 22:30:15.556517377 +0000 utc
