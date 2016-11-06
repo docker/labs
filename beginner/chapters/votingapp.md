@@ -28,7 +28,7 @@ git clone https://github.com/docker/example-voting-app.git
 
 #### 3.2.1 Modify app.py
 
-In the folder ```example-voting-app/voting-app``` you need to edit the app.py and change the two options for the programming languages you chose.
+In the folder ```example-voting-app/vote``` you need to edit the app.py and change the two options for the programming languages you chose.
 
 Edit the following lines:
 
