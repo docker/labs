@@ -100,7 +100,7 @@ In this step you'll start a new container that will max out two CPU cores. You w
 5. Build the image specified in the `Dockerfile`.
 
    ```
-   $ sudo docker build -t stress-cpu .
+   $ sudo docker build -t cpu-stress .
    Sending build context to Docker daemon 3.072 kB
    Step 1 : FROM ubuntu:latest
    latest: Pulling from library/ubuntu
@@ -117,7 +117,7 @@ In this step you'll start a new container that will max out two CPU cores. You w
 6. Run a new container called **stresser** based on the image built in the previous step.
 
    ```
-   $ sudo docker run -d --name stresser stress-cpu
+   $ sudo docker run -d --name stresser cpu-stress
    stress: info: [5] dispatching hogs: 2 cpu, 0 io, 0 vm, 0 hdd
 
    ```
@@ -149,7 +149,7 @@ Docker makes it possible to restrict containers to a particular CPU core, or set
 1. Run a new Docker container called **stresser** and restrict it to running on the first CPU on the system.
 
    ```
-   $ sudo docker run -d --name stresser --cpuset-cpus 0 stress-cpu
+   $ sudo docker run -d --name stresser --cpuset-cpus 0 cpu-stress
 
    0bfbf2d33516065bbcfa56bd8f9df24749312460141bca729f53d66a9b2dba6b
    ```
@@ -161,7 +161,7 @@ Docker makes it possible to restrict containers to a particular CPU core, or set
   ![](http://i.imgur.com/IJP31bP.png)
 
   There are a few things worth noting about what you have just done:
-  - The container is based on the same **stress-cpu** image that spawns two stress worker processes.
+  - The container is based on the same **cpu-stress** image that spawns two stress worker processes.
   - The two stress worker processes have been restricted to running against a single CPU core by the `--cpuset-cpus` flag.
   - Each of the two stress processes is consuming ~50% of available time on the single CPU core they are executing on.
   - `htop` indexes CPU cores starting at 1 whereas `--cpuset-cpus` indexes starting at 0.
