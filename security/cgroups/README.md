@@ -255,7 +255,7 @@ In this step you will use the `--pids-limit` flag to limit the number of process
 1. Start a new container and limit the number of processes it can create to 200 with the following command.
 
    ```
-   $ sudo docker run -rm -it --pids-limit 200 debian:jessie bash
+   $ sudo docker run --rm -it --pids-limit 200 debian:jessie bash
 
    Unable to find image 'debian:jessie' locally
    jessie: Pulling from library/debian

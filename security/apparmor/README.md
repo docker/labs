@@ -242,10 +242,11 @@ WordPress and its plugins run as PHP. This means an attacker could upload their 
 
 In this step we'll show how a custom AppArmor profile could have protected Dockerized WordPress from this attack vector.
 
-1.  If you have not already, `cd` into the lab's `wordpress` directory.
+1.  If you have not already, clone the lab and `cd` into the lab's `wordpress` directory.
 
    ```
-   $ cd dockercon-workshop/apparmor/wordpress
+   $ git clone https://github.com/docker/labs.git
+   $ cd labs/security/apparmor/wordpress
    ```
 
 2.  List the files in the directory.
