@@ -45,10 +45,10 @@ Docker has used seccomp since version 1.10 of the Docker Engine.
 
 Docker uses seccomp in *filter mode* and has its own JSON-based DSL that allows you to define *profiles* that compile down to seccomp filters. When you run a container it gets the default seccomp profile unless you override this by passing the `--security-opt` flag to the `docker run` command.
 
-The following example command starts an interactive container based off the Alpine image and starts a shell process. It also applies the `default.json` seccomp profile to it.
+The following example command starts an interactive container based off the Alpine image and starts a shell process. It also applies the seccomp profile described by `<profile>.json` to it.
 
    ```
-   $ sudo docker run -it --rm --security-opt seccomp=default.json alpine sh ...
+   $ sudo docker run -it --rm --security-opt seccomp=<profile>.json alpine sh ...
    ```
 
 The above command sends the JSON file from the client to the daemon where it is compiled into a BPF program using a [thin Go wrapper around libseccomp](https://github.com/seccomp/libseccomp-golang).
@@ -75,7 +75,7 @@ In this step you will clone the lab's GitHub repo so that you have the seccomp p
    $ cd labs/security/seccomp
    ```
 
-The remaining steps in this lab will assume that you are running commands from this `dockercon-workshop/seccomp` directory. This will be important when referencing the seccomp profiles on the various `docker run` commands throughout the lab.
+The remaining steps in this lab will assume that you are running commands from this `labs/security/seccomp` directory. This will be important when referencing the seccomp profiles on the various `docker run` commands throughout the lab.
 
 # <a name="test"></a>Step 2: Test a seccomp profile
 
