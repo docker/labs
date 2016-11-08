@@ -22,4 +22,4 @@ This feature works with the `overlay` driver in Swarm mode only and can be enabl
 
 The Swarm leader periodically regenerates a symmetrical key and distributes it securely to all cluster nodes. This key is used by IPsec to encrypt and decrypt data plane traffic. The encryption is implemented via IPSec in host-to-host transport mode using AES-GCM.
 
-Next: **[IP Address Management](IP Address Management)**
+Next: **[IP Address Management](12-ipaddress-management.md)**
