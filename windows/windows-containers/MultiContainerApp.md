@@ -67,8 +67,8 @@ You can find more details in the [Docker Compose documentation](https://docs.doc
   - `db` is a Microsoft SQL Express image official image from Microsoft.
     - The password for `db` is set to `Password1` (obviously only for a developer environment).
     - Port 1433 on the host is mapped to the exposed port 1433 in the container which is used for debugging.
-  -  `web` is build from `Dockerfile.windows`. 
-    - Compose passes along an evironment variable which defines where the database is and how to connect to it. Notice that we can just refer to the database as `db` and Compose will allow `web` to discover the service there.
+  -  `web` is built from `Dockerfile.windows`. 
+    - Compose passes along an environment variable which defines where the database is and how to connect to it. Notice that we can just refer to the database as `db` and Compose will allow `web` to discover the service there.
     - The port 5000 is mapped to the exposed port 5000 in the container.
   - The two services are added to an existing network, named `nat`.
 
