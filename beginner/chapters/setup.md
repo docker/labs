@@ -12,7 +12,7 @@ The *getting started* guide on Docker has detailed instructions for setting up D
 
 *Important note* If you're using an older version of Windows or MacOS you may need to use [Docker Machine](https://docs.docker.com/machine/overview/) instead.
 
-*All commandline work in either bash or Powershell on Windows*
+*All commands work in either bash or Powershell on Windows*
 
 Once you are done installing Docker, test your Docker installation by running the following:
 ```
