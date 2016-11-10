@@ -74,7 +74,7 @@ What you see above is a list of all containers that you ran. Notice that the `ST
 $ docker run -it alpine /bin/sh
 / # ls
 bin      dev      etc      home     lib      linuxrc  media    mnt      proc     root     run      sbin     sys      tmp      usr      var
-/ # uname-a
+/ # uname -a
 Linux 97916e8cb5dc 4.4.27-moby #1 SMP Wed Oct 26 14:01:48 UTC 2016 x86_64 Linux
 ```
 Running the `run` command with the `-it` flags attaches us to an interactive tty in the container. Now you can run as many commands in the container as you want. Take some time to run your favorite commands.
