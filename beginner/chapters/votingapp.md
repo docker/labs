@@ -109,9 +109,9 @@ This Compose file defines
 - A .NET based worker app based on a .NET image
 - A Postgres container based on a postgres image
 
-Note that three of the containers are built from Dockerfiles, while the other two are images on Docker Hub. To learn more about how they're built, you can examine each of the Dockerfiles in the three directories: `vote`, `result`, `worker`. 
+Note that three of the containers are built from Dockerfiles, while the other two are images on Docker Hub. To learn more about how they're built, you can examine each of the Dockerfiles in the three directories: `vote`, `result`, `worker`. Also note that there's a version number at the top. The current version of the Compose file is 2. 
 
-The Compose file also defines two networks, front-tier and back-tier. Each container is placed on one or two networks. Once on those networks, they can access other services on that network in code just by using the name of the service. To learn more about networking check out the [Networking with Compose documentation](https://docs.docker.com/compose/networking/).
+The Compose file also defines two networks, front-tier and back-tier. Each container is placed on one or two networks. Once on those networks, they can access other services on that network in code just by using the name of the service. Services can be on any number of networks. Services are isolated on their network. Services are only able to discover each other by name if they are on the same network. To learn more about networking check out the [Networking with Compose documentation](https://docs.docker.com/compose/networking/).
 
 To launch your app navigate to the example-voting-app directory and run the following command:
 

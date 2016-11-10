@@ -1,5 +1,5 @@
 ## 1.0 Running your first container
-Now that you have everything setup, it's time to get our hands dirty. In this section, you are going to run a [Alpine Linux](http://www.alpinelinux.org/) container (a lightweight linux distribution) on our system and get a taste of the `docker run` command.
+Now that you have everything setup, it's time to get our hands dirty. In this section, you are going to run an [Alpine Linux](http://www.alpinelinux.org/) container (a lightweight linux distribution) on your system and get a taste of the `docker run` command.
 
 To get started, let's run the following in our terminal:
 ```
@@ -39,12 +39,6 @@ $ docker run alpine echo "hello from alpine"
 hello from alpine
 ```
 OK, that's some actual output. In this case, the Docker client dutifully ran the `echo` command in our alpine container and then exited it. If you've noticed, all of that happened pretty quickly. Imagine booting up a virtual machine, running a command and then killing it. Now you know why they say containers are fast!
-
-Try another command.
-```
-$ docker run alpine uptime
-00:16:48 up  1:48,  0 users,  load average: 0.00, 0.01, 0.04
-```
 
 Try another command.
 ```
