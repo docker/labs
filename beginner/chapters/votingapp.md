@@ -43,6 +43,21 @@ substituting two options of your choice. For instance:
 option_a = os.getenv('OPTION_A', "Java")
 option_b = os.getenv('OPTION_B', ".NET")
 ```
+
+You will also have to change ```example-voting-app/result/views/index.html``` to your choices:
+
+```
+ <div class="choice cats">
+            <div class="label">Cats</div>
+            <div class="stat">{{aPercent | number:1}}%</div>
+          </div>
+          <div class="divider"></div>
+          <div class="choice dogs">
+            <div class="label">Dogs</div>
+            <div class="stat">{{bPercent | number:1}}%</div>
+          </div>
+        </div>
+```
 #### 3.2.2 Running your app
 Now, run your application. To do that, we'll use [Docker Compose](https://docs.docker.com/compose). Docker Compose is a tool for defining and running multi-container Docker applications. With Compose, you define a `.yml` file that describes all the containers and volumes that you want, and the networks between them. In the example-voting-app directory, you'll see a `docker-compose.yml file`:
 
