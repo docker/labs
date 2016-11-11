@@ -9,36 +9,28 @@
 
 ### Getting Started
 
-In Eclipse, clone the [registration-docker](https://github.com/spara/registration-docker.git) repository
+On the command line clone the [registration-docker](https://github.com/spara/java-debugging.git) repository
 
-`File`> `Import`
-Select `Git`> `Projects`> `Next`
+```
+git clone https://github.com/spara/java-debugging.git
+```
 
-![](images/eclipse_git_import_repo2.png)
+In Eclipse, import the app directory of that project as an existing maven project
 
-Select `Clone URI`> `Next`
+`File`> `Import` Select `Maven`> `Existing Maven Projects`> `Next`
 
-![](images/eclipse_git_clone_uri2.png)
+![](images/eclipse_import_existing_maven_project_1.png)
+ 
+ 
+Select the app subdirectory of the directory where you cloned the project.
+ 
+![](images/eclipse_import_existing_maven_project_2.png)
+ 
+ 
+Select the pom.xml from the app directory, click `Finish`. 
+ 
+![](images/eclipse_import_existing_maven_project_3.png)
 
-Enter the [`repositoryurl`](https://github.com/spara/registration-docker.git)> `Next`
-
-![](images/eclipse_git_repo_uri2.png)
-
-`Select the master branch`> `Next`
-
-![](images/eclipse_git_select_branch2.png)
-
-`Enter the destination directory`> `Next`
-
-![](images/eclipse_git_local_destination2.png)
-
-Select the import wizard, `Import existing Eclipse project`> `Next`
-
-![](images/eclipse_git_import_wizard2.png)
-
-Select `registration-docker`> `Finish`
-
-![](images/eclipse_git_import_project2.png)
 
 ### Building the application
 
