@@ -16,7 +16,7 @@ In IntelliJ, clone the repository. Click on `Check out from Version Control` > `
 If this the first time to use IntelliJ with Github, log into your Github account.
 ![](images/intelliJ_git_login.png)
 
-Clone the repository [registration-docker](https://github.com/spara/registration-docker.git).
+Clone the repository [registration-docker](https://github.com/spara/java-debugging.git).
 
 ![](images/intelliJ_git_clone_repository.png)
 Click on `Import project from external model`, select `Maven`. Click `Next`
