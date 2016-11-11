@@ -11,7 +11,7 @@
 Using your git client clone the repository.
 
 ```
-git clone https://github.com/spara/registration-docker.git
+git clone https://github.com/spara/java-debugging.git
 ```
 
 Open NetBeans IDE, Click on `Open Project...`
