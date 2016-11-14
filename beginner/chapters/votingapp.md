@@ -153,11 +153,11 @@ You are all set now. Navigate to each of the directories where you have a Docker
 In order to build the images, make sure to replace `<YOUR_DOCKER_ID>` with your *Docker Hub username* in the following commands:
 
 ```
-$ docker build --no-cache -t <YOUR_DOCKER_ID>/votingapp_voting-app .
+$ docker build --no-cache -t <YOUR_DOCKER_ID>/votingapp_voting-app vote
 ...
-$ docker build --no-cache -t <YOUR_DOCKER_ID>/votingapp_result-app .
+$ docker build --no-cache -t <YOUR_DOCKER_ID>/votingapp_result-app result
 ...
-$ docker build --no-cache -t <YOUR_DOCKER_ID>/votingapp_worker .
+$ docker build --no-cache -t <YOUR_DOCKER_ID>/votingapp_worker worker
 ```
 
 #### 3.2.4 Push images to Docker Hub
