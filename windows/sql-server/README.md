@@ -16,7 +16,7 @@ You'll learn how to:
 
 ### Prerequisites
 
-You'll need [Docker for Windows](https://docs.docker.com/docker-for-windows/), or Docker running natively on [Windows 10](https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_10) or [Windows Server 2016](https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_server).
+You'll need Docker running on Windows. You can follow the [Windows Container Lab Setup](https://github.com/docker/labs/blob/master/windows/windows-containers/Setup.md) to install  Docker on Windows 10, or Windows 2016 - locally, on AWS and Azure.
 
 You should be familiar with the key Docker concepts, and with Docker volumes:
 
