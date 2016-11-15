@@ -11,7 +11,8 @@
 Using your git client clone the repository.
 
 ```
-git clone https://github.com/spara/java-debugging.git
+git clone https://github.docker.com/labs
+cd labs/developer-tools/java-debugging
 ```
 
 Open NetBeans IDE, Click on `Open Project...`
