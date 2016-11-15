@@ -1,0 +1,5 @@
+#SSDT 
+
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
