@@ -9,10 +9,11 @@
 
 ### Getting Started
 
-On the command line clone the [registration-docker](https://github.com/spara/java-debugging.git) repository
+On the command line clone the [registration-docker](https://github.com/docker/labs) repository
 
 ```
-git clone https://github.com/spara/java-debugging.git
+git clone https://github.com/docker/labs
+cd labs/developer-tools/java-debugging
 ```
 
 In Eclipse, import the app directory of that project as an existing maven project
