@@ -2,6 +2,10 @@
 
 In September 2016, Microsoft announced the general availability of Windows Server 2016, and with it, Docker engine running containers natively on Windows. This tutorial describes how to get setup to run Docker Windows Containers on Windows 10 or using a Windows Server 2016 VM.
 
+###If you are developing locally, you must be running Windows 10 pro or Windows 2016 in a virtual machine to be able to use this tutorial
+If you can develop in the cloud, you must run on a Windows 2016 VM
+
+
 This tutorial consists of three parts:
 
 1. [Setup](Setup.md "Setup"): Making sure your development environment is properly set-up to work with Windows Containers.
