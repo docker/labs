@@ -16,12 +16,7 @@ In IntelliJ, clone the repository. Click on `Check out from Version Control` > `
 If this the first time to use IntelliJ with Github, log into your Github account.
 ![](images/intelliJ_git_login.png)
 
-+On the command line clone the [registration-docker](https://github.com/docker/labs) repository
-  		  
- -`File`> `Import`		 +```
- -Select `Git`> `Projects`> `Next`		 +git clone https://github.com/docker/labs
- -		 +cd labs/developer-tools/java-debugging
- -![](images/eclipse_git_import_repo2.png)		 +```
+On the command line clone the [docker/labs](https://github.com/docker/labs) repository
  
 ![](images/intelliJ_git_clone_repository.png)
 Click on `Import project from external model`, select `Maven`. Click `Next`
