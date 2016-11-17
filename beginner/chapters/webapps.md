@@ -184,6 +184,8 @@ Start by creating a directory called ```flask-app``` where we'll create the foll
 - [templates/index.html](#templatesindexhtml)
 - [Dockerfile](#dockerfile)
 
+Make sure to ```cd flask-app``` before you start creating the files, because you don't want to start adding a whole bunch of other random files to your image.
+
 #### app.py
 Create the **app.py** with the following content:
 
