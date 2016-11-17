@@ -84,7 +84,7 @@ $ docker run --name static-site-2 -e AUTHOR="Your Name" -d -p 8888:80 seqvence/s
 
 To deploy this on a real server you would just need to install Docker, and run the above `docker` command(as in this case you can see the `AUTHOR` is Docker which we passed as an environment variable).
 
-Now that you've seen how to run a webserver inside a Docker image, how do you create your own Docker image? This is the question we'll explore in the next section.
+Now that you've seen how to run a webserver inside a Docker container, how do you create your own Docker image? This is the question we'll explore in the next section.
 
 But first, let's stop and remove the containers since you won't be using them anymore.
 
