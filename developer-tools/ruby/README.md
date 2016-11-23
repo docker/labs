@@ -1,24 +1,21 @@
 # Rails on Docker
 
-Note: many issues listed below are not specific to Rails or to Ruby. They can also exist in other languages or web frameworks presenting similar challeneges. It is important to note these challenges, because they can impede the workflow and best practices taught and used by Rails practitioners.
+Ruby on Rails is a popular web application framework. Implementng RoR in containers presents challenges because of conflicting workflows and practices between Ruby on Rails and container based development. Developing RoR applications in containers is feasible keeping in mind that these differences can be overcome by changing workflows and practices.
 
 ## Challenges and Remediations
 
 ### Different versions of Ruby
 
-There are many different versions of Ruby in use. This is very unique, in that, in the Python world, you have many versions, but almost everyone will be using the last 2.X or the last 3.X. In the Java world, most use cases are covered by the last two major releases of either Java released by Oracle or on OpenJDK. 
+There are many different versions of Ruby in use. Ruby applications can be based on 1.8, 1.9, 2.0 and all intermediary versions up to the latest release. This includes "upstream" Ruby but also REE (an "Enterprise Edition" set of patches, for older versions of Ruby), and a number of "Ruby on X" ports: JRuby (on top of the JVM), IronRuby (on top of .NET), Maglev, Rubinius, RubyMotion, and more. 
 
-Ruby applications can be based on 1.8, 1.9, 2.0 and all intermediary versions all the way to 2.3. This includes "upstream" Ruby but also REE (an "Enterprise Edition" set of patches, for older versions of Ruby), and a number of "Ruby on X" ports: JRuby (on top of the JVM), IronRuby (on top of .NET), Maglev, Rubinius, RubyMotion, and more.
+In contrast, there are also many many versions of Python in use, but the majority of applications use the lastest 2.X or 3.X versions. Simialrly, Java applications use the last two major releases of either Java released by Oracle or OpenJDK. 
 
-Earlier versions are used in production because upgrading presentes challenges such as critical gems are not backward-compatible. Debugging tools like pry, rubocop, byebug... do work on many versions, but not consistently on all Ruby verisons.
+Earlier versions of Ruby are used in production because upgrading presents challenges such as, critical gems are not backward-compatible. Debugging tools like pry, rubocop, byebug... do work on many versions, but not consistently on all Ruby verisons.
 
-As a result, most Ruby programmers (and people deploying Ruby apps) rely on tools like [rvm](https://rvm.io/) or [rbenv](https://github.com/rbenv/rbenv) to install a specific version of Ruby. These tools enable developers to switch between different versions of Ruby, and between different sets of gems (when different applications have conflicting requirements).
+As a result, Ruby developers (and people deploying Ruby apps) rely on tools like [rvm](https://rvm.io/) or [rbenv](https://github.com/rbenv/rbenv) to install a specific version of Ruby. These tools enable developers to switch between different versions of Ruby, and between different sets of gems (when different applications have conflicting requirements).
 
-Ruby programmers expect to be able to request a specific version of Ruby on demand. This is not currently available on Docker Hub and developers will have to create Dockerfiles that are specific to development environment requirements.
+Ruby programmers expect to be able to request a specific version of Ruby on demand. This is not currently available on Docker Hub and developers will have to create Dockerfiles that are specific to development environment requirements. Docker Hub currently has Ruby 2.1, 2.2, 2.3; which means the images on Docker Hub can support newer applications.  However, migrating older applications to a container may require custom builds to meet Ruby version requirements.
 
-Docker Hub currently has Ruby 2.1, 2.2, 2.3; which means the images on Docker Hub can support newer applications.  However, migrating older applications to a container will require custom builds.
-
-Ruby is avalable on [Docker Hub](https://hub.docker.com/_/ruby/)
 
 #### Use RVM to manage Ruby Versions
 
@@ -133,14 +130,8 @@ Setting the RAILS_ENV environment variable switches between environments. Each e
 * a different set of gems (you don't have the debugging tools in production),
 * a different way to handle static assets (you don't precompile JS, CSS, etc. in dev),
 * a different database (at least a different server, but sometimes a totally different engine),
-* a bunch of things that behave differently (e.g. in test a bunch of things are replaced by mocks),
-* etc.
 
-This architecture does not fit within the Docker model for the reasons listed below.
-
-#### RAILS_ENV and Testing
-
-There isn't a clear solution for testing environments. It is common practice to load extra gems in the testing environment (e.g. capybara, to simulate a browser environment). The traditional Docker approach would be to have two images, production and testing, the latter extending the former. This could be implemented with a Gemfile (used for all environments) and Gemfile.testing, and Dockerfile (used for production) and Dockerfile.testing (which would be identical to Dockerfile, except for a couple of lines handling Gemfile.testing); but even if that worked fine, it would require a significant change in the workflow for people accustomed to traditional Gemfile handling (in which statements delineate clearly which gem sets are used in which environments).
+This architecture is not the standard Docker model, but works well for Ruby development practices.
 
 ### Assets Pipeline
 
@@ -163,8 +154,7 @@ The assets pipeline has an extra challenge: when pre-compiling assets, the whole
 
 #### RAILS_ENV and Assets Pipeline
 
-This requires a radical change in the workflow. Instead of handling dev and production differently, it makes more sense to have a single environment (it is more the "Docker way"), and always compute assets on the fly. To avoid overloading the app server with assets compilation, a caching web server can be used. Some people use Squid or Varnish for this, but in this specific scenario, since expiration doesn't need to be handled, NGINX can do the job very well.
-
+This requires a departure from the typical Ruby workflow. Having a single environment that always compute assets on the fly is the typical Docker pattern, instead of handling dev and production separately. To avoid overloading the app server with assets compilation, a caching web server can be used such asSquid or Varnish. In this specific scenario, since expiration is not a concern, NGINX can adequately address the issue of computing assets on the fly.
 
 ### App Server vs Web Server
 
@@ -177,15 +167,17 @@ Sometimes the app server is a module in the web server. While the latter seems s
 There are at minimum four possibilities for app server and web server containerization, each with their pros and cons:
 
 * app server and web server in separate containers, assets pre-compiled at build time: this achieves clean separation, and efficient handling of assets; but the assets have to be built in the app server, then extracted to be copied to the web server before building the web server image; moreover, the database has to be available at build time;
+
 * app server and web server in separate containers, assets pre-compiled at run time, placed in a volume: this achieves clean separation; there is a transient period (just after deployment) where assets have yet to be built, and the service is not fully operational; so zero-downtime deployment requires extra steps; since the assets are built at run-time, database availability is not an issue;
+
 * app server and web server in separate processes but in the same container: this considerably simplifies asset handling (though database availability remains an issue), but it requires using a process manager in the container, since we're running two independent processes in the same container;
+
 * app server and web server in the same process (and in the same container): this obviates the question of whether to put them in separate containers or not, but it is much less flexible, since it reduces the choice of app servers down to Passenger and mod_ruby. Also, configuration becomes a bit trickier (but admittedly, this should be a one-time cost).
 
-In short, there is no "good" solution here: while the single process model is simpler, some apps rely on the specific behavior of e.g. Unicorn, while others leverage Thin's async event model, etc.
 
 ### Database Migrations
 
-Rails has a sophisticated database migration mechanism, helping operators to ensure that the database schema is exactly like it should be, i.e. in sync with ActiveRecord models as they are declared in the application code. This is not a problem per se and Rails even comes with a few functions to run migrations in a rather safe way, i.e. "bring up the database schema to what it should be, no matter what."
+Rails has a sophisticated database migration mechanism, helping operators to ensure that the database schema is exactly in sync with ActiveRecord models as they are declared in the application code. This is not a problem and Rails even comes with a few functions to run migrations in a rather safe way, i.e. "bring up the database schema to what it should be, no matter what."
 
 However, this mechanism hasn't been designed with automation in mind. The typical workflow when deploying a Rails app is to execute Capistrano from a central machine. Capistrano will distribute the new version of the code, pre-compile assets, execute database migrations, and so on. But in a container-based environment, there is no central machine. If migrations are executed by the app container, in a scaled environment, you end up with multiple migrations running at the same time. This requires some extra rules.
 
@@ -206,13 +198,13 @@ This is probably not optimal (especially from a concurrent execution point of vi
 
 #### Containers and Database Access
 
-As indicated above, many things (including asset pre-compilation) require database access, even though 99% of the time, it is unnecessary.
-Heroku veterans told me that their solution had been to mock the database presence when running specific things (like assets pre-compilation) to let those steps run without the database.
+As indicated above, many things (including asset pre-compilation) require database access, even though it is frequently unnecessary. Heroku veterans told me that their solution had been to mock the database presence when running specific things (like assets pre-compilation) to let those steps run without the database.
 
-## Thanks and acknowledgements
+## Resources
 
-Thank all the people who helped navigate around the Ruby and Rails jungles; in particular:
+Here are additional sources to checkout. 
 
-* AJ Bowen from Voteraide
-* Laura Frank from Codeship,
-* Noah Zoschke from Convox.
+* [Ruby on Docker Hub](https://hub.docker.com/_/ruby/)
+* [Compose and Rails Quickstart](https://docs.docker.com/compose/rails/)
+* [Rails & Assets with Docker](http://red-badger.com/blog/2016/06/22/docker-and-assets-and-rails-oh-my/)
+* [Docker on Rails Demo](https://github.com/cpuguy83/docker-rails-dev-demo)
