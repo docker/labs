@@ -19,7 +19,7 @@ This repo contains [Docker](https://docker.com) labs and tutorials authored both
 
 
 #### Community tutorials
-* [Docker Tutorials from the Community](https://github.com/docker/community/blob/master/tutorials/docker-tutorials.md) - links to a different repository
+* [Docker Tutorials from the Community](https://github.com/docker/community/tree/master/Docker-Meetup-Content) - links to a different repository
 * [Advanced Docker orchestration workshop] (https://github.com/docker/labs/tree/master/Docker-Orchestration) - links to a different repository
 
 For more information on Docker, see the Official [Docker documentation](https://docs.docker.com).
