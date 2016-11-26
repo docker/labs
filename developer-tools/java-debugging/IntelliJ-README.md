@@ -51,7 +51,7 @@ The application is built using Maven. To build the application click on icon on 
 
 ![](images/intellij_maven_setup.png)
 
-The `Maven Projects` window will open ont the right side. Maven goals of `clean` and `install` need to be set to build the application.
+The `Maven Projects` window will open on the right side. Maven goals of `clean` and `install` need to be set to build the application.
 
 To set the `clean` goal, click on `Lifecycle` to display the tree of goals. Right click on `clean` and select `Create 'UserSignup [clean]'...`
 
@@ -77,7 +77,7 @@ Then run `install`
 
 ![](images/intellij_maven_goal_install_run.png)
 
-When the application builds you will see a success message in the log window.
+When the application builds, you will see a success message in the log window.
 
 ![](images/intellij_maven_goal_install_log.png)
 
@@ -87,7 +87,7 @@ Open a terminal and go to the application directory. Start the application with 
 
 <pre>&gt; docker-compose up </pre>
 
-Docker will build the images for Apache Tomcat and MySQL and start the containers. It will also mount the application directory (`./app/target/UserSignup`) as a data volume on the host system to the Tomcat webapps directory in the web server container.
+Docker will build the images for Apache Tomcat and MySQL then start the containers. It will also mount the application directory (`./app/target/UserSignup`) as a data volume on the host system to the Tomcat webapps directory in the web server container.
 
 Open a browser window and go to:
 'localhost:8080'; you should see the Tomcat home page
@@ -134,13 +134,13 @@ Add a new remote configuration.
 
 ![](images/intellij_debug_add_remote_configuration.png)
 
-In the `Run\Debug Configurations` window, set the `Name` of the configuration and in `Settings` set the port to '8000' the default Tomcat JPDA debuging port. Clcik on `OK` to save the configuration.
+In the `Run\Debug Configurations` window, set the `Name` of the configuration as `docker tomcat` and in `Settings` set the port to '8000' as the default Tomcat JPDA debuging port. Click on `OK` to save the configuration.
 
 ![](images/intellij_debug_tomcat_remote_settings.png)
 
 #### Finding the Error
 
-Since the problem is with the password, lets see how the password is set in the User class. In the User class, the setter for password is scrambled using [rot13](https://en.wikipedia.org/wiki/ROT13) before it is saved to the database.
+Since the problem is with the password, let's see how the password is set in the User class. In the User class, the setter for password is scrambled using [rot13](https://en.wikipedia.org/wiki/ROT13) before it is saved to the database.
 
 ![](images/intellij_debug_User_password.png)
 
@@ -152,7 +152,7 @@ Choose the remote Tomcat debug configuration. The Debugger console will be displ
 
 ![](images/intellij_debug_choose_remote_tomcat.png)
 
-Set a breakpoint for in the User class where the password is set.
+Set a breakpoint in the User class where the password is set.
 
 ![](images/intellij_debug_set_breakpoint_password.png)
 
