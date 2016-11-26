@@ -18,7 +18,7 @@ If this the first time to use IntelliJ with Github, log into your Github account
 
 On the command line clone the [docker/labs](https://github.com/docker/labs) repository
  
-![](images/intelliJ_git_clone_repository.png)
+![](images/intelliJ_git_clone_repository1.png)
 Click on `Import project from external model`, select `Maven`. Click `Next`
 
 ![](images/intellij_github_import_maven.png)
@@ -31,7 +31,7 @@ Select the project and click `Next`
 
 ![](images/intellij_github_import_maven_select.png)
 
-Select the JDK and click `Next`
+Select the JDK(set the `JDK home path`) and click `Next`
 
 ![](images/intellij_github_import_select_sdk.png)
 
