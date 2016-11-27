@@ -8,7 +8,7 @@ We welcome issues and pull requests for either adding a new tutorial, or fixing 
 
 Anything you contribute will be under an Apache license. Docker will choose which tutorials to accept and reject, and will be able to take any tutorials here and put them in Docker documentation. Likewise, anything posted here may be forked by anyone on GitHub.
 
-We will be following the a lightweight version of the Docker contribution policies and procedures as explained in
+We will be following the lightweight version of the Docker contribution policies and procedures as explained in
 - [Docker documentation](https://docs.docker.com)
 - The [Docker engine repo](https://github.com/docker/docker/blob/master/CONTRIBUTING.md).
 
