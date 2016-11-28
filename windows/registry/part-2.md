@@ -92,7 +92,7 @@ d6826c28b1cd: Pushed
 nanoserver: digest: sha256:961497c5ca49dc217a6275d4d64b5e4681dd3b2712d94974b8ce4762675720b4 size: 1149
 ```
 
-> Note. The two layers from Microsoft's base image are skipped - they don't get stored in the local registry, because the image is not freely redistributable. Track [GitHub issue 27580]( https://github.com/docker/docker/issues/27580) to see if a resolution is found.
+> Note. The two layers from Microsoft's base image are skipped - they don't get stored in the local registry, because the image is not freely redistributable. Check [GitHub issue 27580]( https://github.com/docker/docker/issues/27580) for more information.
 
 On the local machine, you can remove the new image tag and the original image, and pull it again from the local registry to verify it was correctly stored:
 
