@@ -148,7 +148,7 @@ $ ssh -L 5000:localhost:5000 <ssh-user>@<CLOUD_INSTANCE_IP_ADDRESS>
 
 #### 3.2.3 Build and tag images
 
-You are all set now. Navigate to each of the directories where you have a Dockerfile to build and tag your images that you want to submit.
+You are all set now. Build and tag your images that you want to submit.
 
 In order to build the images, make sure to replace `<YOUR_DOCKER_ID>` with your *Docker Hub username* in the following commands:
 
