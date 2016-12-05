@@ -1,5 +1,5 @@
 # escape=`
-FROM microsoft/mssql-server-2016-express-windows
+FROM microsoft/mssql-server-windows-express
 MAINTAINER Elton Stoneman <elton@docker.com>
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
