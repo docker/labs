@@ -1,8 +1,8 @@
 # HTTP Routing Mesh (HRM)
 
-> **NOTE TO MIKE/BETTY:** This lab assumes two things.
-    >1. DNS name resolution is configured for red.example.com and white.example.com to point to a load balancer.  I'll leave the specifics out as this will be dependent on AWS vs Azure vs DO etc. But it could be as simple as entries in the local hosts file on each lab machine - if you did this, the lab machines/users laptops would be where the mappings are needed, not the AWS instances.
-    >2. An external load balancer has been configured to accept connections for the two DNS names above and to load balance across all nodes in a UCP cluster.
+> **NOTE:** This lab assumes two things.
+    >1. You have configured DNS name resolution for red.example.com and white.example.com to point to a load balancer. This name resolution is required for your laptop/desktop and not the Docker nodes that will make up your UCP cluster. Therefore, it can be as simple as a couple of entries in the local `hosts` file of your laptop or desktop. As long as your web browser can resolve red.example.com and white.example.com to a load balancer in front of your Swarm this lab will work.
+    >2. You have configured an external load balancer to accept connections for the two DNS names above and to load balance across all nodes in a UCP cluster.
 
 
 # Lab Meta
@@ -31,9 +31,7 @@ You will need all of the following to complete this lab:
 
 Your instructor will provide you with the details you require.
 
-> **MIKE** This next note can be removed if you go with local name resolution for red.example.com and white.example.com.
-
-> **NOTE:** Throughout this guide we will use *red.example.com* and *white.example.com*. The DNS names in your lab will be different and your instructor will provide you details. This means that any time you see *red.example.com* and *white.example.com* you will need to substitute these for *red.<your-domain-goes-here>* and *white.your-domain-goes-here>*.
+> **NOTE:** Throughout this guide we will use *red.example.com* and *white.example.com*. As per the note above, you will need to configure this yourself. You can also substitute other names if you like.That would mean that any time you see *red.example.com* and *white.example.com* you will need to substitute these for *red.* and *white.<your-domain-goes-here>*.
 
 
 # <a name="enable_hrm"></a>Step 1: Enable the HTTP Routing Mesh (HRM)
@@ -115,7 +113,7 @@ You now have two services running. Both are connected to the `ucp-hrm` network a
 
 # <a name="test"></a>Step 5: Test the configuration
 
-> **NOTE TO MIKE: DNS name resolution is required for this step. This can obviously be via the local hosts file, but this step will not work unless the URLs specified in the `com.docker.ucp.mesh.http` labels resolve to the UCP cluster nodes (probably via a load balancer).**
+> **NOTE: DNS name resolution is required for this step. This can obviously be via the local hosts file, but this step will not work unless the URLs specified in the `com.docker.ucp.mesh.http` labels resolve to the UCP cluster nodes (probably via a load balancer).**
 
 In this step you will use your web browser to issue HTTP requests to `red.example.com` and `white.example.com`. DNS name resolution is configured so that these URLs resolve to a load balancer which in turn balances requests across all nodes in the UCP cluster.
 
