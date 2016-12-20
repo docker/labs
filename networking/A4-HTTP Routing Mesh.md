@@ -42,7 +42,7 @@ Your instructor will provide you with the details you require.
 
 3. Navigate to `Admin Settings` > `Routing Mesh` and enable the HTTP Routing Mesh (HRM) on port 80.
 
-   ![](img/enable-hrm.png)
+   ![](concepts/img/enable-hrm.png)
 
 The HRM is now configured and ready to use.
 

@@ -1,4 +1,4 @@
-# Docker Reference Architecture: Designing Scalable, Portable Docker Container Networks
+# Designing Scalable, Portable Docker Container Networks
 
 ## What You Will Learn
 
@@ -14,6 +14,10 @@ Before continuing, being familiar with Docker concepts and Docker Swarm is recom
 - [Docker Swarm](https://docs.docker.com/engine/swarm/) and the newly introduced [Swarm mode concepts](https://docs.docker.com/engine/swarm/key-concepts/#/services-and-tasks)
 
 ### Networking concepts
-This tutorial allows you to dive right in and try code in the [Tutorials](tutorials.md) section.
+This tutorial allows you to dive right in and try code in the [Quick Tutorials](tutorials.md) section, or deep dive into this series of tutorials:
+1. [Networking Basics](A1-network-basics.md)
+1. [Bridge Networking](A2-bridge-networking.md)
+1. [Overlay Networking](A3-overlay-networking.md)
+1. [HTTP Routing Mesh](A4-HTTP Routing Mesh.md)
 
 Or you can first dive deep into the [Network Concepts](concepts/) before trying in out in code yourself.
