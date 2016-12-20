@@ -15,6 +15,7 @@ Before continuing, being familiar with Docker concepts and Docker Swarm is recom
 
 ### Networking concepts
 This tutorial allows you to dive right in and try code in the [Quick Tutorials](tutorials.md) section, or deep dive into this series of tutorials:
+
 1. [Networking Basics](A1-network-basics.md)
 1. [Bridge Networking](A2-bridge-networking.md)
 1. [Overlay Networking](A3-overlay-networking.md)
