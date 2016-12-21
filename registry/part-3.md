@@ -92,6 +92,32 @@ Status: Image is up to date for registry.local:5000/hello-world:latest
 
 > Note. The open-source registry does not support the same authorization model as Docker Hub or Docker Trusted Registry. Once you are logged in to the registry, you can push and pull from any repository, there is no restriction to limit specific users to specific repositories.
 
+## Using Docker Compose to Start the Registry
+Typing in all the options to start the registry can become tedious. An easier and simpler way is to use [Docker Compose](https://docs.docker.com/compose/). Here's an example of a `docker-compose.yml` file that will start the registry.
+```
+registry:
+  restart: always
+  image: registry:2
+  ports:
+    - 5000:5000
+  environment:
+    REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+    REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+    REGISTRY_AUTH: htpasswd
+    REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+    REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+  volumes:
+    - /path/registry-data:/var/lib/registry
+    - /path/certs:/certs
+    - /path/auth:/auth
+```
+
+To start the registry, type:
+```
+$ sudo docker-compose up
+```
+
+
 ## Conclusion
 
 [Docker Registry](https://docs.docker.com/registry/) is a free, open-source application for storing and accessing Docker images. You can run the registry in a container on your own network, or in a virtual network in the cloud, to host private images with secure access. For Linux hosts, there is an [official registry image](https://hub.docker.com/_/registry/) on Docker Hub.
