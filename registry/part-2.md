@@ -2,9 +2,8 @@
 
 We saw how to run a simple registry container in [Part 1](part-1.md), using the official Docker registry image. The registry server con be configured to serve HTTPS traffic on a known domain, so it's straightforward to run a secure registry for private use with a self-signed SSL certificate.
 
-## Generating the SSL Certificate
+## Generating the SSL Certificate in Linux
 
-### Create an SSL Certificate in Linux
 The Docker docs explain how to [generate a self-signed certificate](https://docs.docker.com/registry/insecure/#/using-self-signed-certificates) on Linux using OpenSSL:
 
 ```
@@ -29,8 +28,21 @@ State or Province Name (full name) [Some-State]:
 Locality Name (eg, city) []:
 Organization Name (eg, company) [Internet Widgits Pty Ltd]:Docker
 Organizational Unit Name (eg, section) []:
-Common Name (e.g. server FQDN or YOUR name) []:<host name>
+Common Name (e.g. server FQDN or YOUR name) []:<hostname>
 Email Address []:
+```
+If you are running the registry locally, be sure to use your host name as the CN. 
+
+To get the docker daemon to trust the certificate, copy the domain.crt file.
+```
+$ sudo su
+$ mkdir /etc/docker/certs.d
+$ mkdir /etc/docker/certs.d/<localhost>:5000 
+$ cp `pwd`/certs/domain.crt /etc/docker/certs.d/<localhost>:5000/ca.crt
+```
+Make sure to restart the docker daemon.
+```
+$ sudo service docker restart
 ```
 Now we have an SSL certificate and can run a secure registry.
 
@@ -41,15 +53,15 @@ The registry server supports several configuration switches as environment varia
 If you have an insecure registry container still running from [Part 2](part-2.md), remove it:
 
 ```
-> docker kill registry
-> docker rm registry
+$ docker kill registry
+$ docker rm registry
 ```
 
 For the secure registry, we need to run a container which has the SSL certificate and key files available, which we'll do with an additional volume mount (so we have one volume for registry data, and one for certs). We also need to specify the location of the certificate files, which we'll do with environment variables:
 
 ```
-> mkdir registry-data
-> docker run -d -p 5000:5000 --name registry \
+$ mkdir registry-data
+$ docker run -d -p 5000:5000 --name registry \
   --restart unless-stopped \
   -v $(pwd)/registry-data:/var/lib/registry -v $(pwd)/certs:/certs \
   -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
@@ -68,12 +80,11 @@ We'll let Docker assign a random IP address to this container, because we'll be 
 
 ## Accessing the Secure Registry
 
-We're ready to run a secure registry now. 
+We're ready to push an image into our secure registry. 
 ```
-> docker tag hello-world mylocalregistry:5000/hello-world
-> docker push mylocalregistry:5000/hello-world
-> docker pull mylocalregistry:5000/hello-world
-
+$ docker push <hostname>:5000/hello-world
+$ docker pull <hostname>:5000/hello-world
+```
 We can go one step further with the open-source registry server, and add basic authentication - so we can require users to securely log in to push and pull images.
 
 ## Next

@@ -2,111 +2,103 @@
 
 There are several ways to run a registry container. The simplest is to run an insecure registry over HTTP, but for that we need to configure Docker to explicitly allow insecure access to the registry. 
 
-## Testing the Registry Image
+Docker expects all registries to run on HTTPS. The next section of this lab will introduce a secure version of our registry container, but for this part of the tutorial we will run a version on HTTP. When registering a image, Docker returns an error message like this:
+```
+http: server gave HTTP response to HTTPS client
+```
+The Docker Engine needs to be explicitly setup to use HTTP for the insecure registry. Edit or create `/etc/docker/docker` file: 
+```
+$ sudo vi /etc/docker/docker
 
-First we'll test that the registry image is working correctly, by running it without any special configuration:
+# add this line
+DOCKER_OPTS="--insecure-registry <localhost>:5000"
+```
+- where `localhost`0 is the name of your machine, which can be found with the `hostname` command
 
 ```
-docker run -d -p 5000:5000 --name registry registry:latest
+$ hostname
+```
+
+Close and save the file, then restart the docker daemon.
+```
+$ sudo service docker restart
+```
+## Testing the Registry Image
+First we'll test that the registry image is working correctly, by running it without any special configuration:
+```
+$ sudo docker run -d -p 5000:5000 --name registry registry:2
 ```
 ## Understanding Image Names
-
 Typically we work with images from the Docker Hub, which is the default registry for the Docker Engine. Commands using just the image repository name work fine, like this:
-
 ```
-docker pull nginx
+$ sudo docker pull hello-world
 ```
-
-`nginx` is the repository name, which we are using as a short form of the full image name. The full name is `docker.io/nginx:latest`. That breaks down into three parts:
+`hello-world` is the repository name, which we are using as a short form of the full image name. The full name is `docker.io/hello-world:latest`. That breaks down into three parts:
 
 - `docker.io` - the hostname of the registry which stores the image;
-- `nginx` - the repository name, in this case in `{userName}/{imageName}` format;
+- `hello-world` - the repository name, in this case in `{imageName}` format;
 - `latest` - the image tag.
 
 If a tag isn't specified, then the default `latest` is used. If a registry hostname isn't specified then the default `docker.io` for Docker Hub is used. If you want to use images with any other registry, you need to explicitly specify the hostname - the default is always Docker Hub, you can't change to a different default registry.
 
-With a local registry, the hostname is the IP address or `localhost`, and the custom port used by the registry. The full registry address is `localhost:5000`.
+With a local registry, the hostname and the custom port used by the registry is the full registry address, e.g. `<hostname>:5000`. 
+```
+$ hostname
+```
 
 ## Pushing and Pulling from the Local Registry
 
 Docker uses the hostname from the full image name to determine which registry to use. We can build images and include the local registry hostname in the image tag, or use the `docker tag` command to add a new tag to an existing image.
 
-These commands pull a public image from Docker Hub, tag it for use in the private registry with the full name `localhost:5000/labs/nginx`, and then push it to the registry:
+These commands pull a public image from Docker Hub, tag it for use in the private registry with the full name `<hostname>:5000/hello-world`, and then push it to the registry:
 
 ```
-docker pull nginx
-docker tag nginx localhost:5000/labs/nginx:latest
-docker push localhost:5000/labs/nginx:latest
+$ sudo docker tag hello-world <hostname>:5000/hello-world
+$ sudo docker push <hostname>:5000/hello-world
 ```
 
 When you push the image to your local registry, you'll see similar output to when you push a public image to the Hub:
 
 ```
-The push refers to a repository [localhost:5000/labs/nginx]
+The push refers to a repository [<hostname>:5000/hello-world]
 a55ad2cda2bf: Pushed
 cfbe7916c207: Pushed
 fe4c16cbf7a4: Pushed
 latest: digest: sha256:79e028398829da5ce98799e733bf04ac2ee39979b238e4b358e321ec549da5d6 size: 948
 ```
-
 On the local machine, you can remove the new image tag and the original image, and pull it again from the local registry to verify it was correctly stored:
-
 ```
-docker rmi localhost:5000/labs/nginx:latest
-docker rmi nginx:latest
-docker pull localhost:5000/labs/nginx:latest
+$ sudo docker rmi <hostname>:5000/hello-world
+$ sudo docker rmi hello-world
+$ sudo docker pull <hostname>:5000/hello-world
 ```
-
 That exercise shows the registry works correctly, but at the moment it's not very useful because all the image data is stored in the container's writable storage area, which will be lost when the container is removed. To store the data outside of the container, we need to mount a host directory when we start the container.
 
 ## Running a Registry Container with External Storage
-
 Remove the existing registry container by removing the container which holds the storage layer. Any images pushed will be deleted:
-
 ```
-docker kill registry
-docker rm registry
+$  sudo docker kill registry
+$  sudo docker rm registry
 ```
-
 In this example, the new container will use a host-mounted Docker volume. When the registry server in the container writes image layer data, it appears to be writing to a local directory in the container but it will be writing to a directory on the host.
 
-The IP address needs to be specified to use the same IP the previous registry had, because that's what Docker Engine is configured to use, and it's how the images are tagged. The `-v` option maps the host folder, and the `--ip` option specifies an IP address. First, create a network to assign an IP address to the container:
-
-```
-docker network create --driver=bridge \
- --subnet=192.168.127.0/24 --gateway=192.168.127.1 \
- --ip-range=192.168.127.128/25 testbridge
-```
 Create the registry:
 ```
-mkdir registry-data
-docker run -d -p 5000:5000 \ 
+$ mkdir registry-data
+$  sudo docker run -d -p 5000:5000 \ 
 --name registry \
--v registry-data:/var/lib/registry \ 
---network testbridge \
---ip 192.168.127.128 \
+-v `pwd`/registry-data:/var/lib/registry \ 
 registry
 ```
-
-Docker expects all registries to run on HTTPS. The next section of this lab will introduce a secure version of our registry container, but the current version runs on HTTP. When registering a image, Docker returns an error message like this:
-```
-http: server gave HTTP response to HTTPS client
-```
-The Docker Engine needs to be explicitly setup to use HTTP for the insecure registry. This can be set by clicking on ![](images/moby.png) 
-
-`Preferences` 
-![](images/preferences.png)
-`Daemon` > `Insecure registries` and enter the IP address and port of the registry.
-![](images/config_insecure_registry_osx.png)
 Tag and push the container with the new IP address of the registry.
 ```
-docker tag nginx 192.168.127.128:5000/labs/nginx:latest
-docker push 192.168.127.128:5000/labs/nginx:latest
+docker tag hello-world <hostname>:5000/hello-world
+docker push <hostname>:5000/hellow-world
 ```
-Repeating the previous `docker push` command uploads an image to the registry container, and the layers will be stored in the container's `/var/lib/registry` directory, which is actually mapped to the `$(pwd)/registry-data` directory on you local machine. The `tree` command will show the directory structure the registry server uses (if `tree` is not installed in OS X, `find` with also work):
+Repeating the previous `docker push` command uploads an image to the registry container, and the layers will be stored in the container's `/var/lib/registry` directory, which is actually mapped to the `$(pwd)/registry-data` directory on you local machine. The `tree` command will show the directory structure the registry server uses:
 
 ```
-registry-data find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
+$ tree registry-data
 .
 |____docker
 | |____registry
@@ -118,10 +110,7 @@ registry-data find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
 
 ...
 ```
-
 Storing data outside of the container means we can build a new version of the registry image and replace the old container with a new one using the same host mapping - so the new registry container has all the images stored by the previous container.
-
-This container is still limited though. The container is accessible externally using the host's IP address, but that's different from the container's IP address - so you need to use different tags and a different engine configuration for external clients.
 
 Using an insecure registry also isn't practical in multi-user scenarios. Effectively there's no security so anyone can push and pull images if they know the registry hostname. The registry server supports authentication, but only over a secure SSL connection. We'll run a secure version of the registry server in a container next.
 

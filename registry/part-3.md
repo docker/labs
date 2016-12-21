@@ -4,12 +4,12 @@ From [Part 2](part-2.md) we have a registry running in a Docker container, which
 
 ## Usernames and Passwords
 
-The registry server and the Docker client support [basic authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) over HTTPS. The server uses a file with a collection of usernames and encrypted passwords. The file uses a common standard from the Linux world - [Apache htpasswd].
+The registry server and the Docker client support [basic authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) over HTTPS. The server uses a file with a collection of usernames and encrypted passwords. The file uses Apache's htpasswd.
 
-Create the password file with an entry for user "moby" with password "DockerRules";
+Create the password file with an entry for user "moby" with password "gordon";
 ```
-> mkdir auth
-> docker run --entrypoint htpasswd registry:latest -bn moby DockerRules > auth/htpasswd
+$ mkdir auth
+$ sudo docker run --entrypoint htpasswd registry:latest -bn moby gordon > auth/htpasswd
 ```
 The options are:
 
@@ -17,10 +17,10 @@ The options are:
 - -b run in batch mode 
 - -n display results
 
-We can verify the entries have been written by checking the file contents - which should show the usernames in plain text and a cipher text password:
+We can verify the entries have been written by checking the file contents - which shows the user names in plain text and a cipher text password:
 
-```PowerShell
-> cat auth/htpasswd
+```
+$ cat auth/htpasswd
 moby:$apr1$xnxYmr0O$S4HXd0ACkZkpp40YCw/lW/
 ```
 
@@ -31,10 +31,9 @@ Adding authentication to the registry is a similar process to adding SSL - we ne
 As before, we'll remove the existing container and run a new one with authentication configured:
 
 ```
-> docker kill registry
-> docker rm registry
-
-> docker run -d -p 5000:5000 --name registry \
+$ sudo docker kill registry
+$ sudo docker rm registry
+$ sudo docker run -d -p 5000:5000 --name registry \
   --restart unless-stopped \
   -v $(pwd)/registry-data:/var/lib/registry \
   -v $(pwd)/certs:/certs \
@@ -42,12 +41,12 @@ As before, we'll remove the existing container and run a new one with authentica
   -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
   -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
   -e REGISTRY_AUTH=htpasswd \
-  -e REGISTRY_AUTH_HTPASSWD_REALM='Registry Realm' \
-  -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+  -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+  -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
   registry
 ```
 
-The new options for this container are:
+The options for this container are:
 
 - `-v $(pwd)/auth:/auth` - mount the local `auth` folder into the container, so the registry server can access `htpasswd` file;
 - `-e REGISTRY_AUTH=htpasswd` - use the registry's `htpasswd` authentication method;
@@ -60,17 +59,17 @@ Now the registry is using secure transport and user authentication.
 
 With basic authentication, users cannot push or pull from the registry unless they are authenticated. If you try and pull an image without authenticating, you will get an error:
 
-```PowerShell
-> docker pull registry.local:5000/labs/hello-world
+```
+$ sudo docker pull <hostname>:5000/hello-world
 Using default tag: latest
-Error response from daemon: Get https://registry.local:5000/v2/labs/hello-world/manifests/latest: no basic auth credentials
+Error response from daemon: Get https://<hostname>:5000/v2/hello-world/manifests/latest: no basic auth credentials
 ```
 
 The result is the same for valid and invalid image names, so you can't even check a repository exists without authenticating. Logging in to the registry is the same `docker login` command you use for Docker Hub, specifying the registry hostname:
 
-```PowerShell
-> docker login registry.local:5000
-Username: elton
+```
+$ sudo docker login registry.local:5000
+Username: moby
 Password:
 Login Succeeded
 ```
@@ -83,12 +82,12 @@ Error response from daemon: login attempt to https://registry.local:5000/v2/ fai
 
 Now you're authenticated, you can push and pull as before:
 
-```PowerShell
-> docker pull registry.local:5000/labs/hello-world
+```
+$ sudo docker pull <hostname>:5000/hello-world
 Using default tag: latest
-latest: Pulling from labs/hello-world
+latest: Pulling from hello-world
 Digest: sha256:961497c5ca49dc217a6275d4d64b5e4681dd3b2712d94974b8ce4762675720b4
-Status: Image is up to date for registry.local:5000/labs/hello-world:latest
+Status: Image is up to date for registry.local:5000/hello-world:latest
 ```
 
 > Note. The open-source registry does not support the same authorization model as Docker Hub or Docker Trusted Registry. Once you are logged in to the registry, you can push and pull from any repository, there is no restriction to limit specific users to specific repositories.
