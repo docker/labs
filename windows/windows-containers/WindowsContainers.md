@@ -26,7 +26,7 @@ Server:
  OS/Arch:      windows/amd64
 ```
 
-Next, pull a base image that’s compatible with the evaluation build, re-tag it and to a test-run:
+Next, pull a base image that’s compatible with the evaluation build, re-tag it and do a test-run:
 
 ```
 docker pull microsoft/windowsservercore:10.0.14393.321
@@ -58,7 +58,7 @@ Login with `docker login` and then push the image:
 docker push <docker-id>/windows-test-image
 ```
 
-Images stored on Docker Cloud available in the web interface and public images can be pulled by other Docker users.
+Images stored on Docker Cloud are available in the web interface and public images can be pulled by other Docker users.
 
 ### Next Steps
 Continue to Step 3: [Multi-Container Applications](MultiContainerApp.md "Multi-Container Applications")
