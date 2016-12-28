@@ -4,13 +4,13 @@ The SQL Server image will come packaged with the database schema, in the form of
 
 ## Dockerfile for the SQL Server Image
 
-[SQL Server Express](https://www.microsoft.com/en-us/sql-server/sql-server-editions-express) is a free version of SQL Server which is suitable for non-production workloads (and even for production with small-scale workloads). Microsoft  provide a Dockerized version on the Hub: [microsoft/mssql-server-2016-express-windows](https://hub.docker.com/r/microsoft/mssql-server-2016-express-windows/), which we'll use as the basis for our database.
+[SQL Server Express](https://www.microsoft.com/en-us/sql-server/sql-server-editions-express) is a free version of SQL Server which is suitable for non-production workloads (and even for production with small-scale workloads). Microsoft  provide a Dockerized version on the Hub: [microsoft/mssql-server-windows-express](https://hub.docker.com/r/microsoft/mssql-server-windows-express/), which we'll use as the basis for our database.
 
 The Dockerfile starts in the usual way for Windows images:
 
 ```Dockerfile
 # escape=`
-FROM microsoft/mssql-server-2016-express-windows
+FROM microsoft/mssql-server-windows-express
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
 ```
 Next we specify some integration points between the container and the host. We want to be able to access SQL Server on port 1433, we want the database files stored outside of the container, and we want to set a default value for the `sa` user password:

@@ -4,7 +4,7 @@ MAINTAINER Elton Stoneman <elton@docker.com>
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
 
-RUN Install-PackageProvider -Name chocolatey -Force; ` 
+RUN Install-PackageProvider -Name chocolatey -Force; `
     Install-Package -Name microsoft-build-tools -RequiredVersion 14.0.25420.1 -Force; `
     Install-Package dotnet4.6-targetpack -Force
 
