@@ -58,7 +58,7 @@ The `run` command is essentially the same, we just lose the `--rm` option and us
 ```PowerShell
 docker kill assets-db
 mkdir C:\databases\assets
-docker run -d -p 1433:1433 --name assets-db --ip $ip -v C:\databases\assets:C:\database assets-db
+docker run -d --rm -p 1433:1433 --name assets-db --ip $ip -v C:\databases\assets:C:\database assets-db
 ```
 
 When the container has started, you can verify that the new database is created and the files are written to the host directory by listing the contents from the host:
