@@ -8,6 +8,5 @@
     [AssetTag] NVARCHAR(50) NULL, 
     [AssetDescription] NVARCHAR(50) NULL, 
     CONSTRAINT [FK_Assets_To_AssetTypes] FOREIGN KEY ([AssetTypeId]) REFERENCES [AssetTypes]([AssetTypeId]),
-	CONSTRAINT [FK_Assets_To_Locations] FOREIGN KEY ([LocationId]) REFERENCES [Locations]([LocationId]),
-	CONSTRAINT [FK_Assets_To_Users] FOREIGN KEY ([OwnerUserId]) REFERENCES [Users]([UserId])
+	CONSTRAINT [FK_Assets_To_Locations] FOREIGN KEY ([LocationId]) REFERENCES [Locations]([LocationId])
 )
