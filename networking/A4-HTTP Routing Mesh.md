@@ -42,7 +42,7 @@ Your instructor will provide you with the details you require.
 
 3. Navigate to `Admin Settings` > `Routing Mesh` and enable the HTTP Routing Mesh (HRM) on port 80.
 
-   ![](img/enable-hrm.png)
+   ![](concepts/img/enable-hrm.png)
 
 The HRM is now configured and ready to use.
 
@@ -54,13 +54,13 @@ Execute the following steps in the UCP web UI.
 
 1. Navigate to `Resources` > `Networks` and check for the presence of the `ucp-hrm` network. You may have to `search` for it.
 
-    ![](img/hrm-network.png)
+    ![](concepts/img/hrm-network.png)
 
     The network shows as an overlay network scoped to the entire Swarm cluster.
 
 2. Navigate to `Resources` > `Services` and click the checkbox to `Show system services`.
 
-    ![](img/hrm-svc1.png)
+    ![](concepts/img/hrm-svc1.png)
 
   The image above shows the `ucp-hrm` service up and running.
 
@@ -106,7 +106,7 @@ In this step you'll create a new service called **WHITE**. The service will be v
 
 3. Verify that both services are up and running by clicking `Resources` > `Services` and checking that both services are running as shown below.
 
-  ![](img/check-svc.png)
+  ![](concepts/img/check-svc.png)
 
 You now have two services running. Both are connected to the `ucp-hrm` network and both have the `com.docker.ucp.mesh.http` label. The **RED** service is associated with HTTP requests for `red.example.com` and the **WHITE** service is associated with HTTP requests for `white.example.com`. This mapping of labels to URLs is leveraged by the `ucp-hrm` service which is published on port 80.
 
@@ -121,13 +121,13 @@ In this step you will use your web browser to issue HTTP requests to `red.exampl
 
 1. Open a web browser tab and point it to `red.example.com`.
 
-  ![](img/red.png)
+  ![](concepts/img/red.png)
 
   The text below the whale saying "RED" indicates that this request was answered by the **RED** service. This is because the `TITLE` environment variable for the **RED** service was configured to display "RED" here. You also know it is the **RED** service as this was the service configured with 10 replicas (containers).
 
 2. Open another tab to `white.example.com`.
 
-  ![](img/white.png)
+  ![](concepts/img/white.png)
 
   The output above shows that this request was routed to the **WHITE** service as it displays "WHITE" below the whale and only has 5 replicas (containers).
 

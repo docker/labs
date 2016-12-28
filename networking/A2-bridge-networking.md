@@ -203,7 +203,7 @@ To complete the following task you will need the IP address of your Docker host.
 
 Point your web browser to the IP and port 8080 of your Docker host. The following example shows a web browser pointed to `52.213.169.69:8080`
 
-![](img/browser.png)
+![](concepts/img/browser.png)
 
 If you try connecting to the same IP address on a different port number it will fail.
 
