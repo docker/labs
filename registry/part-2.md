@@ -28,7 +28,7 @@ State or Province Name (full name) [Some-State]:
 Locality Name (eg, city) []:
 Organization Name (eg, company) [Internet Widgits Pty Ltd]:Docker
 Organizational Unit Name (eg, section) []:
-Common Name (e.g. server FQDN or YOUR name) []:<hostname>
+Common Name (e.g. server FQDN or YOUR name) []:localhost
 Email Address []:
 ```
 If you are running the registry locally, be sure to use your host name as the CN. 
@@ -82,8 +82,8 @@ We'll let Docker assign a random IP address to this container, because we'll be 
 
 We're ready to push an image into our secure registry. 
 ```
-$ docker push <hostname>:5000/hello-world
-$ docker pull <hostname>:5000/hello-world
+$ docker push localhost:5000/hello-world
+$ docker pull localhost:5000/hello-world
 ```
 We can go one step further with the open-source registry server, and add basic authentication - so we can require users to securely log in to push and pull images.
 

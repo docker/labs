@@ -11,18 +11,17 @@ The Docker Engine needs to be explicitly setup to use HTTP for the insecure regi
 $ sudo vi /etc/docker/docker
 
 # add this line
-DOCKER_OPTS="--insecure-registry <localhost>:5000"
+DOCKER_OPTS="--insecure-registry localhost:5000"
 ```
-- where `localhost`0 is the name of your machine, which can be found with the `hostname` command
-
-```
-$ hostname
-```
-
 Close and save the file, then restart the docker daemon.
 ```
 $ sudo service docker restart
 ```
+In Docker for Mac, the `Preferences` menu lets you set the address for an insecure registry under the `Daemon` panel:
+![MacOS menu](images/docker_osx_insecure_registry.png)
+
+In Docker for Windows, the `Settings` menu lets you set the address for an insecure registry under the `Daemon` panel:
+![MacOS menu](images/docker_windows_insecure_registry.png)
 ## Testing the Registry Image
 First we'll test that the registry image is working correctly, by running it without any special configuration:
 ```
@@ -41,7 +40,7 @@ $ sudo docker pull hello-world
 
 If a tag isn't specified, then the default `latest` is used. If a registry hostname isn't specified then the default `docker.io` for Docker Hub is used. If you want to use images with any other registry, you need to explicitly specify the hostname - the default is always Docker Hub, you can't change to a different default registry.
 
-With a local registry, the hostname and the custom port used by the registry is the full registry address, e.g. `<hostname>:5000`. 
+With a local registry, the hostname and the custom port used by the registry is the full registry address, e.g. `localhost:5000`. 
 ```
 $ hostname
 ```
@@ -50,17 +49,17 @@ $ hostname
 
 Docker uses the hostname from the full image name to determine which registry to use. We can build images and include the local registry hostname in the image tag, or use the `docker tag` command to add a new tag to an existing image.
 
-These commands pull a public image from Docker Hub, tag it for use in the private registry with the full name `<hostname>:5000/hello-world`, and then push it to the registry:
+These commands pull a public image from Docker Hub, tag it for use in the private registry with the full name `localhost:5000/hello-world`, and then push it to the registry:
 
 ```
-$ sudo docker tag hello-world <hostname>:5000/hello-world
-$ sudo docker push <hostname>:5000/hello-world
+$ sudo docker tag hello-world localhost:5000/hello-world
+$ sudo docker push localhost:5000/hello-world
 ```
 
 When you push the image to your local registry, you'll see similar output to when you push a public image to the Hub:
 
 ```
-The push refers to a repository [<hostname>:5000/hello-world]
+The push refers to a repository [localhost:5000/hello-world]
 a55ad2cda2bf: Pushed
 cfbe7916c207: Pushed
 fe4c16cbf7a4: Pushed
@@ -68,9 +67,9 @@ latest: digest: sha256:79e028398829da5ce98799e733bf04ac2ee39979b238e4b358e321ec5
 ```
 On the local machine, you can remove the new image tag and the original image, and pull it again from the local registry to verify it was correctly stored:
 ```
-$ sudo docker rmi <hostname>:5000/hello-world
+$ sudo docker rmi localhost:5000/hello-world
 $ sudo docker rmi hello-world
-$ sudo docker pull <hostname>:5000/hello-world
+$ sudo docker pull localhost:5000/hello-world
 ```
 That exercise shows the registry works correctly, but at the moment it's not very useful because all the image data is stored in the container's writable storage area, which will be lost when the container is removed. To store the data outside of the container, we need to mount a host directory when we start the container.
 
@@ -92,8 +91,8 @@ registry
 ```
 Tag and push the container with the new IP address of the registry.
 ```
-docker tag hello-world <hostname>:5000/hello-world
-docker push <hostname>:5000/hellow-world
+docker tag hello-world localhost:5000/hello-world
+docker push localhost:5000/hellow-world
 ```
 Repeating the previous `docker push` command uploads an image to the registry container, and the layers will be stored in the container's `/var/lib/registry` directory, which is actually mapped to the `$(pwd)/registry-data` directory on you local machine. The `tree` command will show the directory structure the registry server uses:
 

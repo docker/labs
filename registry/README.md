@@ -16,9 +16,7 @@ You'll learn how to:
 
 ### Prerequisites
 
-You'll need Docker running on Linux, Mac OSX or on AWS and Azure.
-
-You should be familiar with the key Docker concepts, and with Docker volumes:
+You'll need Docker running on Linux and be familiar with the key Docker concepts, and with Docker volumes:
 
 - [Docker concepts](https://docs.docker.com/engine/understanding-docker/)
 - [Docker volumes](https://docs.docker.com/engine/tutorials/dockervolumes/)
