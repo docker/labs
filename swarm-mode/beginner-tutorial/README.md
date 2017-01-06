@@ -1,5 +1,5 @@
 # Docker Swarm Tutorial
-Docker Engine 1.12 includes swarm mode for natively managing a cluster of Docker Engines called a swarm. You can use the Docker CLI to create a swarm, deploy application services to a swarm, and manage swarm behavior. This tutorial uses [Docker Machine](https://docs.docker.com/machine/) to create multiple nodes on your desktop. If you prefer you can create those nodes in your own cloud or on multiple machines.
+Docker includes swarm mode for natively managing a cluster of Docker Engines called a swarm. You can use the Docker CLI to create a swarm, deploy application services to a swarm, and manage swarm behavior. This tutorial uses [Docker Machine](https://docs.docker.com/machine/) to create multiple nodes on your desktop. If you prefer you can create those nodes in your own cloud or on multiple machines.
 
 ## Preparation
 You need to have Docker and Docker Machine installed on your system. [Download Docker](https://docker.com/getdocker) for your platform and install it.

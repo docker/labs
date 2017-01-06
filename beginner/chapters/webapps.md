@@ -408,7 +408,7 @@ Successfully built 2f7357a0805d
 If you don't have the `alpine:latest` image, the client will first pull the image and then create your image. Therefore, your output on running the command will look different from mine. If everything went well, your image should be ready! Run `docker images` and see if your image (`<YOUR_USERNAME>/myfirstapp`) shows.
 
 ### 2.3.4 Run your image
-The last step in this section is to run the image and see if it actually works.
+The next step in this section is to run the image and see if it actually works.
 
 ```
 $ docker run -p 8888:5000 --name myfirstapp YOUR_USERNAME/myfirstapp
@@ -421,7 +421,13 @@ Head over to `http://localhost:8888` and your app should be live. **Note** If yo
 
 Hit the Refresh button in the web browser to see a few more cat images.
 
-OK, now that you are done with this container, stop and remove it since you won't be using it again.
+### 2.3.4 Push your image
+Now that you've created and tested your image, you can push it to [Docker Hub](https://hub.docker.com). All you have to do is:
+
+```
+docker push YOUR_USERNAME/myfirstapp
+```
+Now that you are done with this container, stop and remove it since you won't be using it again.
 
 Open another terminal window and execute the following commands:
 
@@ -454,6 +460,8 @@ Here's a quick summary of the few basic commands we used in our Dockerfile.
 ```
 
 * `EXPOSE` opens ports in your image to allow communication to the outside world when it runs in a container.
+
+* `PUSH` pushes your image to Docker Hub, or alternately to a [private registry](TODO: add URL)
 
 >**Note:** If you want to learn more about Dockerfiles, check out [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/).
 
