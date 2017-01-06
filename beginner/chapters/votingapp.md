@@ -1,4 +1,4 @@
-## 3.0 Run a multi-container, mult-host app with Docker Compose
+## 3.0 Deploying an app to a Swarm
 This portion of the tutorial will guide you through the creation and customization of a voting app. It's important that you follow the steps in order, and make sure to customize the portions that are customizable.
 
 **Important.**
