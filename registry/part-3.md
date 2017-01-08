@@ -9,11 +9,12 @@ The registry server and the Docker client support [basic authentication](https:/
 Create the password file with an entry for user "moby" with password "gordon";
 ```
 $ mkdir auth
-$ sudo docker run --entrypoint htpasswd registry:latest -bn moby gordon > auth/htpasswd
+$ sudo docker run --entrypoint htpasswd registry:latest -Bbn moby gordon > auth/htpasswd
 ```
 The options are:
 
 - --entrypoint Overwrite the default ENTRYPOINT of the image
+- -B Use bcrypt encryption (required)
 - -b run in batch mode 
 - -n display results
 
@@ -21,7 +22,7 @@ We can verify the entries have been written by checking the file contents - whic
 
 ```
 $ cat auth/htpasswd
-moby:$apr1$xnxYmr0O$S4HXd0ACkZkpp40YCw/lW/
+moby:$2y$05$Geu2Z4LN0QDpUJBHvP5JVOsKOLH/XPoJBqISv1D8Aeh6LVGvjWWVC
 ```
 
 ## Running an Authenticated Secure Registry
