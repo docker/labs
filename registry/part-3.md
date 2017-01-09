@@ -9,11 +9,12 @@ The registry server and the Docker client support [basic authentication](https:/
 Create the password file with an entry for user "moby" with password "gordon";
 ```
 $ mkdir auth
-$ sudo docker run --entrypoint htpasswd registry:latest -bn moby gordon > auth/htpasswd
+$ sudo docker run --entrypoint htpasswd registry:latest -Bbn moby gordon > auth/htpasswd
 ```
 The options are:
 
 - --entrypoint Overwrite the default ENTRYPOINT of the image
+- -B to force bcrypt vs default md5
 - -b run in batch mode 
 - -n display results
 
@@ -60,9 +61,9 @@ Now the registry is using secure transport and user authentication.
 With basic authentication, users cannot push or pull from the registry unless they are authenticated. If you try and pull an image without authenticating, you will get an error:
 
 ```
-$ sudo docker pull <hostname>:5000/hello-world
+$ sudo docker pull localhost:5000/hello-world
 Using default tag: latest
-Error response from daemon: Get https://<hostname>:5000/v2/hello-world/manifests/latest: no basic auth credentials
+Error response from daemon: Get https://localhost:5000/v2/hello-world/manifests/latest: no basic auth credentials
 ```
 
 The result is the same for valid and invalid image names, so you can't even check a repository exists without authenticating. Logging in to the registry is the same `docker login` command you use for Docker Hub, specifying the registry hostname:
@@ -83,7 +84,7 @@ Error response from daemon: login attempt to https://registry.local:5000/v2/ fai
 Now you're authenticated, you can push and pull as before:
 
 ```
-$ sudo docker pull <hostname>:5000/hello-world
+$ sudo docker pull localhost:5000/hello-world
 Using default tag: latest
 latest: Pulling from hello-world
 Digest: sha256:961497c5ca49dc217a6275d4d64b5e4681dd3b2712d94974b8ce4762675720b4
