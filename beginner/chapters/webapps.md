@@ -273,7 +273,7 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
 
 2. The next step usually is to write the commands of copying the files and installing the dependencies. But first we will install the Python pip package to the alpine linux distribution. This will not just install the pip package but any other dependencies too, which includes the python interpreter. Add the following [RUN](https://docs.docker.com/engine/reference/builder/#run) command next:
   ```
-  RUN apk add --update py-pip
+  RUN apk add --update py2-pip
   ```
 
 3. Let's add the files that make up the Flask Application.
@@ -314,7 +314,7 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
   FROM alpine:latest
 
   # Install python and pip
-  RUN apk add --update py-pip
+  RUN apk add --update py2-pip
 
   # install Python modules needed by the Python app
   COPY requirements.txt /usr/src/app/
