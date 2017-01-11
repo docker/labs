@@ -4,14 +4,6 @@ This portion of the tutorial will guide you through the creation and customizati
 **Important.**
 To complete this section, you will need to have Docker installed on your machine as mentioned in the [Setup](./setup.md) section. You'll also need to have git installed. There are many options for installing it. For instance, you can get it from [GitHub](https://help.github.com/articles/set-up-git/).
 
-You'll also need to have a [Docker Id](https://hub.docker.com/register/). Once you do run login from the command line:
-
-```
-$ docker login
-```
-
-And follow the login directions. Now you can push images to Docker Hub.
-
 ### Voting app
 For this application we will use the [Docker Example Voting App](https://github.com/docker/example-voting-app). This app consists of five components:
 
@@ -31,7 +23,7 @@ cd example-voting-app
 ### 3.1 Deploying the app
 For this first stage, we will use existing images that are in Docker Hub.
 
-This app relies on [Docker Swarm mode](https://docs.docker.com/engine/swarm/). Swarm mode is the cluster management and orchestration features embedded in the Docker. You can easily deploy to a swarm using a file that declares your desired state for the app. Swarm allows you to run your containers on more than one machine. In this tutorial, you can run on just one machine, or you can use something like [Docker for AWS](TODO:URL) or [Docker for Azure](TODO:URL) to quickly create a multiple node machine. Alternately, you can use Docker Machine to create a number of local nodes on your development machine. See [this page](TODO:URL) for more information.
+This app relies on [Docker Swarm mode](https://docs.docker.com/engine/swarm/). Swarm mode is the cluster management and orchestration features embedded in the Docker. You can easily deploy to a swarm using a file that declares your desired state for the app. Swarm allows you to run your containers on more than one machine. In this tutorial, you can run on just one machine, or you can use something like [Docker for AWS](https://beta.docker.com/) or [Docker for Azure](https://beta.docker.com/) to quickly create a multiple node machine. Alternately, you can use Docker Machine to create a number of local nodes on your development machine. See [the Swarm Mode lab](../../swarm-mode/beginner-tutorial/README.md#creating-the-nodes-and-swarm) for more information.
 
 First, create a Swarm.
 
@@ -189,7 +181,7 @@ The `image` key there specifies which image you can use, in this case the image 
 
 Much like `docker run` you will see you can define `ports` and `networks`. There's also a `depends_on` key which allows you to specify that a service is only deployed after another service, in this case `vote` only deploys after `redis`.
 
-The `deploy` key is new in version 3. It allows you to specify various properties of the deployment to the Swarm. In this case, you are specifying that you want two replicas, that is two containers are deployed on the Swarm. You can specify other properties, like when to restart, what [heartbeat](TODO add URL) to use, placement constraints, resources.
+The `deploy` key is new in version 3. It allows you to specify various properties of the deployment to the Swarm. In this case, you are specifying that you want two replicas, that is two containers are deployed on the Swarm. You can specify other properties, like when to restart, what [healthcheck](https://docs.docker.com/engine/reference/builder/#healthcheck) to use, placement constraints, resources.
 
 #### Test run
 
