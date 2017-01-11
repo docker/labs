@@ -68,7 +68,7 @@ services:
       placement:
         constraints: [node.role == manager]
   vote:
-    image: dockersamples/examplevotingapp_vote
+    image: dockersamples/examplevotingapp_vote:before
     ports:
       - 5000:80
     networks:
@@ -82,7 +82,7 @@ services:
       restart_policy:
         condition: on-failure
   result:
-    image: dockersamples/examplevotingapp_result
+    image: dockersamples/examplevotingapp_result:before
     ports:
       - 5001:80
     networks:
@@ -111,6 +111,14 @@ services:
         delay: 10s
         max_attempts: 3
         window: 120s
+
+  visualizer:
+    image: manomarks/visualizer
+    ports:
+      - "8080:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
 networks:
   frontend:
@@ -162,11 +170,11 @@ version: "3"
 It's important that you use version 3 of compose files, as `docker stack deploy` won't support use of earlier versions. You will see there's also a `services` key, under which there is a separate key for each of the services. Such as:
 ```
   vote:
-    image: dockersamples/examplevotingapp_vote
+    image: dockersamples/examplevotingapp_vote:before
     ports:
       - 5000:80
     networks:
-      - front-tier
+      - frontend
     depends_on:
       - redis
     deploy:
@@ -177,7 +185,7 @@ It's important that you use version 3 of compose files, as `docker stack deploy`
         condition: on-failure
 ```
 
-The `image` key there specifies which image you can use. If you're familiar with Compose, you may know that there's a `build` key, which builds based on a Dockerfile. However, `docker stack deploy` does not suppport `build`, so you need to use pre-built images.
+The `image` key there specifies which image you can use, in this case the image `dockersamples/examplevotingapp_vote:before`. If you're familiar with Compose, you may know that there's a `build` key, which builds based on a Dockerfile. However, `docker stack deploy` does not suppport `build`, so you need to use pre-built images.
 
 Much like `docker run` you will see you can define `ports` and `networks`. There's also a `depends_on` key which allows you to specify that a service is only deployed after another service, in this case `vote` only deploys after `redis`.
 
@@ -198,45 +206,42 @@ $ ssh -L 5000:localhost:5000 <ssh-user>@<CLOUD_INSTANCE_IP_ADDRESS>
 ```
 
 ### 3.2 Customize the app
-In this step, you will customize the app and redeploy it.
+In this step, you will customize the app and redeploy it. We've supplied the same images but with the votes changed from Cats and Dogs to Java and .NET using the `after` tag.
 
-#### 3.2.1 Modify app.py
+#### 3.2.1 Change the images used
 
-In the folder ```example-voting-app/vote``` you need to edit the app.py and change the two options for the programming languages you chose.
-
-Edit the following lines:
+Going back to `docker-stack.yml`, change the `vote` and `result` images to use the `after` tag, so they look like this:
 
 ```
-option_a = os.getenv('OPTION_A', "Cats")
-option_b = os.getenv('OPTION_B', "Dogs")
-```
-
-substituting two options of your choice. For instance:
-
-```
-option_a = os.getenv('OPTION_A', "Java")
-option_b = os.getenv('OPTION_B', ".NET")
-```
-
-You will also have to change ```example-voting-app/result/views/index.html``` to your choices:
-
-```
- <div class="choice cats">
-            <div class="label">Cats</div>
-            <div class="stat">{{aPercent | number:1}}%</div>
-          </div>
-          <div class="divider"></div>
-          <div class="choice dogs">
-            <div class="label">Dogs</div>
-            <div class="stat">{{bPercent | number:1}}%</div>
-          </div>
-        </div>
-```
-#### 3.2.2 Build your app
-To build each of the containers, you'll need to use `docker build`.
-```
-docker build -t dockersamples/vote -f vote/Dockerfile
-docker build -t dockersamples/result -f result/Dockerfile
+  vote:
+    image: dockersamples/examplevotingapp_vote:after
+    ports:
+      - 5000:80
+    networks:
+      - frontend
+    depends_on:
+      - redis
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+      restart_policy:
+        condition: on-failure
+  result:
+    image: dockersamples/examplevotingapp_result:after
+    ports:
+      - 5001:80
+    networks:
+      - backend
+    depends_on:
+      - db
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
 ```
 
 #### 3.2.3 Redeploy
