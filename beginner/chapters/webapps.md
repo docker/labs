@@ -268,7 +268,7 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
   We'll start by specifying our base image, using the `FROM` keyword:
 
   ```
-  FROM alpine:latest
+  FROM alpine:3.5
   ```
 
 2. The next step usually is to write the commands of copying the files and installing the dependencies. But first we will install the Python pip package to the alpine linux distribution. This will not just install the pip package but any other dependencies too, which includes the python interpreter. Add the following [RUN](https://docs.docker.com/engine/reference/builder/#run) command next:
@@ -311,7 +311,7 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
 
   ```
   # our base image
-  FROM alpine:latest
+  FROM alpine:3.5
 
   # Install python and pip
   RUN apk add --update py2-pip
@@ -405,7 +405,7 @@ Removing intermediate container 78e324d26576
 Successfully built 2f7357a0805d
 ```
 
-If you don't have the `alpine:latest` image, the client will first pull the image and then create your image. Therefore, your output on running the command will look different from mine. If everything went well, your image should be ready! Run `docker images` and see if your image (`<YOUR_USERNAME>/myfirstapp`) shows.
+If you don't have the `alpine:3.5` image, the client will first pull the image and then create your image. Therefore, your output on running the command will look different from mine. If everything went well, your image should be ready! Run `docker images` and see if your image (`<YOUR_USERNAME>/myfirstapp`) shows.
 
 ### 2.3.4 Run your image
 The next step in this section is to run the image and see if it actually works.
