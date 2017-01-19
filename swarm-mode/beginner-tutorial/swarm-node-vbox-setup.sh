@@ -10,7 +10,7 @@ echo "======> Creating $managers manager machines ...";
 for node in $(seq 1 $managers);
 do
 	echo "======> Creating manager$node machine ...";
-	docker-machine create -d virtualbox manager$node;
+	docker-machine create -d virtualbox --virtualbox-boot2docker-url "https://github.com/boot2docker/boot2docker/releases/download/v1.13.0-rc4/boot2docker.iso" manager$node;
 done
 
 # create worker machines
@@ -18,7 +18,7 @@ echo "======> Creating $workers worker machines ...";
 for node in $(seq 1 $workers);
 do
 	echo "======> Creating worker$node machine ...";
-	docker-machine create -d virtualbox worker$node;
+	docker-machine create -d virtualbox --virtualbox-boot2docker-url "https://github.com/boot2docker/boot2docker/releases/download/v1.13.0-rc4/boot2docker.iso" worker$node;
 done
 
 # list all machines

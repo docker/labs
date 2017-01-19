@@ -1,144 +1,195 @@
-## 3.0 Run a multi-container app with Docker Compose
+## 3.0 Deploying an app to a Swarm
 This portion of the tutorial will guide you through the creation and customization of a voting app. It's important that you follow the steps in order, and make sure to customize the portions that are customizable.
 
 **Important.**
-To complete this section, you will need to have Docker and Docker Compose installed on your machine as mentioned in the [Setup](./setup.md) section. You'll also need to have git installed. There are many options for installing it. For instance, you can get it from [GitHub](https://help.github.com/articles/set-up-git/).
+To complete this section, you will need to have Docker installed on your machine as mentioned in the [Setup](./setup.md) section. You'll also need to have git installed. There are many options for installing it. For instance, you can get it from [GitHub](https://help.github.com/articles/set-up-git/).
 
-You'll also need to have a [Docker Id](https://hub.docker.com/register/). Once you do run login from the command line:
+### Voting app
+For this application we will use the [Docker Example Voting App](https://github.com/docker/example-voting-app). This app consists of five components:
 
-```
-$ docker login
-```
+* Python webapp which lets you vote between two options
+* Redis queue which collects new votes
+* .NET worker which consumes votes and stores them in…
+* Postgres database backed by a Docker volume
+* Node.js webapp which shows the results of the voting in real time
 
-And follow the login directions. Now you can push images to Docker Hub.
-
-
-### 3.1 Get the voting-app
-You now know how to build your own Docker image, so let's take it to the next level and glue things together. For this app you have to run multiple containers and Docker Compose is the best way to do that.
-
-Start by quickly reading the documentation [here](https://docs.docker.com/compose/overview/).
-
-Clone the voting-app repository already available at [Github Repo](https://github.com/docker/example-voting-app.git).
+Clone the repository onto your machine and `cd` into the directory:
 
 ```
 git clone https://github.com/docker/example-voting-app.git
+cd example-voting-app
 ```
 
-### 3.2 Customize the app
+### 3.1 Deploying the app
+For this first stage, we will use existing images that are in Docker Hub.
 
-#### 3.2.1 Modify app.py
+This app relies on [Docker Swarm mode](https://docs.docker.com/engine/swarm/). Swarm mode is the cluster management and orchestration features embedded in the Docker. You can easily deploy to a swarm using a file that declares your desired state for the app. Swarm allows you to run your containers on more than one machine. In this tutorial, you can run on just one machine, or you can use something like [Docker for AWS](https://beta.docker.com/) or [Docker for Azure](https://beta.docker.com/) to quickly create a multiple node machine. Alternately, you can use Docker Machine to create a number of local nodes on your development machine. See [the Swarm Mode lab](../../swarm-mode/beginner-tutorial/README.md#creating-the-nodes-and-swarm) for more information.
 
-In the folder ```example-voting-app/vote``` you need to edit the app.py and change the two options for the programming languages you chose.
-
-Edit the following lines:
-
-```
-option_a = os.getenv('OPTION_A', "Cats")
-option_b = os.getenv('OPTION_B', "Dogs")
-```
-
-substituting two options of your choice. For instance:
+First, create a Swarm.
 
 ```
-option_a = os.getenv('OPTION_A', "Java")
-option_b = os.getenv('OPTION_B', ".NET")
+docker swarm init
 ```
 
-You will also have to change ```example-voting-app/result/views/index.html``` to your choices:
+Next, you will need a [Docker Compose](https://docs.docker.com/compose) file. You don't need Docker Compose installed, though if you are using Docker for Mac or Docker for Windows you have it installed. However, `docker stack deploy` accepts a file in the Docker Compose format. The file you need is in Docker Example Voting App at the root level. It's called docker-stack.yml. You can also just copy and paste it from here:
 
 ```
- <div class="choice cats">
-            <div class="label">Cats</div>
-            <div class="stat">{{aPercent | number:1}}%</div>
-          </div>
-          <div class="divider"></div>
-          <div class="choice dogs">
-            <div class="label">Dogs</div>
-            <div class="stat">{{bPercent | number:1}}%</div>
-          </div>
-        </div>
-```
-#### 3.2.2 Running your app
-Now, run your application. To do that, we'll use [Docker Compose](https://docs.docker.com/compose). Docker Compose is a tool for defining and running multi-container Docker applications. With Compose, you define a `.yml` file that describes all the containers and volumes that you want, and the networks between them. In the example-voting-app directory, you'll see a `docker-compose.yml file`:
-
-```yml
-version: "2"
-
+version: "3"
 services:
-  vote:
-    build: ./vote
-    command: python app.py
-    volumes:
-     - ./vote:/app
-    ports:
-      - "5000:80"
-    networks:
-      - front-tier
-      - back-tier
-
-  result:
-    build: ./result
-    command: nodemon --debug server.js
-    volumes:
-      - ./result:/app
-    ports:
-      - "5001:80"
-      - "5858:5858"
-    networks:
-      - front-tier
-      - back-tier
-
-  worker:
-    build: ./worker
-    networks:
-      - back-tier
 
   redis:
     image: redis:alpine
-    container_name: redis
-    ports: ["6379"]
+    ports:
+      - "6379"
     networks:
-      - back-tier
-
+      - frontend
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
   db:
     image: postgres:9.4
-    container_name: db
     volumes:
-      - "db-data:/var/lib/postgresql/data"
+      - db-data:/var/lib/postgresql/data
     networks:
-      - back-tier
+      - backend
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+  vote:
+    image: dockersamples/examplevotingapp_vote:before
+    ports:
+      - 5000:80
+    networks:
+      - frontend
+    depends_on:
+      - redis
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+      restart_policy:
+        condition: on-failure
+  result:
+    image: dockersamples/examplevotingapp_result:before
+    ports:
+      - 5001:80
+    networks:
+      - backend
+    depends_on:
+      - db
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  worker:
+    image: dockersamples/examplevotingapp_worker
+    networks:
+      - frontend
+      - backend
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels: [APP=VOTING]
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
+  visualizer:
+    image: manomarks/visualizer
+    ports:
+      - "8080:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+networks:
+  frontend:
+  backend:
 
 volumes:
   db-data:
-
-networks:
-  front-tier:
-  back-tier:
 ```
 
-This Compose file defines
-
-- A vote container based on a Python image
-- A result container based on a Node.js image
-- A redis container based on a redis image, to temporarily store the data.
-- A .NET based worker app based on a .NET image
-- A Postgres container based on a postgres image
-
-Note that three of the containers are built from Dockerfiles, while the other two are images on Docker Hub. To learn more about how they're built, you can examine each of the Dockerfiles in the three directories: `vote`, `result`, `worker`. Also note that there's a version number at the top. The current version of the Compose file is 2. 
-
-The Compose file also defines two networks, front-tier and back-tier. Each container is placed on one or two networks. Once on those networks, they can access other services on that network in code just by using the name of the service. Services can be on any number of networks. Services are isolated on their network. Services are only able to discover each other by name if they are on the same network. To learn more about networking check out the [Networking with Compose documentation](https://docs.docker.com/compose/networking/).
-
-To launch your app navigate to the example-voting-app directory and run the following command:
+First deploy it, and then we will look more deeply into the details:
 
 ```
-$ docker-compose up -d
+docker stack deploy --compose-file docker-stack.yml vote
+Creating network vote_frontend
+Creating network vote_backend
+Creating network vote_default
+Creating service vote_vote
+Creating service vote_result
+Creating service vote_worker
+Creating service vote_redis
+Creating service vote_db
+```
+to verify your stack has deployed, use `docker stack services`
+```
+docker stack services vote
+ID            NAME         MODE        REPLICAS  IMAGE
+25wo6p7fltyn  vote_db      replicated  1/1       postgres:9.4
+2ot4sz0cgvw3  vote_worker  replicated  1/1       dockersamples/examplevotingapp_worker:latest
+9faz4wbvxpck  vote_redis   replicated  2/2       redis:alpine
+ocm8x2ijtt88  vote_vote    replicated  2/2       dockersamples/examplevotingapp_vote:latest
+p1dcwi0fkcbb  vote_result  replicated  2/2       dockersamples/examplevotingapp_result:latest
 ```
 
-This tells Compose to start all the containers specified in the `docker-compose.yml` file. The `-d` tells it to run them in daemon mode, in the background. Navigate to `http://localhost:5000` in your browser, and you'll see the voting app, something like this:
+If you take a look at `docker-stack.yml`, you will see that the file defines
+
+* vote container based on a Python image
+* result container based on a Node.js image
+* redis container based on a redis image, to temporarily store the data.
+* .NET based worker app based on a .NET image
+* Postgres container based on a postgres image
+
+The Compose file also defines two networks, front-tier and back-tier. Each container is placed on one or two networks. Once on those networks, they can access other services on that network in code just by using the name of the service. Services can be on any number of networks. Services are isolated on their network. Services are only able to discover each other by name if they are on the same network. To learn more about networking check out the [Networking Lab](https://github.com/docker/labs/tree/master/networking).
+
+Take a look at the file again. You'll see it starts with
+
+```
+version: "3"
+```
+It's important that you use version 3 of compose files, as `docker stack deploy` won't support use of earlier versions. You will see there's also a `services` key, under which there is a separate key for each of the services. Such as:
+```
+  vote:
+    image: dockersamples/examplevotingapp_vote:before
+    ports:
+      - 5000:80
+    networks:
+      - frontend
+    depends_on:
+      - redis
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+      restart_policy:
+        condition: on-failure
+```
+
+The `image` key there specifies which image you can use, in this case the image `dockersamples/examplevotingapp_vote:before`. If you're familiar with Compose, you may know that there's a `build` key, which builds based on a Dockerfile. However, `docker stack deploy` does not suppport `build`, so you need to use pre-built images.
+
+Much like `docker run` you will see you can define `ports` and `networks`. There's also a `depends_on` key which allows you to specify that a service is only deployed after another service, in this case `vote` only deploys after `redis`.
+
+The `deploy` key is new in version 3. It allows you to specify various properties of the deployment to the Swarm. In this case, you are specifying that you want two replicas, that is two containers are deployed on the Swarm. You can specify other properties, like when to restart, what [healthcheck](https://docs.docker.com/engine/reference/builder/#healthcheck) to use, placement constraints, resources.
+
+#### Test run
+
+Now that the app is running, you can go to `http://localhost:5000` to see:
 
 <img src="../images/vote.png" title="vote">
 
-Click on one to vote. You can check the results at `http://<YOUR_IP_ADDRESS:5001>`.
+Click on one to vote. You can check the results at `http://localhost:5001>`.
 
 **NOTE**: If you are running this tutorial in a cloud environment like AWS, Azure, Digital Ocean, or GCE you will not have direct access to localhost or 127.0.0.1 via a browser.  A work around for this is to leverage ssh port forwarding. Below is an example for Mac OS. Similarly this can be done for Windows and Putty users.
 
@@ -146,39 +197,54 @@ Click on one to vote. You can check the results at `http://<YOUR_IP_ADDRESS:5001
 $ ssh -L 5000:localhost:5000 <ssh-user>@<CLOUD_INSTANCE_IP_ADDRESS>
 ```
 
-#### 3.2.3 Build and tag images
+### 3.2 Customize the app
+In this step, you will customize the app and redeploy it. We've supplied the same images but with the votes changed from Cats and Dogs to Java and .NET using the `after` tag.
 
-You are all set now. Build and tag your images that you want to submit.
+#### 3.2.1 Change the images used
 
-In order to build the images, make sure to replace `<YOUR_DOCKER_ID>` with your *Docker Hub username* in the following commands:
-
-```
-$ docker build --no-cache -t <YOUR_DOCKER_ID>/votingapp_voting-app vote
-...
-$ docker build --no-cache -t <YOUR_DOCKER_ID>/votingapp_result-app result
-...
-$ docker build --no-cache -t <YOUR_DOCKER_ID>/votingapp_worker worker
-```
-
-#### 3.2.4 Push images to Docker Hub
-
-Push the images to Docker hub. Remember, you must have run `docker login` before you can push.
+Going back to `docker-stack.yml`, change the `vote` and `result` images to use the `after` tag, so they look like this:
 
 ```
-$ docker push <YOUR_DOCKER_ID>/votingapp_voting-app
-...
-$ docker push <YOUR_DOCKER_ID>/votingapp_result-app
-...
-$ docker push <YOUR_DOCKER_ID>/votingapp_worker
+  vote:
+    image: dockersamples/examplevotingapp_vote:after
+    ports:
+      - 5000:80
+    networks:
+      - frontend
+    depends_on:
+      - redis
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+      restart_policy:
+        condition: on-failure
+  result:
+    image: dockersamples/examplevotingapp_result:after
+    ports:
+      - 5001:80
+    networks:
+      - backend
+    depends_on:
+      - db
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
 ```
 
-Now you can access these images anywhere by running
+#### 3.2.3 Redeploy
+Redeployment is the same as deploying
 
 ```
-$ docker pull <YOUR_DOCKER_ID>/votingapp_voting-app
-$ docker pull <YOUR_DOCKER_ID>/votingapp_result-app
-$ docker pull <YOUR_DOCKER_ID>/votingapp_worker
+docker stack deploy --compose-file docker-stack.yml vote
 ```
+#### 3.2.4 Another test run
+
+Now take it for a spin again. Go to the URLs you used in section [3.1](#31-deploying-the-app) and see the new votes.
 
 ### 3.3 Next steps
-Now that you've built some images and pushed them to docker hub, and learned about Docker Compose, you can explore more of Docker by checking out [the documentation](https://docs.docker.com). And if you need any help, check out the [Docker Forums](forums.docker.com) or [StackOverflow](https://stackoverflow.com/tags/docker/).
+Now that you've built some images and pushed them to docker hub, and learned the basics of Swarm mode, you can explore more of Docker by checking out [the documentation](https://docs.docker.com). And if you need any help, check out the [Docker Forums](forums.docker.com) or [StackOverflow](https://stackoverflow.com/tags/docker/).
