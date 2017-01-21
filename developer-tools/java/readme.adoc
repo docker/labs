@@ -6,13 +6,19 @@ This tutorial offers Java developers an intro-level and self-paced hands-on work
 * link:chapters/ch02-basic-concepts.adoc[Docker Basic Concepts]
 * link:chapters/ch03-build-image.adoc[Build a Docker Image]
 * link:chapters/ch04-run-container.adoc[Run a Docker Container]
-* link:chapters/ch05-compose.adoc[Run Multiple Containers Using Docker Compose]
-* link:chapters/ch06-swarm.adoc[Run Multiple Containers on Multiple Hosts using Docker Swarm Cluster]
+* link:chapters/ch05-compose.adoc[Mult-container Application Using Compose]
+* link:chapters/ch06-swarm.adoc[Multi-container Using Compose and Swarm Mode]
 * Java IDEs
 ** link:chapters/ch07-netbeans.adoc[Docker Tooling in NetBeans]
 ** link:chapters/ch07-intellij.adoc[Docker Tooling in IntelliJ IDEA]
 ** link:chapters/ch07-eclipse.adoc[Docker Tooling in Eclipse]
-* link:chapters/ch08-cloud.adoc[Run a Docker Container using Docker Cloud]
+* Docker in Cloud
+** link:chapters/ch08-cloud.adoc[Docker Cloud]
+** Docker for AWS (coming)
+** Docker for Azure (coming)
+* CI/CD using Docker (coming)
+* Monitoring Java container using Docker (coming)
+** 
 * link:chapters/appa-common-commands.adoc[Common Docker Commands]
 * link:chapters/appb-troubleshooting.adoc[Troubleshooting]
 * link:chapters/appc-references.adoc[References]
