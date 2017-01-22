@@ -1,0 +1,18 @@
+version: '3'
+services:
+  ubuntu:
+    image: ubuntu:latest
+  busybox:
+    image: busybox:latest
+  openjdk:
+    image: openjdk:latest
+  wildfly:
+    image: jboss/wildfly:latest
+  mysql:
+    image: mysql:latest
+  javaee7-hol:
+    image: arungupta/javaee7-hol:latest
+  wildfly-couchbase-javaee7:
+    image: arungupta/wildfly-couchbase-javaee7:latest
+  couchbase:
+    image: arungupta/couchbase:latest

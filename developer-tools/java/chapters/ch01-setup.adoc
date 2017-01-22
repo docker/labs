@@ -13,10 +13,11 @@ This section describes the hardware and software needed for this workshop, and h
 
 Docker runs natively on Mac, Windows and Linux. Follow the instructions to install Docker:
 
-. https://www.docker.com/products/docker#/mac[Docker for Mac]
-. https://www.docker.com/products/docker#/windows[Docker for Windows]
-. http://docs.docker.com/engine/installation/ubuntulinux/[Docker on Ubuntu]
-. http://docs.docker.com/engine/installation/centos/[Docker on Centos]
+. https://docs.docker.com/docker-for-mac/[Mac]
+. https://docs.docker.com/docker-for-windows/[Windows]
+. https://docs.docker.com/engine/installation/linux/centos/[Centos]
+. https://docs.docker.com/engine/installation/linux/debian/[Debian]
+. https://docs.docker.com/engine/installation/linux/ubuntulinux/[Ubuntu]
 
 NOTE: Docker for Mac and Windows have requirements for a fairly recent operating system version. If your machine does not meet these requirements, then you need to install https://www.docker.com/products/docker-toolbox[Docker Toolbox]. 
 
@@ -26,7 +27,7 @@ Complete set of operating systems are listed at http://docs.docker.com/engine/in
 
 Install the following additional components:
 
-. Docker Compose: https://github.com/docker/compose/releases
+. https://docs.docker.com/compose/install/[Docker Compose]
 
 === Docker Toolbox Notes
 
@@ -34,59 +35,30 @@ Skip this section if you are not using Docker Toolbox for Mac or Windows.
 
 . *Default Docker Machine*: Docker Toolbox creates a Docker Machine named `default`. To make it easier to start/stop the containers, an entry is added into the host mapping table of your operating system. 
 +
-Find out IP address of your machine:
+Find out the IP address of your Docker Machine:
 +
-```console
+```
 docker-machine ip default
 ```
 +
 This will provide the IP address associated with the Docker Machine created by Toolbox.
 +
-. *Docker CLI Shell*: Any Docker CLI command needs to be issued from the Terminal or Command Prompt where `eval $(docker-machine env default)` command was issued. This will make sure Docker CLI is configured to talk to the VM created by Docker Toolbox.
-
-=== Setup Host Mapping
-
-For Linux, Docker host is running on local machine and so the IP address would be `127.0.0.1`.
-
-Edit `/etc/hosts` (Mac OS or Linux) or `C:\Windows\System32\drivers\etc\hosts` (Windows) and add:
+Edit `/etc/hosts` (Mac OS) or `C:\Windows\System32\drivers\etc\hosts` (Windows) and add:
 
 [source, text]
 ----
 <IP ADDRESS>  dockerhost
-<IP ADDRESS>  localhost
 ----
-
-This allows to access Docker containers using `dockerhost` or `localhost`.
++
+This allows to access Docker containers using `dockerhost`.
++
+. *Docker CLI Shell*: Any Docker CLI command needs to be issued from the Terminal or Command Prompt where `eval $(docker-machine env default)` command was issued. This will make sure Docker CLI is configured to talk to the VM created by Docker Toolbox.
 
 === Download Images
 
 This tutorial uses a few Docker images and software. Let's download them before we start the tutorial.
 
-Create a new file, name it `docker-compose-pull-images.yml`, and add the following content:
-
-[source, text]
-----
-ubuntu:
-  image: ubuntu
-busybox:
-  image: busybox
-openjdk:
-  image: openjdk
-wildfly:
-  image: jboss/wildfly
-mysql:
-  image: mysql
-javaee7-hol:
-  image: arungupta/javaee7-hol
-swarm:
-  image: swarm
-wildfly-couchbase-javaee7:
-  image: arungupta/wildfly-couchbase-javaee7
-couchbase:
-  image: arungupta/couchbase
-----
-
-Give the command to pull all the images:
+Download the file from https://github.com/docker/labs/blob/master/developer-tools/java/scripts/docker-compose-pull-images.yml and give the command to pull all the images:
 
 ```console
 docker-compose -f docker-compose-pull-images.yml pull
@@ -99,6 +71,7 @@ NOTE: For Linux, `docker-compose` and `docker` commands need `sudo` access. So p
 . Download Java IDE based upon your choice and install.
 .. http://bits.netbeans.org/download/trunk/nightly/latest/[NetBeans Nightly] (`"Java EE"` version)
 .. https://www.jetbrains.com/idea/download/[IntelliJ IDEA Community or Ultimate]
-.. http://eclipse.org/[Eclipse IDE for Java EE Developers Mars 2]
+.. http://www.eclipse.org/downloads/eclipse-packages/[Eclipse IDE for Java EE Developers]
 . Download https://maven.apache.org/download.cgi[Maven] and install.
 . Install Docker Cloud CLI following the https://docs.docker.com/docker-cloud/tutorials/installing-cli/[instructions].
+
