@@ -32,7 +32,7 @@ Once done, the app needs to be rebuilt `docker build -t message-app:v0.2 .`
 **REDIS_HOST** needs to be added to the docker-compose file as the new release will run against this kv store.
 
 ```
-version: '2'
+version: '3'
 services:
   mongo:
     image: mongo:3.2

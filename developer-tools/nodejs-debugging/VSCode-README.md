@@ -43,7 +43,7 @@ As you can see it installs [nodemon](http://nodemon.io/), a utility that will mo
 You'll start the app with the `docker-compose.yml`
 
 ```
-version: "2"
+version: "3"
 
 services:
   web:

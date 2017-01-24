@@ -50,7 +50,7 @@ There are several options to inject the configuration in the build, among them
 We'll go for the second option and define a docker-compose file where the MONGO_URL will be set with the value of the execution environment
 
 ```
-version: '2'
+version: '3'
 services:
   mongo:
     image: mongo:3.2
