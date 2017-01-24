@@ -143,7 +143,7 @@ The application container (named **app**) is connected to mongo container using 
 The following file (docker-compose.yml) defines the whole application
 
 ```
-version: '2'
+version: '3'
 services:
   mongo:
     image: mongo:3.2
@@ -202,7 +202,7 @@ It will update it's configuration each time a container is started / stopped.
 The new version of our docker-compose.yml is
 
 ```
-version: '2'
+version: '3'
 services:
   mongo:
     image: mongo:3.2

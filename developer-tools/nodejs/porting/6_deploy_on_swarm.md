@@ -120,7 +120,7 @@ The image can now be used in our Docker Compose file.
 The new version of the docker-compose.yml file is the following one
 
 ```
-version: '2'
+version: '3'
 services:
   mongo:
     image: mongo:3.2

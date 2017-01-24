@@ -36,7 +36,7 @@ If using Windows Server 2016 and accessing from outside the VM or host, simply u
 Take a closer look at the `docker-compose.windows.yml` file.
 
 ```
-version: '2'
+version: '3'
 services:
   db:
     image: microsoft/mssql-server-2016-express-windows
