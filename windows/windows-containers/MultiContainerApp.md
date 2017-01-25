@@ -39,7 +39,7 @@ Take a closer look at the `docker-compose.windows.yml` file.
 version: '3'
 services:
   db:
-    image: microsoft/mssql-server-2016-express-windows
+    image: microsoft/mssql-server-windows-express
     environment:
       sa_password: "Password1"
     ports:
