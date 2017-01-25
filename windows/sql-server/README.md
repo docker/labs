@@ -1,6 +1,6 @@
 # SQL Server Lab
 
-Microsoft have an image on Docker Hub which lets you run SQL Server Express 2016 as a container: [microsoft/mssql-server-2016-express-windows](https://hub.docker.com/r/microsoft/mssql-server-2016-express-windows/). That gives you a vanilla SQL Server instance where you can attach existing databases, but you need to have created the database outside of the container first. In this lab we'll build a Docker image which packages up a whole database schema, so when you run the container you have a fully-deployed database ready to use from your applications, or from SQL Server Management Studio. 
+Microsoft have an image on Docker Hub which lets you run SQL Server Express 2016 as a container: [microsoft/mssql-server-windows-express](https://hub.docker.com/r/microsoft/mssql-server-windows-express/). That gives you a vanilla SQL Server instance where you can attach existing databases, but you need to have created the database outside of the container first. In this lab we'll build a Docker image which packages up a whole database schema, so when you run the container you have a fully-deployed database ready to use from your applications, or from SQL Server Management Studio. 
 
 ## What You Will Learn
 
