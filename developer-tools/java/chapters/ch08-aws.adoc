@@ -159,7 +159,9 @@ Creating service webapp_web
 Shutdown the application using the command `docker -H localhost:2374 stack rm webapp`:
 
 ```
-TBD
+Removing service webapp_db
+Removing service webapp_web
+Removing network webapp_default
 ```
 
 This stops the container in each service and removes the services. It also deletes any networks that were created as part of this application.
