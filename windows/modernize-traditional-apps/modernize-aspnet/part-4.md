@@ -1,6 +1,6 @@
 # Part 4 - Improving Performance with Asynchronous Messaging
 
-Modernizing apps can be a significant amount of work. You can break a monolithic app into microservices along the lines of bounded contexts, re-platform all the services to use .NET Core and run them in Nano Server containers with Docker. There's a lot to gain from that approach, but it's a rebuild project which needs a lot of investment. The Docker platform supports more targeted, feature-driven modernization, where you take specific features of your app that need improving, and redesign them to take advantage of Docker - without an extensive rebuild.
+Modernizing apps can be a significant amount of work. You can break a monolithic app into microservices along the lines of bounded contexts, re-platform all the services to use .NET Core and run them in Nano Server containers. There's a lot to gain from doing that, and the Docker platform is an enabler for that approach, but it's a rebuild project which needs a lot of investment.  Docker also supports a more targeted, feature-driven modernization, where you take specific features of your app that need improving, and redesign them to take advantage of Docker - without an extensive rebuild.
 
 We're going to look at one feature improvement in this part, addressing performance and scalability. In version 1 of the app the sign-up form makes a connection to the database and executes synchronous database queries. That approach doesn't scale. If there's a spike in traffic to our site we can run more web containers to spread the load, but we'd hit a bottleneck on the number of open connections the database can handle. We'd have to scale the database toom because the web tier is tightly coupled to the data tier.
 
@@ -12,7 +12,7 @@ That decouples the web layer from the data layer and means we can scale to meet 
 
 ## Changing the App to Use Asynchronous Messaging
 
-In the [v2-src]() folder there's a new version of the solution which uses messaging to publish an event when a prospect signs up, rather than writing to the database directly. The main change is in the [SignUp.aspx.cs]() code-behind, for the webform. In Version 1 the `btnGo_Click` handler used this code, to insert the prospect details into the database:
+In the `v2-src` folder there's a new version of the solution which uses messaging to publish an event when a prospect signs up, rather than writing to the database directly. The main change is in the [SignUp code-behind](v2-src/ProductLaunch/ProductLaunch.Web/SignUp.aspx.cs) for the webform. In version 1 the `btnGo_Click` handler used this code, to insert the prospect details into the database:
 
 ```
 using (var context = new ProductLaunchContext())
@@ -38,21 +38,21 @@ var eventMessage = new ProspectSignedUpEvent
 MessageQueue.Publish(eventMessage);
 ```
 
-The `ProspectSignedUpEvent` object contains the original `Prospect` object, populated from the webform input. The `MessageQueue` class is just a wrapper to abstract the type of message queue. In this lab I'm using [NATS](), a high-performance, low-latency, cross-platform and open-source message server. NATS is available as an [official image]() on Docker Hub, which means its a curated image that you can rely on for quality. Publishing a Message to NATS means multiple subscribers can listen for the event, and we start to bring [event-driven architecture]() into our application - just for the one feature that needs it, without a full rewrite.
+The `ProspectSignedUpEvent` object contains the original `Prospect` object, populated from the webform input. The `MessageQueue` class is just a wrapper to abstract the type of message queue. In this lab I'm using [NATS](https://nats.io), a high-performance, low-latency, cross-platform and open-source message server. NATS is available as an [official image](https://hub.docker.com/_/nats/) on Docker Hub, which means its a curated image that you can rely on for quality. Publishing a Message to NATS means multiple subscribers can listen for the event, and we start to bring [event-driven architecture](https://msdn.microsoft.com/en-us/library/dd129913.aspx) into our application - just for the one feature that needs it, without a full rewrite.
 
 ## Changing App Configuration to use Environment Variables
 
-One other thing has changed in the WebForms app. Instead of using `Web.config` for configuration values which may change between environments, we now use environment variables. Lightweight modern app frameworks like [NodeJS]() and [.NET Core]() use environment variables for configuration settings, because they're available in pretty much any host platform - Windows, Linux and PaaS platforms in the cloud. We can do the same in full .NET apps, and moving from config files baked into the deployment package to environment variables set by the platform makes our app more portable.
+One other thing has changed in the WebForms app. Instead of using `Web.config` for configuration values which may change between environments, we now use environment variables. Lightweight modern app frameworks like [NodeJS](https://nodejs.org/en/) and [.NET Core](www.microsoft.com/net/core) use environment variables for configuration settings, because they're available in pretty much any host platform - Windows, Linux and PaaS platforms in the cloud. We can do the same in full .NET apps, and moving from config files baked into the deployment package to environment variables set by the platform makes our app more portable.
 
-In the Entity Framework [ProductLaunchContext]() class we now load the database connection string from an environment variable, using a simple [Config]() class which just reads the value by its key:
+In the Entity Framework [ProductLaunchContext](v2-src/ProductLaunch/ProductLaunch.Model/ProductLaunchContext.cs) class we now load the database connection string from an environment variable, using a simple [Config](v2-src/ProductLaunch/ProductLaunch.Model/Config.cs) class which just reads the value by its key:
 
 ```
 var value = Environment.GetEnvironmentVariable(variable, EnvironmentVariableTarget.Machine);
 ```
 
-To configure the database, we just need to set the connection string as an environment variable named `DB_CONNECTION_STRING`. A similar [Config]() class in the message queue project gets the URL for the NATS host from an environment variable named `MESSAGE_QUEUE_URL`. The Docker platform has first-class support for environment variables. They can be created with a default value in a Docker image, and containers can be run with specific values.
+To configure the database, we just need to set the connection string as an environment variable named `DB_CONNECTION_STRING`. A similar [Config](v2-src/ProductLaunch/ProductLaunch.Messaging/Config.cs) class in the message queue project gets the URL for the NATS host from an environment variable named `MESSAGE_QUEUE_URL`. The Docker platform has first-class support for environment variables. They can be created with a default value in a Docker image, and containers can be run with specific values.
 
-In the [Dockerfile]() for the web app, the default value for the message queue URL is specified as an environment variabkle using the `ENV` instruction:
+In the [Dockerfile](v2-src/docker/web/Dockerfile) for the web app, the default value for the message queue URL is specified as an environment variable using the `ENV` instruction:
 
 ```
 ENV MESSAGE_QUEUE_URL="nats://message-queue:4222"
@@ -64,7 +64,7 @@ Any container we start from that image will have the same value for the URL, unl
 
 Now the web app is built and configured to use messaging, we need another component in the solution to listen for events and save data to the database. Message handlers are typically simple components that do a single job - they listen for a specific type of message and act on it.
 
-In the version 2 source folder there's a message hanbdler project. It's a .NET console app with all the code in the [Program]() class. It connects to NATS using the same messaging project, and listens for `ProspectSignedUpEvent` messages. For each message it receives, the handler extracts the prospect details from the message and saves them to the database:
+In the version 2 source folder there's a message hanbdler project. It's a .NET console app with all the code in the [Program](v2-src/ProductLaunch/ProductLaunch.MessageHandlers.SaveProspect/Program.cs) class. It connects to NATS using the same messaging project, and listens for `ProspectSignedUpEvent` messages. For each message it receives, the handler extracts the prospect details from the message and saves them to the database:
 
 ```
 var prospect = eventMessage.Prospect;
@@ -88,7 +88,7 @@ The messaga handler will run in a Docker container too. The [Dockerfile](v2-src/
 
 ## Co-ordinating Multiple Containers in Docker
 
-Our solution has evolved in version 2, and we now have a distributed solution running across four containers. There are dependencies between those containers. The database and the message queue need to be running for the web application to run correctly, and the message handler needs to be running for the full feature set to work. The containers all need to be ion the same Docker network so they cabn communicate, and the dependent containers need to have the expected names so Docker can resolve them by hostname.
+Our solution has evolved in version 2, and we now have a distributed solution running across four containers. There are dependencies between those containers. The database and the message queue need to be running for the web application to run correctly, and the message handler needs to be running for the full feature set to work. The containers all need to be on the same Docker network so they can communicate, and the dependent containers need to have the expected names so Docker can resolve them by hostname.
 
 We could manage those dependencies manually by starting containers in the correct order, or we could automate all the `docker run` commands in a PowerShell script. A better option is to use another part of the Docker Platform, [Docker Compose](https://docs.docker.com/compose/). Compose is a tool for capturing complex distributed solutions in a single, executable script file. Just as the Dockerfile replaces the deployment document for a single component, the compose file replaces the deployment document for a whole solution.
 
@@ -108,7 +108,7 @@ This is the definition of the web application in the [version 2 Docker Compose f
       - app-net
 ```
 
-Docker Compose lets you capture the setup of each service using familiar terminology from `docker run`. We specify the image to create containers from, publish port 80, and specify the database connection string in an environment variable (if you think having the credentials in plain text isn't good, there are [other](https://docs.docker.com/compose/env-file/) [ways](https://docs.docker.com/engine/swarm/secrets/) of dealing with secrets in Docker.
+Docker Compose lets you capture the setup of each service using familiar terminology from `docker run`. We specify the image to create containers from, publish port 80, and specify the database connection string in an environment variable (if you think having the credentials in plain text isn't good, there are [other ways](https://docs.docker.com/compose/env-file/) of dealing with [secrets in Docker](https://docs.docker.com/engine/swarm/secrets/).
 
 There is extra functionality in Docker Compose too. The `depends_on` attribute lets you explicitly define dependencies between services. In this case the web service is dependent on the database and message queue services - Compose will ensure those services are running before it starts the web service ("service" is Compose terminology - a service definition is implemented by running one or more containers).
 
@@ -176,8 +176,8 @@ Country_CountryCode : USA
 
 ## Part 4 - Recap
 
-Moving our web app to Docker gives us a modern, scalable and easily pluggable platform to modernize it. Containers running in the samew Docker network can communicate with very little overhead, and with [Docker Hub](https://hub.docker.com) and [Docker Store](https://store.docker.com) there are thousands of ready-built, enterprise-grade, open-source applications which you can drop straight into your solution.
+Moving our web app to Docker gives us a modern, scalable and easily pluggable platform to modernize it. Containers running in the same Docker network can communicate with very little overhead, and with [Docker Hub](https://hub.docker.com) and [Docker Store](https://store.docker.com) there are thousands of ready-built, enterprise-grade, open-source applications which you can drop straight into your solution.
 
 We made one of our features asynchronous by pulling the functionality out of the website, and into a message handler, using the NATS message queue to plumb them together. [NATS](http://nats.io) is a very performant, high-quality messaging system which is perfect for microservice or event-driven architectures, and it can be added to a Dockerized solution with very little effort. Without Docker you would need to commission servers for the message queue and ensure it ran with the same level of high-availability as the web application. With Docker you run the queue and the app on the same cluster, and the whole solution has the same HA level.
 
-Performance problems are a great candidate for taking into a modernization program. With asynchronous messaging you can add scalability and performance by targeting a specific feature. In the last part of the lab, we'll see that the Docker platform makes it just as easy to spin out existing featureds into new containers, but maintain synchronous communication - in [Part 5 - Enabling fast prototyping with separate UI components](part-5.md).
+Performance problems are a great candidate for taking into a modernization program. With asynchronous messaging you can add scalability and performance by targeting a specific feature. In the last part of the lab, we'll see that the Docker platform makes it just as easy to spin out existing features into new containers, but maintain synchronous communication - in [Part 5 - Enabling fast prototyping with separate UI components](part-5.md).

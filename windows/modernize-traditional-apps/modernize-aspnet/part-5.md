@@ -1,4 +1,4 @@
-# Enabling Fast Prototyping with Separate UI Components
+# Part 5 - Enabling Fast Prototyping with Separate UI Components
 
 In [Part 4](part-4.md) we modernized one part of our application by making use of the Docker platform, and addressed a performance feature. That's an improvement will benefit all the stakeholders of the app - ops folks now have an app which is easy to maintain, upgrade and scale; dev folks have the freedom to bring new technology into the app without a rewrite; business folks have an app which behaves correctly under pressure and continues to work for users.
 
@@ -47,18 +47,18 @@ There's no contract between the main web app and the homepage component, other t
 In this lab we have a simple static HTML site for the new landing page, which will run in a Docker container with the rest of the solution. The [Dockerfile](v3-src/docker/homepage/Dockerfile) is extremely simple:
 
 ```
-FROM microsoft/iis  
+FROM microsoft/iis:windowsservercore-10.0.14393.693 
 COPY index.html c:/inetpub/wwwroot/index.html
 ```
 
 We're using the [microsoft/iis](https://hub.docker.com/r/microsoft/iis/) image, which is based on Windows Server Core, installs IIS and uses the same ServiceMonitor tool. The only other instruction is to copy in the `index.html` file to a known location on the image, which is the content root for the default website in IIS.
 
-> The integration between the web app and the new homepage component is simplified in this example. Dependencies for the new content (stylesheets, scripts and images) would need to be publicly accessible. A better approaxch would be to use a reverse proxy as the entrypoint to the app, and define the routings in the proxy.
+> The integration between the web app and the new homepage component is simplified in this example. Dependencies for the new content (stylesheets, scripts and images) would need to be publicly accessible. A better approach would be to use a reverse proxy as the entrypoint to the app, and define the routings in the proxy.
 
 
 ## Running the Version 3 App with Docker Compose
 
-The [compilation build script](/v3-src/ProductLaunch/build.ps1) for version 3 is unchganged, bnecause there are no new .NET projects to build. The [packaging build script](/v3-src/build.ps1) has an extra step to package the homepage website into a new Docker image. In the [docker-compose.yml]() file there's a new entry fopr the homepage service:
+The [compilation build script](v3-src/ProductLaunch/build.ps1) for version 3 is unchanged, bnecause there are no new .NET projects to build. The [packaging build script](v3-src/build.ps1) has an extra step to package the homepage website into a new Docker image. In the [docker-compose.yml](v3-src/docker-compose.yml) file there's a new entry for the homepage service:
 
 ```
   product-launch-homepage:
@@ -117,12 +117,12 @@ When we hit the web application, it will make a call to the homepage component a
 
 ![v3 homepage](img/v3-homepage.gif)
 
-If you can hit the 'Register now' link in between the blinking, you'll see the original sign-up page. As before, when you submit the form the app publishes an event message and the message handler saves the details to the database. The existing functionality is all preserved, but now we have a new homepage component and the ability to switch out the homepage service, or revert to the original hompeage will just a change to the Docker Compose file.
+If you can hit the 'Register now' link in between the blinking, you'll see the original sign-up page. As before, when you submit the form the app publishes an event message, and the message handler saves the details to the database. The existing functionality is all preserved, but now we have a new homepage component and the ability to switch out the homepage service, or revert to the original hompeage will just a change to the Docker Compose file.
 
 
 ## Part 5 - Recap
 
-This section completes the lab. We modified the original application to fetch the home page content from a separate service, and built a replacement landing page using a static HTML site running in IIS. The new web page is unattractive, but it illustrates the point that we can use any framework for the new UI component. The project team could experiment with [React](https://facebook.github.io/react/) or [Ember](http://emberjs.com/), or even Dockerize a CMS like [Umbraco](https://umbraco.com/umbraco-for-site-owners/) and give the business users self-service content.
+This section completes the lab. We modified the original application to fetch the home page content from a separate service, and built a replacement landing page using a static HTML site running in IIS. The new landing page probably needs a little design work, but it illustrates the point that we can use any framework for the new UI component. The project team could experiment with [React](https://facebook.github.io/react/) or [Ember](http://emberjs.com/), or even Dockerize a CMS like [Umbraco](https://umbraco.com/umbraco-for-site-owners/) and give the business users self-service content.
 
 In this lab we started with a monolothic ASP.NET WebForms app, and modernized it using the Docker platform:
 
@@ -132,7 +132,7 @@ In this lab we started with a monolothic ASP.NET WebForms app, and modernized it
 - integrating enterprise-grade third party software from Docker Hub into the solution;
 - capturing the full solution configuration in a runnable format using Docker Compose.
 
-Taking a feature-driven approach to modernization gives you fast and quanitifiable return on investment when you move your application to Docker. In the lab we took steps towads an event-driven architecture, and made use of a microservice approach to the UI, without an extensive re-write of the application. We've seen that the Docker platform is an enabler for modernizing applications with a focus on business value and without a full re-architecture of the application.
+Taking a feature-driven approach to modernization gives you fast and quanitifiable return on investment when you move your application to Docker. In the lab we took steps towads an event-driven architecture, and made use of a microservice approach to the UI, without an extensive re-write of the application. We've seen that the Docker platform is an enabler for modernizing applications, with a focus on business value and without a full re-architecture of the application.
 
 
 ## Next steps

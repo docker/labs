@@ -81,8 +81,8 @@ That means the app is working correctly and storing the data in SQL Server.
 
 ## Part 3 - Recap
 
-Now we've taken our .NET WebForms app and it's running in Docker. We have a version tag in the image name, and we could share the image on a public registry like [Docker Hub](), or a private registry we run [in Docker](), or an enterprise-grade solution like [Docker Trusted Registry](). Anyone with avccess to the registry can pull the image and run the application, and it will behave in the exact same way.
+Now we've taken our .NET WebForms app and it's running in Docker. We have a version tag in the image name, and we could share the image on a public registry like [Docker Hub](https://hub.docker.com), or run our own [private registry in Docker](https://github.com/docker/labs/blob/master/windows/registry/README.md), or an enterprise-grade solution like [Docker Trusted Registry](https://docs.docker.com/datacenter/dtr/2.1/guides/). Anyone with avccess to the registry can pull the image and run the application, and it will behave in the exact same way.
 
-At this stage we need to communicate a dependency on SQL Server for the application, and it's still a manual step to start both the database and application containers. Later in the lab we'll see how to capture all the dependencies for a distributed solution, and automate the startup using [Docker Compose]().
+At this stage we need to communicate a dependency on SQL Server for the application, and it's still a manual step to start both the database and application containers. Later in the lab we'll see how to capture all the dependencies for a distributed solution, and automate the startup using [Docker Compose](https://docs.docker.com/compose/overview/).
 
 Already we've made a big improvement for managing and deploying our application. Automation and repeatability are baked into the process, which is consistent between environments. And now that we have the app running in Docker, we can easily make use of the platform to modernize the app and improve the features - which we'll do in [Part 4 - Improving performance with asynchronous messaging](part-4.md)
