@@ -2,13 +2,17 @@
 
 = Docker for AWS
 
-https://docs.docker.com/docker-for-aws/[Docker for AWS] is a CloudFormation template that configures Docker in swarm-mode, running on EC2 instances backed by custom AMIs. This allows to create a cluster of Docker Engine in swarm-mode with a single click.
+https://docs.docker.com/docker-for-aws/[Docker for AWS] is a CloudFormation template that configures Docker in swarm-mode, running on EC2 instances backed by custom AMIs. This allows to create a cluster of Docker Engine in swarm-mode with a single click. This workshop will take the https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch06-swarm.adoc#multi-container-application[multi-container application] and deploy it on multiple hosts.
+
+=== Requirements
 
 What is required for creating this CloudFormation template?
 
 . https://docs.docker.com/docker-for-aws/iam-permissions/[Permissions]
 . SSH key in AWS in the region where you want to deploy (required to access the completed Docker install). http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html[Amazon EC2 Key Pair] explains how to add SSH key to your account.
 . AWS account that support EC2-VPC
+
+=== Create swarm-mode cluster
 
 https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=Docker&templateURL=https://editions-us-east-1.s3.amazonaws.com/aws/stable/Docker.tmpl[Launch Stack] to create the CloudFormation template.
 
@@ -139,3 +143,23 @@ mn21f9xckrcimtlk5e0j2dc6w    ip-172-31-11-29.us-west-2.compute.internal   Ready 
 qjs9qmepub3sou3p1m1vl5p3k    ip-172-31-38-56.us-west-2.compute.internal   Ready   Active        
 ```
 
+=== Multi-container application to multi-host
+
+Use Compose file as defined at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch06-swarm.adoc#multi-container-application[Multi-container Application] to deploy a multi-container application to this Docker cluster. This will deploy a multi-container application to multiple hosts. The command is `docker -H localhost:2374 stack deploy --compose-file=docker-compose.yml webapp` and the output is:
+
+```
+Creating network webapp_default
+Creating service webapp_db
+Creating service webapp_web
+```
+
+
+=== Shutdown application
+
+Shutdown the application using the command `docker -H localhost:2374 stack rm webapp`:
+
+```
+TBD
+```
+
+This stops the container in each service and removes the services. It also deletes any networks that were created as part of this application.
