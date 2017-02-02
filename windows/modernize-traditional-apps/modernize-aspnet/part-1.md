@@ -26,7 +26,7 @@ FROM microsoft/windowsservercore:10.0.14393.693
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 ```
 
-We start `FROM` the `microsoft/windowsservercore` base image, which is managed by Microsoft and is publicly available on Docker Hub. Using the tag `10.0.14393.693` means we want to use a specific version of the image, rather than the default `latest` version. That means our build is repeatable, so any time we build the image we should get the exact same results, because the base image will always be the same. If we want to update to a newer base image (Microsoft release regular updates with security patches), we can change the tag and rebuild.
+We start `FROM` the `microsoft/windowsservercore` base image, which is managed by Microsoft and is publicly available on Docker Hub. Using the tag `10.0.14393.693` means we want to use a specific version of the image, rather than the default `latest` version. That means our build is repeatable, so any time we build the image we should get the exact same results because the base image will always be the same. If we want to update to a newer base image (Microsoft release regular updates with security patches), we can change the tag and rebuild.
 
 Then we switch to PowerShell using the `SHELL` instruction, so for the rest of the Dockerfile any commands we run will use PowerShell. We configure PowerShell to fail if there are any errors, and to switch off progress bars for better performance. With this and the `escape` instruction we can use normal PowerShell syntax in the Dockerfile.
 
