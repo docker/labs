@@ -78,7 +78,7 @@ For version 1 we're going to package the application as-is, without any code cha
 </connectionStrings>
 ```
 
-That may be OK for developers, as LocalDB comes installed with Visual Studio. We could even install LocalDB in our Docker image and use the same configuration, but that's not good practice. That would mean ruinning one container which hosts both the web app and the database, tightly coupling them and making it difficult to scale or upgrade the components separately. Instead we'll run SQL Server Express in a separate container, and change the connection string in the config file.
+That may be OK for developers, as LocalDB comes installed with Visual Studio. We could even install LocalDB in our Docker image and use the same configuration, but that's not good practice. That would mean running one container which hosts both the web app and the database, tightly coupling them and making it difficult to scale or upgrade the components separately. Instead we'll run SQL Server Express in a separate container, and change the connection string in the config file.
 
 We have a separate [Web.config](v1-src/docker/web/Web.config) file, which we'll use in our deployment process - copying it over the existing `Web.config` file from the published application. The connection string in the new file uses `sql-server` as the database server name, and specifies user credentials:
 
@@ -101,7 +101,7 @@ COPY ProductLaunchWeb/_PublishedWebsites/ProductLaunch.Web /web-app
 COPY Web.config /web-app/Web.config
 ```
 
-We'll be scripting the whole build process, so we can use hard-coded paths for the file locations in thge source and the target, knowing that they will exist.
+We'll be scripting the whole build process, so we can use hard-coded paths for the file locations in the source and the target, knowing that they will exist.
 
 > The order of the instructions in the Dockerfile is important. Each instruction creates a new read-only [image layer](https://docs.docker.com/engine/userguide/storagedriver/imagesandcontainers/), which can be cached and used in future builds or in other images. We start with the most generic instructions and get more specific. The final instruction copies in the website content - if we change code and rebuild the image, Docker will re-use all the existing layers and just run the final `COPY` instruction to copy in the new content, which makes for fast, efficient builds.
 
