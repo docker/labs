@@ -42,3 +42,100 @@ image::docker-aws-6.png[]
 
 Click on `Create` to create the Swarm cluster.
 
+It will take a few minutes for the CloudFormation template to complete. The output will look like:
+
+.Swarm CloudFormation complete
+image::docker-aws-7.png[]
+
+https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#Instances:search=docker;sort=instanceState[EC2 Console] will show the EC2 instances for manager and worker.
+
+.EC2 Console
+image::docker-aws-8.png[]
+
+Select the manager node, copy the public IP address:
+
+.Swarm Manager
+image::docker-aws-9.png[]
+
+Create a SSH tunnel using the command `ssh -i ~/.ssh/arun-cb-west2.pem -NL localhost:2374:/var/run/docker.sock docker@ec2-35-165-14-136.us-west-2.compute.amazonaws.com &`
+
+Get more details about the cluster using the command `docker -H localhost:2374 info`. This shows the output:
+
+```
+Containers: 5
+ Running: 4
+ Paused: 0
+ Stopped: 1
+Images: 5
+Server Version: 1.13.0
+Storage Driver: overlay2
+ Backing Filesystem: extfs
+ Supports d_type: true
+ Native Overlay Diff: true
+Logging Driver: awslogs
+Cgroup Driver: cgroupfs
+Plugins: 
+ Volume: local
+ Network: bridge host ipvlan macvlan null overlay
+Swarm: active
+ NodeID: ep8668sq4y8n7qdkvm8l2lecf
+ Is Manager: true
+ ClusterID: mw186ukvx9rx5h87vxzkr0ic0
+ Managers: 1
+ Nodes: 4
+ Orchestration:
+  Task History Retention Limit: 5
+ Raft:
+  Snapshot Interval: 10000
+  Number of Old Snapshots to Retain: 0
+  Heartbeat Tick: 1
+  Election Tick: 3
+ Dispatcher:
+  Heartbeat Period: 5 seconds
+ CA Configuration:
+  Expiry Duration: 3 months
+ Node Address: 172.31.42.42
+ Manager Addresses:
+  172.31.42.42:2377
+Runtimes: runc
+Default Runtime: runc
+Init Binary: docker-init
+containerd version: 03e5862ec0d8d3b3f750e19fca3ee367e13c090e
+runc version: 2f7393a47307a16f8cee44a37b262e8b81021e3e
+init version: 949e6fa
+Security Options:
+ seccomp
+  Profile: default
+Kernel Version: 4.9.4-moby
+Operating System: Alpine Linux v3.5
+OSType: linux
+Architecture: x86_64
+CPUs: 1
+Total Memory: 3.67 GiB
+Name: ip-172-31-42-42.us-west-2.compute.internal
+ID: NNAE:BGOF:DU6D:DE2V:TLEO:PBUL:CD5S:H5QB:MEA5:DBAW:DTIQ:ASVP
+Docker Root Dir: /var/lib/docker
+Debug Mode (client): false
+Debug Mode (server): true
+ File Descriptors: 69
+ Goroutines: 182
+ System Time: 2017-02-02T19:35:33.882319271Z
+ EventsListeners: 0
+Username: arungupta
+Registry: https://index.docker.io/v1/
+Experimental: true
+Insecure Registries:
+ 127.0.0.0/8
+Live Restore Enabled: false
+```
+
+List of nodes in the cluster can be seen using `docker -H localhost:2374 node ls`:
+
+```
+ID                           HOSTNAME                                     STATUS  AVAILABILITY  MANAGER STATUS
+4qh424edo91sw3bt6xssz6mmo    ip-172-31-17-231.us-west-2.compute.internal  Ready   Active        
+ep8668sq4y8n7qdkvm8l2lecf *  ip-172-31-42-42.us-west-2.compute.internal   Ready   Active        Leader
+mn21f9xckrcimtlk5e0j2dc6w    ip-172-31-11-29.us-west-2.compute.internal   Ready   Active        
+qjs9qmepub3sou3p1m1vl5p3k    ip-172-31-38-56.us-west-2.compute.internal   Ready   Active        
+```
+
