@@ -2,3 +2,43 @@
 
 = Docker for AWS
 
+https://docs.docker.com/docker-for-aws/[Docker for AWS] is a CloudFormation template that configures Docker in swarm-mode, running on EC2 instances backed by custom AMIs. This allows to create a cluster of Docker Engine in swarm-mode with a single click.
+
+What is required for creating this CloudFormation template?
+
+. https://docs.docker.com/docker-for-aws/iam-permissions/[Permissions]
+. SSH key in AWS in the region where you want to deploy (required to access the completed Docker install). http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html[Amazon EC2 Key Pair] explains how to add SSH key to your account.
+. AWS account that support EC2-VPC
+
+https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=Docker&templateURL=https://editions-us-east-1.s3.amazonaws.com/aws/stable/Docker.tmpl[Launch Stack] to create the CloudFormation template.
+
+.Select template
+image::docker-aws-1.png[]
+
+Click on `Next`
+
+.Swarm size
+image::docker-aws-2.png[]
+
+Select the number of Swarm manager (1) and worker (3) nodes. This wll create a 4 node cluster. Select the SSH key that will be used to access the cluster. Scroll down to select manager and worker properties.
+
+.Swarm manager/worker properties
+image::docker-aws-3.png[]
+
+`m3.medium` (1 vCPU and 3.75 GB memory) is a good start for manager. `m3.large` (2 vCPU and 7.5 GB memory) is a good start for worker node. Make sure the EC2 instance size is chosen to accommodate the processing and memory needs of your containers.
+
+Click on `Next`
+
+.Swarm options
+image::docker-aws-4.png[]
+
+Take default for all the options and click on `Next`.
+
+.Swarm review
+image::docker-aws-5.png[]
+
+.Swarm IAM accept
+image::docker-aws-6.png[]
+
+Click on `Create` to create the Swarm cluster.
+
