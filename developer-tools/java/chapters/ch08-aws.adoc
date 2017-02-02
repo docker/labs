@@ -9,7 +9,7 @@ https://docs.docker.com/docker-for-aws/[Docker for AWS] is a CloudFormation temp
 What is required for creating this CloudFormation template?
 
 . https://docs.docker.com/docker-for-aws/iam-permissions/[Permissions]
-. SSH key in AWS in the region where you want to deploy (required to access the completed Docker install). http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html[Amazon EC2 Key Pair] explains how to add SSH key to your account.
+. SSH key in AWS in the region where you want to deploy (required to access the completed Docker install). http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html[Amazon EC2 Key Pair] explains how to add SSH key to your account
 . AWS account that support EC2-VPC
 
 === Create swarm-mode cluster
@@ -24,7 +24,9 @@ Click on `Next`
 .Swarm size
 image::docker-aws-2.png[]
 
-Select the number of Swarm manager (1) and worker (3) nodes. This wll create a 4 node cluster. Select the SSH key that will be used to access the cluster. Scroll down to select manager and worker properties.
+Select the number of Swarm manager (1) and worker (3) nodes. This wll create a 4 node cluster. Select the SSH key that will be used to access the cluster. By default, the template is configured to redirect all log statements to CloudWatch. Until https://github.com/docker/docker/issues/30691[#30691] is fixed, the logs will only be available using CloudWatch. Alternatively, you may select to not redirect logs to CloudWatch. In this case, the usual command to get the logs will work.
+
+Scroll down to select manager and worker properties.
 
 .Swarm manager/worker properties
 image::docker-aws-3.png[]
@@ -53,12 +55,12 @@ image::docker-aws-7.png[]
 
 https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#Instances:search=docker;sort=instanceState[EC2 Console] will show the EC2 instances for manager and worker.
 
-.EC2 Console
+.EC2 console
 image::docker-aws-8.png[]
 
 Select the manager node, copy the public IP address:
 
-.Swarm Manager
+.Swarm manager
 image::docker-aws-9.png[]
 
 Create a SSH tunnel using the command `ssh -i ~/.ssh/arun-cb-west2.pem -NL localhost:2374:/var/run/docker.sock docker@ec2-35-165-14-136.us-west-2.compute.amazonaws.com &`
@@ -145,13 +147,165 @@ qjs9qmepub3sou3p1m1vl5p3k    ip-172-31-38-56.us-west-2.compute.internal   Ready 
 
 === Multi-container application to multi-host
 
-Use Compose file as defined at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch06-swarm.adoc#multi-container-application[Multi-container Application] to deploy a multi-container application to this Docker cluster. This will deploy a multi-container application to multiple hosts. The command is `docker -H localhost:2374 stack deploy --compose-file=docker-compose.yml webapp` and the output is:
+Use Compose file as defined at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch06-swarm.adoc#multi-container-application[Multi-container Application] to deploy a multi-container application to this Docker cluster. This will deploy a multi-container application to multiple hosts. The command is:
+
+```
+docker -H localhost:2374 stack deploy --compose-file=docker-compose.yml webapp
+```
+
+The output is:
 
 ```
 Creating network webapp_default
 Creating service webapp_db
 Creating service webapp_web
 ```
+
+WildFly and Couchbase services are started on this cluster. Each service has a single container. A new overlay network is created. This allows multiple containers on different hosts to communicate with each other.
+
+=== Verify service/containers in application
+
+Verify that the WildFly and Couchbase services are running using `docker -H localhost:2374 service ls`:
+
+```
+ID            NAME        MODE        REPLICAS  IMAGE
+bfi9s7t5sdjo  webapp_db   replicated  1/1       arungupta/couchbase:travel
+ij04s9di00xw  webapp_web  replicated  1/1       arungupta/couchbase-javaee:travel
+```
+
+More details about the service can be obtained using `docker -H localhost:2374 service inspect webapp_web`:
+
+```
+[
+    {
+        "ID": "ij04s9di00xwa4czywsg9tu10",
+        "Version": {
+            "Index": 81
+        },
+        "CreatedAt": "2017-02-02T21:42:36.128550439Z",
+        "UpdatedAt": "2017-02-02T21:42:36.159291096Z",
+        "Spec": {
+            "Name": "webapp_web",
+            "Labels": {
+                "com.docker.stack.namespace": "webapp"
+            },
+            "TaskTemplate": {
+                "ContainerSpec": {
+                    "Image": "arungupta/couchbase-javaee:travel@sha256:e48e05c0327e30e1d11f226b7b68e403e6c9c8d977bf09cb23188c6fff46bf39",
+                    "Labels": {
+                        "com.docker.stack.namespace": "webapp"
+                    },
+                    "Env": [
+                        "COUCHBASE_URI=db"
+                    ]
+                },
+                "Resources": {},
+                "Placement": {},
+                "ForceUpdate": 0
+            },
+            "Mode": {
+                "Replicated": {
+                    "Replicas": 1
+                }
+            },
+            "Networks": [
+                {
+                    "Target": "x0ohr41bl6aqs8m97lqc1yhl0",
+                    "Aliases": [
+                        "web"
+                    ]
+                }
+            ],
+            "EndpointSpec": {
+                "Mode": "vip",
+                "Ports": [
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 8080,
+                        "PublishedPort": 8080,
+                        "PublishMode": "ingress"
+                    },
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 9990,
+                        "PublishedPort": 9990,
+                        "PublishMode": "ingress"
+                    }
+                ]
+            }
+        },
+        "Endpoint": {
+            "Spec": {
+                "Mode": "vip",
+                "Ports": [
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 8080,
+                        "PublishedPort": 8080,
+                        "PublishMode": "ingress"
+                    },
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 9990,
+                        "PublishedPort": 9990,
+                        "PublishMode": "ingress"
+                    }
+                ]
+            },
+            "Ports": [
+                {
+                    "Protocol": "tcp",
+                    "TargetPort": 8080,
+                    "PublishedPort": 8080,
+                    "PublishMode": "ingress"
+                },
+                {
+                    "Protocol": "tcp",
+                    "TargetPort": 9990,
+                    "PublishedPort": 9990,
+                    "PublishMode": "ingress"
+                }
+            ],
+            "VirtualIPs": [
+                {
+                    "NetworkID": "n2jeheeoo6loyf38vlaceqzra",
+                    "Addr": "10.255.0.7/16"
+                },
+                {
+                    "NetworkID": "x0ohr41bl6aqs8m97lqc1yhl0",
+                    "Addr": "10.0.0.2/24"
+                }
+            ]
+        },
+        "UpdateStatus": {
+            "StartedAt": "0001-01-01T00:00:00Z",
+            "CompletedAt": "0001-01-01T00:00:00Z"
+        }
+    }
+]
+```
+
+Logs for the service cannot be seen using `docker service logs`. This will be fixed with https://github.com/docker/docker/issues/30691[#30691]. Instead they are visible using https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logs:prefix=Docker[CloudWatch].
+
+.CloudWatch log group
+image::docker-aws-10.png[]
+
+Select the log group:
+
+.CloudWatch log stream
+image::docker-aws-11.png[]
+
+Pick `webapp_web.xxx` log stream to see log statements from Couchbase image:
+
+.CloudWatch database log stream
+image::docker-aws-12.png[]
+
+Pick `webapp_db.xxx` log stream to see log statements from WildFly application server:
+
+.CloudWatch application log stream
+image::docker-aws-13.png[]
+
+=== Access application
 
 
 === Shutdown application
