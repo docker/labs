@@ -44,7 +44,7 @@ As before you now have an environment variable for the new home page location, `
 
 There's no contract between the main web app and the homepage component, other than the expectation that it will return valid HTML. For the new UI you could use ASP.NET MVC, or ASP.NET Core - or in fact any web framework. Decoupling a UI component like this gives the dev team a huge amount of freedom to evaluate new frameworks in a meaningful way. They can go to production quickly and safely, and they can be just as quickly and safely backed out.
 
-In this lab ther's a simple static HTML site for the new landing page, which will run in a Docker container alongside the rest of the solution. The [Dockerfile](v3-src/docker/homepage/Dockerfile) is extremely simple:
+In this lab there's a simple static HTML site for the new landing page, which will run in a Docker container alongside the rest of the solution. The [Dockerfile](v3-src/docker/homepage/Dockerfile) is extremely simple:
 
 ```
 FROM microsoft/iis:windowsservercore-10.0.14393.693 
