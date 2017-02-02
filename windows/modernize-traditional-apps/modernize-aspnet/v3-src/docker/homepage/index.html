@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>We're launching something new...</title>
+        <script type="text/javascript">
+  function blink() {
+    var blinks = document.getElementsByTagName('blink');
+    for (var i = blinks.length - 1; i >= 0; i--) {
+      var s = blinks[i];
+      s.style.visibility = (s.style.visibility === 'visible') ? 'hidden' : 'visible';
+    }
+    window.setTimeout(blink, 300);
+  }
+  if (document.addEventListener) document.addEventListener("DOMContentLoaded", blink, false);
+  else if (window.addEventListener) window.addEventListener("load", blink, false);
+  else if (window.attachEvent) window.attachEvent("onload", blink);
+  else window.onload = blink;
+</script>
+    </head>
+    <body>
+        <div>
+        <marquee direction="down" width="1500" height="300" behavior="alternate" style="border:solid; font-size: 45pt; font-weight: bold; background-color: yellow">
+             <marquee behavior="alternate">
+                 WE'RE LAUNCHING SOMETHING NEW!
+             </marquee>
+        </marquee>
+        </div>
+        <br/>
+        <br/>
+        <div style="width: 1500px; height: 150px; border:solid; font-size: 45pt; font-weight: bold; background-color: blue; text-align: center;">
+            <blink><a style="font-size: 30pt; font-weight: bold; color:aqua;" href="/SignUp.aspx">Register here for updates!<a></blink>
+        </div>
+    </body>
+</html>
