@@ -24,14 +24,16 @@ Click on `Next`
 .Swarm size
 image::docker-aws-2.png[]
 
-Select the number of Swarm manager (1) and worker (3) nodes. This wll create a 4 node cluster. Select the SSH key that will be used to access the cluster. By default, the template is configured to redirect all log statements to CloudWatch. Until https://github.com/docker/docker/issues/30691[#30691] is fixed, the logs will only be available using CloudWatch. Alternatively, you may select to not redirect logs to CloudWatch. In this case, the usual command to get the logs will work.
+Select the number of Swarm manager (1) and worker (3) nodes. This wll create a 4 node cluster. Select the SSH key that will be used to access the cluster.
+
+By default, the template is configured to redirect all log statements to CloudWatch. Until https://github.com/docker/docker/issues/30691[#30691] is fixed, the logs will only be available using CloudWatch. Alternatively, you may select to not redirect logs to CloudWatch. In this case, the usual command to get the logs will work.
 
 Scroll down to select manager and worker properties.
 
 .Swarm manager/worker properties
 image::docker-aws-3.png[]
 
-`m3.medium` (1 vCPU and 3.75 GB memory) is a good start for manager. `m3.large` (2 vCPU and 7.5 GB memory) is a good start for worker node. Make sure the EC2 instance size is chosen to accommodate the processing and memory needs of your containers.
+`m3.medium` (1 vCPU and 3.75 GB memory) is a good start for manager. `m3.large` (2 vCPU and 7.5 GB memory) is a good start for worker node. Make sure the EC2 instance size is chosen to accommodate the processing and memory needs of containers that will run there.
 
 Click on `Next`
 
@@ -46,9 +48,9 @@ image::docker-aws-5.png[]
 .Swarm IAM accept
 image::docker-aws-6.png[]
 
-Click on `Create` to create the Swarm cluster.
+Accept the checkbox for CloudFormation to create IAM resources. Click on `Create` to create the Swarm cluster.
 
-It will take a few minutes for the CloudFormation template to complete. The output will look like:
+It will take a few minutes for the CloudFormation template to complete. For example, it took about 10-12 minutes for this cluster to be created in `us-west-2` region. The output will look like:
 
 .Swarm CloudFormation complete
 image::docker-aws-7.png[]
@@ -60,10 +62,11 @@ image::docker-aws-8.png[]
 
 Select the manager node, copy the public IP address:
 
+[[Swarm_manager]]
 .Swarm manager
 image::docker-aws-9.png[]
 
-Create a SSH tunnel using the command `ssh -i ~/.ssh/arun-cb-west2.pem -NL localhost:2374:/var/run/docker.sock docker@ec2-35-165-14-136.us-west-2.compute.amazonaws.com &`
+Create a SSH tunnel using the command `ssh -i ~/.ssh/arun-cb-west2.pem -NL localhost:2374:/var/run/docker.sock docker@ec2-52-37-65-169.us-west-2.compute.amazonaws.com &`
 
 Get more details about the cluster using the command `docker -H localhost:2374 info`. This shows the output:
 
@@ -139,15 +142,15 @@ List of nodes in the cluster can be seen using `docker -H localhost:2374 node ls
 
 ```
 ID                           HOSTNAME                                     STATUS  AVAILABILITY  MANAGER STATUS
-4qh424edo91sw3bt6xssz6mmo    ip-172-31-17-231.us-west-2.compute.internal  Ready   Active        
-ep8668sq4y8n7qdkvm8l2lecf *  ip-172-31-42-42.us-west-2.compute.internal   Ready   Active        Leader
-mn21f9xckrcimtlk5e0j2dc6w    ip-172-31-11-29.us-west-2.compute.internal   Ready   Active        
-qjs9qmepub3sou3p1m1vl5p3k    ip-172-31-38-56.us-west-2.compute.internal   Ready   Active        
+4gj5tt6f2rtv9bmmtegn3sw7l    ip-172-31-22-34.us-west-2.compute.internal   Ready   Active        
+jul7u4x2yue1pz46lxb62n3lt *  ip-172-31-45-44.us-west-2.compute.internal   Ready   Active        Leader
+trg4x49872k5w178q306pljhz    ip-172-31-36-119.us-west-2.compute.internal  Ready   Active        
+zyg7i7pki0jqdq9kjzp92vq0j    ip-172-31-7-184.us-west-2.compute.internal   Ready   Active        
 ```
 
 === Multi-container application to multi-host
 
-Use Compose file as defined at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch06-swarm.adoc#multi-container-application[Multi-container Application] to deploy a multi-container application to this Docker cluster. This will deploy a multi-container application to multiple hosts. The command is:
+Use the Compose file as defined at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch06-swarm.adoc#multi-container-application[Multi-container Application] to deploy a multi-container application to this Docker cluster. This will deploy a multi-container application to multiple hosts. The command is:
 
 ```
 docker -H localhost:2374 stack deploy --compose-file=docker-compose.yml webapp
@@ -173,17 +176,19 @@ bfi9s7t5sdjo  webapp_db   replicated  1/1       arungupta/couchbase:travel
 ij04s9di00xw  webapp_web  replicated  1/1       arungupta/couchbase-javaee:travel
 ```
 
+`REPLICAS` colum shows that one of one replica for the container is running for each service. It might take a few minutes for the service to be running as the image needs to be downloaded on the host where the container is started.
+
 More details about the service can be obtained using `docker -H localhost:2374 service inspect webapp_web`:
 
 ```
 [
     {
-        "ID": "ij04s9di00xwa4czywsg9tu10",
+        "ID": "ssf0kj0hagl7c1tcpw8bbsiue",
         "Version": {
-            "Index": 81
+            "Index": 29
         },
-        "CreatedAt": "2017-02-02T21:42:36.128550439Z",
-        "UpdatedAt": "2017-02-02T21:42:36.159291096Z",
+        "CreatedAt": "2017-02-02T22:38:20.424806786Z",
+        "UpdatedAt": "2017-02-02T22:38:20.428265482Z",
         "Spec": {
             "Name": "webapp_web",
             "Labels": {
@@ -210,7 +215,7 @@ More details about the service can be obtained using `docker -H localhost:2374 s
             },
             "Networks": [
                 {
-                    "Target": "x0ohr41bl6aqs8m97lqc1yhl0",
+                    "Target": "poh9n7fbrl3mlue6lkl6qwbst",
                     "Aliases": [
                         "web"
                     ]
@@ -268,11 +273,11 @@ More details about the service can be obtained using `docker -H localhost:2374 s
             ],
             "VirtualIPs": [
                 {
-                    "NetworkID": "n2jeheeoo6loyf38vlaceqzra",
+                    "NetworkID": "vsr5otzk5gwz7afwafjmiiv40",
                     "Addr": "10.255.0.7/16"
                 },
                 {
-                    "NetworkID": "x0ohr41bl6aqs8m97lqc1yhl0",
+                    "NetworkID": "poh9n7fbrl3mlue6lkl6qwbst",
                     "Addr": "10.0.0.2/24"
                 }
             ]
@@ -285,7 +290,7 @@ More details about the service can be obtained using `docker -H localhost:2374 s
 ]
 ```
 
-Logs for the service cannot be seen using `docker service logs`. This will be fixed with https://github.com/docker/docker/issues/30691[#30691]. Instead they are visible using https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logs:prefix=Docker[CloudWatch].
+Logs for the service cannot be seen using `docker service logs`. This will be fixed with https://github.com/docker/docker/issues/30691[#30691]. Instead they are visible using https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logs:prefix=Docker[CloudWatch Logs].
 
 .CloudWatch log group
 image::docker-aws-10.png[]
@@ -295,18 +300,48 @@ Select the log group:
 .CloudWatch log stream
 image::docker-aws-11.png[]
 
-Pick `webapp_web.xxx` log stream to see log statements from Couchbase image:
+Pick `webapp_db.xxx` log stream to see log statements from the Couchbase image:
 
 .CloudWatch database log stream
 image::docker-aws-12.png[]
 
-Pick `webapp_db.xxx` log stream to see log statements from WildFly application server:
+Pick `webapp_db.xxx` log stream to see log statements from the WildFly application server:
 
 .CloudWatch application log stream
 image::docker-aws-13.png[]
 
 === Access application
 
+Application is accessed using manager's IP address and on port 8080. By default, the port 8080 is not open. In <<Swarm_manager>>, click on `Docker-Managerxxx` in `Security groups`. Click on `Inbound`, `Edit`, `Add Rule`, and create a rule to enable TCP traffic on port 8080.
+
+.Open port 8080 in Docker manager
+image::docker-aws-14.png[]
+
+Click on `Save` to save the rules.
+
+Now, the application is accessible using the command `curl -v http://ec2-52-37-65-169.us-west-2.compute.amazonaws.com:8080/airlines/resources/airline` and shows output:
+
+```
+*   Trying 52.37.65.169...
+* Connected to ec2-52-37-65-169.us-west-2.compute.amazonaws.com (52.37.65.169) port 8080 (#0)
+> GET /airlines/resources/airline HTTP/1.1
+> Host: ec2-52-37-65-169.us-west-2.compute.amazonaws.com:8080
+> User-Agent: curl/7.43.0
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Connection: keep-alive
+< X-Powered-By: Undertow/1
+< Server: WildFly/10
+< Content-Type: application/octet-stream
+< Content-Length: 1402
+< Date: Thu, 02 Feb 2017 23:42:41 GMT
+< 
+* Connection #0 to host ec2-52-37-65-169.us-west-2.compute.amazonaws.com left intact
+[{"travel-sample":{"country":"United States","iata":"Q5","callsign":"MILE-AIR","name":"40-Mile Air","icao":"MLA","id":10,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"TQ","callsign":"TXW","name":"Texas Wings","icao":"TXW","id":10123,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"A1","callsign":"atifly","name":"Atifly","icao":"A1F","id":10226,"type":"airline"}}, {"travel-sample":{"country":"United Kingdom","iata":null,"callsign":null,"name":"Jc royal.britannica","icao":"JRB","id":10642,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"ZQ","callsign":"LOCAIR","name":"Locair","icao":"LOC","id":10748,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"K5","callsign":"SASQUATCH","name":"SeaPort Airlines","icao":"SQH","id":10765,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"KO","callsign":"ACE AIR","name":"Alaska Central Express","icao":"AER","id":109,"type":"airline"}}, {"travel-sample":{"country":"United Kingdom","iata":"5W","callsign":"FLYSTAR","name":"Astraeus","icao":"AEU","id":112,"type":"airline"}}, {"travel-sample":{"country":"France","iata":"UU","callsign":"REUNION","name":"Air Austral","icao":"REU","id":1191,"type":"airline"}}, {"travel-sample":{"country":"France","iata":"A5","callsign":"AIRLINAIR","name":"Airlinair","icao":"RLA","id":1203,"type":"airline"}}]
+```
+
+Complete set of commands are at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch06-swarm.adoc#access-application.
 
 === Shutdown application
 
@@ -319,3 +354,11 @@ Removing network webapp_default
 ```
 
 This stops the container in each service and removes the services. It also deletes any networks that were created as part of this application.
+
+=== Shutdown cluster
+
+Docker cluster can be shutdown by deleting the stack created by CloudFormataion:
+
+.Delete CloudFormation template
+image::docker-aws-15.png[]
+
