@@ -1,0 +1,56 @@
+version: '2'
+
+services:
+  
+  product-launch-db:
+    image: microsoft/mssql-server-windows-express
+    ports:
+      - "1433:1433"
+    environment: 
+      - ACCEPT_EULA=Y
+      - sa_password=d0ck3r_Labs!
+    networks:
+      - app-net
+
+  message-queue:
+    image: nats:windowsservercore
+    ports:
+      - "4222:4222"
+    networks:
+      - app-net
+
+  product-launch-homepage:
+    image: dockersamples/modernize-aspnet-homepage:v3 
+    ports:
+      - "81:80"
+    networks:
+      - app-net
+
+  product-launch-web:
+    image: dockersamples/modernize-aspnet-web:v3
+    ports:
+      - "80:80"
+    environment:
+      - DB_CONNECTION_STRING=Server=product-launch-db;Database=ProductLaunch;User Id=sa;Password=d0ck3r_Labs!;
+      - HOMEPAGE_URL=http://product-launch-homepage
+    depends_on:
+      - product-launch-db
+      - message-queue
+      - product-launch-homepage
+    networks:
+      - app-net
+
+  save-prospect-handler:
+    image: dockersamples/modernize-aspnet-handler:v3
+    environment:
+      - DB_CONNECTION_STRING=Server=product-launch-db;Database=ProductLaunch;User Id=sa;Password=d0ck3r_Labs!;
+    depends_on:
+      - product-launch-db
+      - message-queue
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    external:
+      name: nat

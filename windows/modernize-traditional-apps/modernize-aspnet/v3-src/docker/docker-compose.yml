@@ -1,0 +1,80 @@
+version: '2'
+
+services:
+  
+  product-launch-db:
+    image: microsoft/mssql-server-windows-express
+    ports:
+      - "1433:1433"
+    environment: 
+      - ACCEPT_EULA=Y
+      - sa_password=NDC_l0nd0n
+    networks:
+      - app-net
+
+  message-queue:
+    image: sixeyed/nats:windowsservercore
+    ports:
+      - "4222:4222"
+    networks:
+      - app-net
+
+  elasticsearch:
+    image: sixeyed/elasticsearch:windowsservercore
+    ports:
+      - "9200:9200"
+    networks:
+      - app-net
+
+  kibana:
+    image: sixeyed/kibana:windowsservercore
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - app-net
+
+  homepage:
+    image: sixeyed/product-launch-homepage:v5
+    ports:
+      - "81:80"
+    networks:
+      - app-net
+
+  product-launch-web:
+    image: sixeyed/product-launch-web:v5
+    ports:
+      - "80:80"
+    environment:
+      - DB_CONNECTION_STRING=Server=product-launch-db;Database=ProductLaunch;User Id=sa;Password=NDC_l0nd0n;
+      - HOMEPAGE_URL=http://homepage
+    depends_on:
+      - homepage
+      - product-launch-db
+      - message-queue
+    networks:
+      - app-net
+
+  save-prospect-handler:
+    image: sixeyed/product-launch-save-handler:v5
+    environment:
+      - DB_CONNECTION_STRING=Server=product-launch-db;Database=ProductLaunch;User Id=sa;Password=NDC_l0nd0n;
+    depends_on:
+      - product-launch-db
+      - message-queue
+    networks:
+      - app-net
+
+  index-prospect-handler:
+    image: sixeyed/product-launch-index-handler:v5
+    depends_on:
+      - elasticsearch
+      - message-queue
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    external:
+      name: nat
