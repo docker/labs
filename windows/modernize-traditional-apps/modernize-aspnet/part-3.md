@@ -1,6 +1,6 @@
 # Part 3 - Running ASP.NET applications as Docker containers
 
-We have a Docker image from [Part 2](part-2.md) which contains our conmfigured application with all its dependencies. To run the website we just need to start a container, but our application needs to connect to a database. The networking stack in Docker means we can use a remote SQL Server instance, not running on Docker, or run we can SQL Server in a Docker container:
+We have a Docker image from [Part 2](part-2.md) which contains our configured application with all its dependencies. To run the website we just need to start a container, but our application needs to connect to a database. The networking stack in Docker means we can use a remote SQL Server instance, not running on Docker, or run we can SQL Server in a Docker container:
 
 ![v1 architecture in Docker](img/v1-docker-arch.png)
 
@@ -21,7 +21,7 @@ docker run --detach `
  microsoft/mssql-server-windows-express
 ```
 
-In the `docker run` command we start the container in the background with the `detached` option, and `publish` the standard SQL Server port 1433, so we can connect to SQL Server outside of Docker. We use enviornment variables to specify a password for the SA user account (which match the crfedentials in the Web.config file for the application), and accept the licence agreement. Lastly we give the container the name `sql-server` which means other containers in the same Docker network will be able to reach the database using that host name.
+In the `docker run` command we start the container in the background with the `detached` option, and `publish` the standard SQL Server port 1433, so we can connect to SQL Server outside of Docker. We use environment variables to specify a password for the SA user account (which match the credentials in the Web.config file for the application), and accept the licence agreement. Lastly we give the container the name `sql-server` which means other containers in the same Docker network will be able to reach the database using that host name.
 
 The database is the only dependency for version 1 of the app, so now we can run it.
 
@@ -81,7 +81,7 @@ That means the app is working correctly and storing the data in SQL Server.
 
 ## Part 3 - Recap
 
-Now we've taken our .NET WebForms app and it's running in Docker. We have a version tag in the image name, and we could share the image on a public registry like [Docker Hub](https://hub.docker.com), or run our own [private registry in Docker](https://github.com/docker/labs/blob/master/windows/registry/README.md), or an enterprise-grade solution like [Docker Trusted Registry](https://docs.docker.com/datacenter/dtr/2.1/guides/). Anyone with avccess to the registry can pull the image and run the application, and it will behave in the exact same way.
+Now we've taken our .NET WebForms app and it's running in Docker. We have a version tag in the image name, and we could share the image on a public registry like [Docker Hub](https://hub.docker.com), or run our own [private registry in Docker](https://github.com/docker/labs/blob/master/windows/registry/README.md), or an enterprise-grade solution like [Docker Trusted Registry](https://docs.docker.com/datacenter/dtr/2.1/guides/). Anyone with access to the registry can pull the image and run the application, and it will behave in the exact same way.
 
 At this stage we need to communicate a dependency on SQL Server for the application, and it's still a manual step to start both the database and application containers. Later in the lab we'll see how to capture all the dependencies for a distributed solution, and automate the startup using [Docker Compose](https://docs.docker.com/compose/overview/).
 
