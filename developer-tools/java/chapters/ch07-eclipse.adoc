@@ -9,19 +9,17 @@ This chapter will show you basic Docker tooling with Eclipse:
 - Run/Start/Stop/Kill Docker containers
 - Customize views
 
-Watch a quick video explaining the key steps:
-
-video::XmhEZiS26os[youtube]
+Watch a quick video explaining the key steps in https://www.youtube.com/watch?v=XmhEZiS26os.
 
 === Install Docker Tooling in Eclipse
 
-Download http://eclipse.org/[Eclipse IDE for Java EE Developers Mars 2] and install.
+Download http://www.eclipse.org/downloads/eclipse-packages/[Eclipse IDE for Java EE Developers] and install.
 
 Go to "`Help`" menu, "`Install New Software...`".
 
-Select Eclipse Mars update site, search for Docker, select "`Docker Tooling`".
+Select Eclipse update site for the release, search for Docker, select "`Docker Tooling`".
 
-image::docker-eclipse-mars-update-site-selection.png[]
+image::docker-eclipse-update-site-selection.png[]
 
 Click on "`Next>`", "`Next>`", accept the license agreement, click on "`Finish`" to start the installation.
 
@@ -31,11 +29,11 @@ Restart Eclipse for the installation to complete.
 
 Go to "`Window`", "`Perspective`", "`Open Perspective`", "`Other...`", "`Docker Tooling`".
 
-image::docker-eclipse-mars-docker-perspective.png[]
+image::docker-eclipse-docker-perspective.png[]
 
 Click on "`OK`" to see the perspective.
 
-image::docker-eclipse-mars-docker-perspective-default-look.png[]
+image::docker-eclipse-docker-perspective-default-look.png[]
 
 This has three views:
 
@@ -43,19 +41,27 @@ This has three views:
 - *Docker Images*: a table view listing containers for selected Docker connection.
 - *Docker Containers*: a table view listing containers for selected Docker connection
 
-Click on the text in Docker Explorer to create a new connection. If you are on Mac, you are likely using Docker Toolbox (or Docker Machine) to setup Docker Host.
+Click on the text in Docker Explorer to create a new connection. If you are on Mac/Windows, you are likely using Docker for Mac/Windows or Docker Toolbox to setup Docker Host. Eclipse allows to configure Docker Engine using both Docker for Mac/Windows and Docker Toolbox.
 
-Enter the values as shown:
+If you are using Docker for Mac/Windows, then the default values are shown:
 
-image::docker-eclipse-mars-docker-connection.png[]
+image::docker-eclipse-docker-connection.png[]
+
+Click on "`Test Connection`" to test the connection.
+
+image::docker-eclipse-docker-connection-test.png[]
+
+If you are using Toolbox, enter the values as shown:
+
+image::docker-eclipse-docker-connection-toolbox.png[]
 
 The exact value of TCP Connection can be found using `docker-machine ls` command. The path for authentication is the directory name where certificates for your Docker Machine, `couchbase` in this case, are stored.
 
-Click on "`Finish`" to complete the configuration.
+Click on "`Test Connection`" to make sure the connection is successfully configured.
 
-Click on Test Connection to make sure the connection is successfully configured.
+image::docker-eclipse-docker-connection-test-toolbox.png[]
 
-image::docker-eclipse-mars-docker-connection-test.png[]
+In either case, the configuration can be completed once the connection is tested. Click on "`Finish`" to complete the configuration.
 
 Docker Explorer is updated to show the connection.
 

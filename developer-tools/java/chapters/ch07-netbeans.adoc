@@ -8,6 +8,8 @@ This chapter will show you basic Docker tooling with NetBeans:
 - Pull/Build Docker images
 - Run/Start/Stop Docker containers
 
+NOTE: NetBeans only supports configuring Docker Engine running using Docker Toolbox. This means that if you are running Docker for Mac or Docker for Windows then NetBeans cannot be used.
+
 === Configure Docker Host
 
 In "`Services`" window, right-click on "`Docker`", click on "`Add Docker...`"
