@@ -12,7 +12,7 @@ services:
     image: mysql:latest
   javaee7-hol:
     image: arungupta/javaee7-hol:latest
-  wildfly-couchbase-javaee7:
-    image: arungupta/wildfly-couchbase-javaee7:latest
+  couchbase-javaee:
+    image: arungupta/couchbase-javaee:travel
   couchbase:
-    image: arungupta/couchbase:latest
+    image: arungupta/couchbase:travel
