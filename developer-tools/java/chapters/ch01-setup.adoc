@@ -69,7 +69,7 @@ NOTE: For Linux, `docker-compose` and `docker` commands need `sudo` access. So p
 === Other Software
 
 . Download Java IDE based upon your choice and install.
-.. https://netbeans.org/downloads/[NetBeans 8.2] (`"Java EE"` version)
+.. https://netbeans.org/downloads/[NetBeans 8.2] (`"Java SE"` version)
 .. https://www.jetbrains.com/idea/download/[IntelliJ IDEA Community or Ultimate]
 .. http://www.eclipse.org/downloads/eclipse-packages/[Eclipse IDE for Java EE Developers]
 . Download https://maven.apache.org/download.cgi[Maven] and install.
