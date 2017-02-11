@@ -59,7 +59,7 @@ do
 	--token $worker_token \
 	--listen-addr $(docker-machine ip worker$node) \
 	--advertise-addr $(docker-machine ip worker$node) \
-	$(docker-machine ip manager1):2377"
+	$(docker-machine ip manager1)"
 done
 
 # show members of swarm
