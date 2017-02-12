@@ -10,7 +10,7 @@ echo "======> Creating $managers manager machines ...";
 for node in $(seq 1 $managers);
 do
 	echo "======> Creating manager$node machine ...";
-	docker-machine create -d virtualbox --virtualbox-boot2docker-url "https://github.com/boot2docker/boot2docker/releases/download/v1.13.0-rc4/boot2docker.iso" manager$node;
+	docker-machine create -d virtualbox manager$node;
 done
 
 # create worker machines
@@ -18,7 +18,7 @@ echo "======> Creating $workers worker machines ...";
 for node in $(seq 1 $workers);
 do
 	echo "======> Creating worker$node machine ...";
-	docker-machine create -d virtualbox --virtualbox-boot2docker-url "https://github.com/boot2docker/boot2docker/releases/download/v1.13.0-rc4/boot2docker.iso" worker$node;
+	docker-machine create -d virtualbox worker$node;
 done
 
 # list all machines
@@ -59,8 +59,9 @@ do
 	--token $worker_token \
 	--listen-addr $(docker-machine ip worker$node) \
 	--advertise-addr $(docker-machine ip worker$node) \
-	$(docker-machine ip manager1):2377"
+	$(docker-machine ip manager1)"
 done
 
 # show members of swarm
 docker-machine ssh manager1 "docker node ls"
+
