@@ -94,7 +94,7 @@ If you want to dig deeper and look at the specifics of each service we are runni
 
 ==== JVM/WildFly Monitoring
 
-When running any Java app, one of the first things we need to do is look at the metrics that the JVM exposes by default. These include threads, heap usage and garbage collection.
+When running any Java app, one of the first things we need to do is look at the metrics that the JVM exposes by default. These include threads, heap usage and garbage collection. If your Java application exposes JMX, you can collect them together with your JVM metrics.
 
 .Sysdig Cloud dashboard for JVM 
 image::sysdig-jvm.png[]
@@ -115,3 +115,10 @@ To close our monitoring jar, we will close the lid with application monitoring. 
 .Sysdig Cloud HTTP view
 image::sysdig-webapp.png[]
 
+== Key Learnings
+
+If we had to sumarize the key learnings to take from Monitoring Docker Container with Sysdig, we would like you to keep the following:
+
+- Docker containers are like blackboxes, great for development but hard to monitor. Docker monitoring API gives you limited visibility, syscalls allow you to see everything.
+- Instrument everything! Instrumenting comes at a cost, Sysdig help you making instrumenting a just one shot process: installing Sysdig Cloud agent on each of your hosts.
+- Collect all the metrics! We never know when a metric will come handy, so leave the agent collect all the metric but only keep an eye on the key ones at the service level, not individually for each container.
