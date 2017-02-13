@@ -12,7 +12,7 @@ Sysdig has the ability to monitor inside your containers without instrumenting e
 
 Then we can answer questions like: "What's the response time of my Cassandra service that's currently distributed over six servers in 2 availability zones ? What are the slowest queries?"
 
-Sysdig is available in two flavours. (Sysdig opensource)[https://www.sysdig.org/] is a freely available tool to gain visibility inside containers running on a single host being able to filter out from system calls up to files read or written, or network requests. Sysdig Cloud is best for monitoring across multiple hosts, looking at service and applications availability and performance, troubleshooting and alerting. Sysdig Cloud comes at a cost per host but you can register for a free trial from (Sysdig Docker monitoring)[https://sysdig.com/docker-monitoring/].
+Sysdig is available in two flavours. https://www.sysdig.org/[Sysdig opensource] is a freely available tool to gain visibility inside containers running on a single host being able to filter out from system calls up to files read or written, or network requests. Sysdig Cloud is best for monitoring across multiple hosts, looking at service and applications availability and performance, troubleshooting and alerting. Sysdig Cloud comes at a cost per host but you can register for a free trial from https://sysdig.com/docker-monitoring/[Sysdig Docker monitoring].
 
 == Deploying the Sysdig Cloud Agent
 
@@ -103,7 +103,7 @@ image::sysdig-jvm.png[]
 
 Monitoring Couchbase requires some understanding of the architecture of this NoSQL database. We will monitor some availability metrics like connections per second, database size or objects stored but to understand the performance bottlenecks we will quickly have to include operations per second, resident objects in memory vs disk, ejections, cache misses or disk read/write and writing queue.
 
-If you are avid on reading more about Couchbase monitoring, trying to understand why metrics move around and when you should care, (Couchbase Monitoring)[https://blog.couchbase.com/monitoring-couchbase-cluster] blog post is a good start point.
+If you are avid on reading more about Couchbase monitoring, trying to understand why metrics move around and when you should care, https://blog.couchbase.com/monitoring-couchbase-cluster[Couchbase Monitoring] blog post is a good start point.
 
 .Sysdig Cloud dashboard for Couchbase
 image::sysdig-couchbase.png[]
