@@ -6,13 +6,15 @@ Containers are seeing rapid adoption due to the simplicity, consistency and port
 
 Sysdig has the ability to monitor inside your containers without instrumenting each one individualy with a monitoring agent or requiring you to instrument your code. In order to offer high-level-service-wide visibility, Sysdig takes 2 paralell approaches:
 
-- Kernel level instrumentation: all system calls are captured through a simple Linux kernel module providing full visibility and autodiscovery of everything being executed in the host no matter if running inside containers
+- *Kernel level instrumentation*: all system calls are captured through a simple Linux kernel module providing full visibility and autodiscovery of everything being executed in the host no matter if running inside containers
 
-- Docker orchestration infrastructure metadata: talking to the Docker container orchestration platform, Sysdig understands all the components that build your infrastructure and automatically can aggregate metrics and events into service level information. This allows you to understand the operability of your infrastructure from the top level down to the individuals of each process.
+- *Docker orchestration infrastructure metadata*: talking to the Docker container orchestration platform, Sysdig understands all the components that build your infrastructure and automatically can aggregate metrics and events into service level information. This allows you to understand the operability of your infrastructure from the top level down to the individuals of each process.
 
-Then we can answer questions like: "What's the response time of my Cassandra service that's currently distributed over six servers in 2 availability zones ? What are the slowest queries?"
+Then we can answer questions like: "What's the response time of my Couchbase service that's currently distributed over six servers in 2 availability zones ? What are the slowest queries?"
 
-Sysdig is available in two flavours. https://www.sysdig.org/[Sysdig opensource] is a freely available tool to gain visibility inside containers running on a single host being able to filter out from system calls up to files read or written, or network requests. Sysdig Cloud is best for monitoring across multiple hosts, looking at service and applications availability and performance, troubleshooting and alerting. Sysdig Cloud comes at a cost per host but you can register for a free trial from https://sysdig.com/docker-monitoring/[Sysdig Docker monitoring].
+Sysdig is available in two flavours. https://www.sysdig.org/[Sysdig opensource] is a freely available tool to gain visibility inside containers running on a single host being able to filter out from system calls up to files read or written, or network requests. ADD LINK Sysdig Cloud is best for monitoring across multiple hosts, looking at service and applications availability and performance, troubleshooting and alerting. Sysdig Cloud comes at a cost per host but you can register for a free trial from https://sysdig.com/docker-monitoring/[Sysdig Docker monitoring].
+
+This section of the workshop will explain how to use Sysdig Cloud to monitor Docker containers.
 
 == Deploying the Sysdig Cloud Agent
 
@@ -37,6 +39,9 @@ In order to start capturing syscalls and forward metrics to Sysdig Cloud, we nee
       - /usr:/host/usr:ro
 ```
 
+TODO: Explain how to get YOUR-ACCESS-KEY
+TODO: Can you provide complete Docker Compose file? Previous Compose file is at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch05-compose.adoc#configuration-file. What is preferred? Include agent in the Compose file or start it in a separate Comopose file.
+
 And we can bring the agent up running:
 
 ```
@@ -60,12 +65,20 @@ To bring it up, like before will run:
 $ docker-compose up -d client
 ```
 
+TODO: Has this setup been tested with Docker 1.13 and Docker Compose 1.11.x?
+
 == Full Stack Monitoring
 
 To understand how our Java application running inside Docker and find out where our performance limitations are or where is something broken, we need to make use a full stack monitoring tool. This basically means being able to gain visibility from the infrastructure (either physical, virtual or cloud) through the different services we run up to the requests the users make against our application. Let's visit these layers individually and understand what are the most important resources, availability and operation metrics we should monitor.
 
-.One of the most visually appealing features of Sysdig Cloud are the topology maps, being able to automatically draw the infrastructure, in this case defined in docker-compose.yml, understanding the services, containers and the processes runing inside each container.
+TODO: Show default view of dashboard
+
+.Topology Maps
 image::sysdig-topology.png[]
+
+TODO: Show instructions on how to view Topology Maps?
+
+One of the most visually appealing features of Sysdig Cloud are the ADD-LINK-TO-SYSDIG.COM-DOCS[topology maps]. They are able to automatically draw the infrastructure, understanding the services, containers and the processes runing inside each container. In our case,  this is defined using `docker-compose.yml`.
 
 === Infrastructure Monitoring
 
@@ -78,14 +91,18 @@ When monitoring at the infrastructure layer we must look first at hosts or nodes
 - What is the network traffic and latency?
 - If using any orchestration platform like Docker Swarm or Kubernetes, what's the overall health of the cluster?
 
+TODO: Show how to reach this view?
+
 .View of the infrastructure resources usage
 image::sysdig-infrastructure.png[]
 
 === Services Monitoring
 
-Monitoring the different services really depends on the internal of each one, but if we look at them from the application point of view we can measure request response time, request count, CPU and memory usage. Obviously we also need to check if the service is actually running and when doing so inside containers, if the containers are running and how many of them.
+Monitoring the different services really depends on the internals of each one. If we look at them from the application point of view then we can measure request response time, request count, CPU and memory usage. Obviously we also need to check if the service is actually running and when doing so inside containers, if the containers are running and how many of them.
 
 As we mentioned before, ideally we should be able to autodiscover the different services that we run automatically, including databases, application servers, web servers, load balancers, etc.
+
+TODO: Show how to reach this view?
 
 .View of the services running autodiscovered from Docker Compose
 image::sysdig-services.png[]
@@ -96,6 +113,8 @@ If you want to dig deeper and look at the specifics of each service we are runni
 
 When running any Java app, one of the first things we need to do is look at the metrics that the JVM exposes by default. These include threads, heap usage and garbage collection. If your Java application exposes JMX, you can collect them together with your JVM metrics.
 
+TODO: Show how to reach this view?
+
 .Sysdig Cloud dashboard for JVM 
 image::sysdig-jvm.png[]
 
@@ -105,12 +124,16 @@ Monitoring Couchbase requires some understanding of the architecture of this NoS
 
 If you are avid on reading more about Couchbase monitoring, trying to understand why metrics move around and when you should care, https://blog.couchbase.com/monitoring-couchbase-cluster[Couchbase Monitoring] blog post is a good start point.
 
+TODO: Show how to reach this view?
+
 .Sysdig Cloud dashboard for Couchbase
 image::sysdig-couchbase.png[]
 
 === Application Monitoring
 
 To close our monitoring jar, we will close the lid with application monitoring. Usually this requires heavy code instrumentation but if we just want to look at the HTTP requests of our API endpoint, Sysdig Cloud is able to automatically decode the HTTP requests going through read and writes in the sockets file descriptors. Without any code or service instrumentation we just got application layer metrics! Here we can identify average and maximum request time, requests per second, which are the top URL endpoints or the slowest ones.
+
+TODO: Show how to reach this view?
 
 .Sysdig Cloud HTTP view
 image::sysdig-webapp.png[]
