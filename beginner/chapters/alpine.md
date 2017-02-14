@@ -30,7 +30,7 @@ drwxr-xr-x    5 root     root          4096 Mar  2 16:20 lib
 ......
 ......
 ```
-What happened? Behind the scenes, a lot of stuff happened. When you call `run`, the Docker client finds the image (alpine in this case), creates the container and then runs a command in that container. When you run `docker run alpine`, you provided a command (`ls -l`), so Docker started the command specified and you saw the listing.
+What happened? Behind the scene, a lot of stuff happened. When you call `run`, the Docker client finds the image (alpine in this case), creates the container and then runs a command in that container. When you run `docker run alpine`, you provided a command (`ls -l`), so Docker started the command specified and you saw the listing.
 
 Let's try something more exciting.
 
@@ -57,7 +57,7 @@ $ docker ps
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
 ```
 
-Since no containers are running, you see a blank line. Let's try a more useful variant: `docker ps -a`
+Since no container is running, you see a blank line. Let's try a more useful variant: `docker ps -a`
 
 ```
 $ docker ps -a
@@ -77,7 +77,7 @@ bin      dev      etc      home     lib      linuxrc  media    mnt      proc    
 / # uname -a
 Linux 97916e8cb5dc 4.4.27-moby #1 SMP Wed Oct 26 14:01:48 UTC 2016 x86_64 Linux
 ```
-Running the `run` command with the `-it` flags attaches us to an interactive tty in the container. Now you can run as many commands in the container as you want. Take some time to run your favorite commands.
+Running the `run` command with the `-it` flag attaches us to an interactive tty in the container. Now you can run as many commands in the container as you want. Take some time to run your favorite commands.
 
 That concludes a whirlwind tour of the `docker run` command which would most likely be the command you'll use most often. It makes sense to spend some time getting comfortable with it. To find out more about `run`, use `docker run --help` to see a list of all flags it supports. As you proceed further, we'll see a few more variants of `docker run`.
 ### 1.2 Terminology
