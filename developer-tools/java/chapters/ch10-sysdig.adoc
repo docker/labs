@@ -18,9 +18,27 @@ This section of the workshop will explain how to use Sysdig Cloud to monitor Doc
 
 == Deploying the Sysdig Cloud Agent
 
-In order to start capturing syscalls and forward metrics to Sysdig Cloud, we need to install a Sysdig Cloud agent in your host. We can either run the Docker container manually or since we are using docker-compose, we will add it to our `docker-compose.yml` file as a new service:
+In order to start capturing syscalls and forward metrics to Sysdig Cloud, we need to install a Sysdig Cloud agent in your host. We can either run the Docker container manually or since we are using Docker Compose, we can also add it to our `docker-compose.yml` file as a new service, this way the agent can be managed with docker-compose:
 
 ```
+version: '3'
+services:
+  web:
+    image: arungupta/couchbase-javaee:travel
+    environment:
+      - COUCHBASE_URI=db
+    ports:
+      - 8080:8080
+      - 9990:9990
+    depends_on:
+      - db
+  db:
+    image: arungupta/couchbase:travel
+    ports:
+      - 8091:8091
+      - 8092:8092
+      - 8093:8093
+      - 11210:11210
   sysdig-agent:
     container_name: sysdig-agent
     privileged: true
@@ -37,12 +55,15 @@ In order to start capturing syscalls and forward metrics to Sysdig Cloud, we nee
       - /boot:/host/boot:ro
       - /lib/modules:/host/lib/modules:ro
       - /usr:/host/usr:ro
+  client:
+    image: ltagliamonte/recurling
+    environment:
+      - URL=http://web:8080/airlines/resources/airline/{,10,10123,10642,10748,10765,112,1191,9999,8888,7777,6666}
 ```
 
-TODO: Explain how to get YOUR-ACCESS-KEY
-TODO: Can you provide complete Docker Compose file? Previous Compose file is at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch05-compose.adoc#configuration-file. What is preferred? Include agent in the Compose file or start it in a separate Comopose file.
+Your access key will be shown on the initial wizard alongside information on how to deploy Sysdig Cloud agent in different orchestration platforms like Docker Swarm, Kubernetes, Openshift, DC/OS, Mesos, RancherOS, etc. Alternatively, the same information is available in Settings > Access Key.
 
-And we can bring the agent up running:
+Finally we can bring the agent up running:
 
 ```
 $ docker-compose up -d sysdig-agent
@@ -50,35 +71,22 @@ $ docker-compose up -d sysdig-agent
 
 == Load Generation With a Fake Client
 
-Since we want to monitor and see how our application performs under some load, we will use Docker again to spawn a fake client that will generate some load. Very complex and customizable load generation methods exist, but in this case we want to keep things as simple as possible so we will just use a container that performs requests with `curl` inside a loop over an array of URLs we configure. Again we will add to our `docker-compose.yaml` a new service:
-
-```
-  client:
-    image: ltagliamonte/recurling
-    environment:
-      - URL=http://web:8080/airlines/resources/airline/{,10,10123,10642,10748,10765,112,1191,9999,8888,7777,6666}
-```
-
-To bring it up, like before will run:
+Since we want to monitor and see how our application performs under some load, we will use Docker again to spawn a fake client that will generate some load. Very complex and customizable load generation methods exist, but in this case we want to keep things as simple as possible so we will just use a container that performs requests with `curl` inside a loop over an array of URLs we configure. In the previous `docker-compose.yaml` we also added a new client service for this task. To bring it up, we will run like before:
 
 ```
 $ docker-compose up -d client
 ```
 
-TODO: Has this setup been tested with Docker 1.13 and Docker Compose 1.11.x?
-
 == Full Stack Monitoring
 
-To understand how our Java application running inside Docker and find out where our performance limitations are or where is something broken, we need to make use a full stack monitoring tool. This basically means being able to gain visibility from the infrastructure (either physical, virtual or cloud) through the different services we run up to the requests the users make against our application. Let's visit these layers individually and understand what are the most important resources, availability and operation metrics we should monitor.
+To understand how our Java application runs inside Docker and find out where our performance limitations are or where is something broken, we need to make use a full stack monitoring tool. This basically means being able to gain visibility from the infrastructure (either physical, virtual or cloud) through the different services we run up to the requests the users make against our application. Let's visit these layers individually and understand what are the most important resources, availability and operation metrics we should monitor.
 
-TODO: Show default view of dashboard
+One of the most visually appealing features of Sysdig Cloud are the https://www.youtube.com/watch?v=N0ZJJLPuQwo[topology maps]. They are able to automatically draw the infrastructure, understanding the services, containers and the processes runing inside each container. In our case, this is defined using `docker-compose.yml`.
 
-.Topology Maps
+.Sysdig Topology Maps
 image::sysdig-topology.png[]
 
-TODO: Show instructions on how to view Topology Maps?
-
-One of the most visually appealing features of Sysdig Cloud are the ADD-LINK-TO-SYSDIG.COM-DOCS[topology maps]. They are able to automatically draw the infrastructure, understanding the services, containers and the processes runing inside each container. In our case,  this is defined using `docker-compose.yml`.
+You can access topology maps selecting the scope you want to display in the `Explore` tab, apply the grouping for Docker Compose and select the top level project. Then on `Views` select any of the prebuilt views `CPU Usage`, `Network Traffic` or `Response Times`. These visualization can be pinned into an existing or new dashboards. Then from the dashboard itself you can modify the scope of the topology (showing only one service for example) or the metrics displayed in the entity boxes or the links between the boxes.
 
 === Infrastructure Monitoring
 
@@ -91,7 +99,7 @@ When monitoring at the infrastructure layer we must look first at hosts or nodes
 - What is the network traffic and latency?
 - If using any orchestration platform like Docker Swarm or Kubernetes, what's the overall health of the cluster?
 
-TODO: Show how to reach this view?
+A good start point is the `Overview by Container` view applied to our Docker Compose project in the `Explore` tab:
 
 .View of the infrastructure resources usage
 image::sysdig-infrastructure.png[]
@@ -102,7 +110,7 @@ Monitoring the different services really depends on the internals of each one. I
 
 As we mentioned before, ideally we should be able to autodiscover the different services that we run automatically, including databases, application servers, web servers, load balancers, etc.
 
-TODO: Show how to reach this view?
+Again, Sysdig Cloud offers a pre-built view of the most relevant metrics aggregated by service through the `Overview by Service` view:
 
 .View of the services running autodiscovered from Docker Compose
 image::sysdig-services.png[]
@@ -113,7 +121,7 @@ If you want to dig deeper and look at the specifics of each service we are runni
 
 When running any Java app, one of the first things we need to do is look at the metrics that the JVM exposes by default. These include threads, heap usage and garbage collection. If your Java application exposes JMX, you can collect them together with your JVM metrics.
 
-TODO: Show how to reach this view?
+To have a look at these metrics, we can either use the default `JVM` view or if we want to tweak this a little bit we recommend creating a new dashboarrd using the wizard and selecting the `JVM` template to get something like this:
 
 .Sysdig Cloud dashboard for JVM 
 image::sysdig-jvm.png[]
@@ -124,7 +132,7 @@ Monitoring Couchbase requires some understanding of the architecture of this NoS
 
 If you are avid on reading more about Couchbase monitoring, trying to understand why metrics move around and when you should care, https://blog.couchbase.com/monitoring-couchbase-cluster[Couchbase Monitoring] blog post is a good start point.
 
-TODO: Show how to reach this view?
+Sysdig also offers a a template for Couchbase. You will find templates for this one and more than 60 other technologies that can be monitored with Sysdig Cloud when creating a new dashboard.
 
 .Sysdig Cloud dashboard for Couchbase
 image::sysdig-couchbase.png[]
@@ -133,7 +141,7 @@ image::sysdig-couchbase.png[]
 
 To close our monitoring jar, we will close the lid with application monitoring. Usually this requires heavy code instrumentation but if we just want to look at the HTTP requests of our API endpoint, Sysdig Cloud is able to automatically decode the HTTP requests going through read and writes in the sockets file descriptors. Without any code or service instrumentation we just got application layer metrics! Here we can identify average and maximum request time, requests per second, which are the top URL endpoints or the slowest ones.
 
-TODO: Show how to reach this view?
+On Sysdig Cloud views can be applied to different scopes and Sysdig will try to see if relevant metrics do exist in that scope. For example we know that our Java app offers a web service. We can apply the `HTTP Overview` over the scope of our app (`web` service) like if it was a HTTP server to get a view like this:
 
 .Sysdig Cloud HTTP view
 image::sysdig-webapp.png[]
