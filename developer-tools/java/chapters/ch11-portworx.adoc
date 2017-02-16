@@ -7,6 +7,14 @@ Containers are meant to be ephemeral and so scale pretty well for stateless app
 * This chapter will explain how to use Docker Volume Plugins and Portworx to create a stateful container.
 * AWS is being used in this setup; but the steps should be similar in on-premise environment.
 
+== Why Portworx?
+Portworx is an easy-to-deploy container data services that provide persistence, replication, snapshots, encryption, secure RBAC and much more. Some of the benefits are:
+
+* Container granular volumes – Portworx can take multiple EBS volumes per host and aggregate the capacity and derive container granular virtual (soft) volumes per container.
+* Cross Availability Zone HA – Portworx will protect the data, at block level, across multiple compute instances across availability zones. As replication controllers restart pods on different nodes, the data will still be highly available on those nodes.
+* Support for enterprise data operations – Portworx implements container granular snapshots, class of service, tiering on top of the available physical volumes.
+* Ease of deployment and provisioning – Portworx itself is deployed as a container and integrated with the orchestration tools. DevOps can programmatically provision container granular storage with any property such as size, class of service, encryption key etc.
+
 == AWS EC2 instance
 
 . Start https://aws.amazon.com/marketplace/pp/B00JV9JBDS[Ubuntu 14.04 LTS instance]
