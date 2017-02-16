@@ -2,4 +2,116 @@
 
 = Stateful Containers using Portworx
 
-Add content/images from https://blog.couchbase.com/stateful-docker-containers-portworx-couchbase/
+Containers are meant to be ephemeral and so scale pretty well for stateless applications. Stateful containers, such as Couchbase, need to be treated differently. Managing Persistence for Docker Containers provide a great overview of how to manage persistence for stateful containers.
+
+* This chapter will explain how to use Docker Volume Plugins and Portworx to create a stateful container.
+* AWS is being used in this setup; but the steps should be similar in on-premise environment.
+
+== AWS EC2 instance
+
+. Start https://aws.amazon.com/marketplace/pp/B00JV9JBDS[Ubuntu 14.04 LTS instance]
+. Login: `ssh -i ~/.ssh/arun-cb-west1.pem ubuntu@<public-ip>`
+. `sudo apt-get update`
+. Install Docker: `curl -sSL https://get.docker.com/ | sh`
+. Enable non-root access: `sudo usermod -aG docker ubuntu`
+. Logout and log back in
+
+== AWS EBS volume
+
+. Create an EBS volume for 10GB
+. Attach this volume to EC2 instance, use default device name as `/dev/sdf`
+. Use `lsblk` in EC2 instance to verify that the volume is attached to the instance:
++
+```
+NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+xvda    202:0    0   8G  0 disk 
+└─xvda1 202:1    0   8G  0 part /
+xvdb    202:16   0  30G  0 disk /mnt
+xvdf    202:80   0  10G  0 disk 
+```
+
+== Portworx
+
+. Start etcd:
++
+[source, text]
+----
+docker run -v /data/varlib/etcd -p 4001:4001 -d portworx/etcd:latest
+----
++
+NOTE: If `etcd` needs to be restarted, then make sure to remove `*.json` from `/etc/pwx/` directory
++
+. Allow root mounted volumes to be shared: `sudo mount --make-shared /`
+. Start Portworx:
++
+```
+docker run --restart=always --name px -d --net=host \
+  --privileged=true                             \
+  -v /run/docker/plugins:/run/docker/plugins    \
+  -v /var/lib/osd:/var/lib/osd:shared           \
+  -v /dev:/dev                                  \
+  -v /etc/pwx:/etc/pwx                          \
+  -v /opt/pwx/bin:/export_bin:shared            \
+  -v /var/run/docker.sock:/var/run/docker.sock  \
+  -v /var/cores:/var/cores                      \
+  -v /usr/src:/usr/src                           \
+  --ipc=host                                    \
+  portworx/px-dev -daemon -k etcd://localhost:4001 -c cluster1 -s /dev/xvdf
+```
++
+NOTE: `/dev/xvdf` is the mount name for `/dev/sdf` volume mounted earlier.
++
+Look for logs using `docker container logs px` and watch out for the following statements:
++
+```
+time="2017-02-16T03:29:57Z" level=info msg="Initialize the scheduler client and the scheduler watch" 
+time="2017-02-16T03:29:57Z" level=info msg="Started a kvdb watch on key : scheduler/containers" 
+time="2017-02-16T03:29:57Z" level=info msg="Started a kvdb watch on key : scheduler/volumes" 
+time="2017-02-16T03:29:57Z" level=info msg="Started a kvdb watch on key : scheduler/nodes/list" 
+```
++
+. Check status using `sudo /opt/pwx/bin/pxctl status` to see the output:
++
+```
+Status: PX is operational
+Node ID: cc44463e-9c4c-4c78-b6e9-6e9fda0c1ef0
+	IP: 172.31.31.79 
+ 	Local Storage Pool: 1 pool
+	Pool	IO_Priority	Size	Used	Status	Zone	Region
+	0	LOW		10 GiB	266 MiB	Online	a	us-west-1
+	Local Storage Devices: 1 device
+	Device	Path		Media Type		Size		Last-Scan
+	0:1	/dev/xvdf	STORAGE_MEDIUM_SSD	10 GiB		16 Feb 17 03:55 UTC
+	total			-			10 GiB
+Cluster Summary
+	Cluster ID: cluster1
+	Node IP: 172.31.31.79 - Capacity: 266 MiB/10 GiB Online (This node)
+Global Storage Pool
+	Total Used    	:  266 MiB
+	Total Capacity	:  10 GiB
+```
+
+== Docker Volume
+
+. Create volume: `docker volume create -d pxd -o size=10G -o fs=ext4 --name cbvol`
+. Check volumes using `docker volume ls`:
++
+```
+DRIVER              VOLUME NAME
+local               0be4571126391044d455626613d27c61308d4c28dcc6a960a0bf5b7ace3bd040
+local               379caf58b67ca6697231b6c739c6452847ffa351c05cdd68351952daf0dff440
+local               44ce0ebfffb90e0bc707c5f88a32dc6f36b07809643ee52b218f4051531ad77e
+local               51bebc1cd44fab5a37060c460d6d9c3158db754e501c5f57292e1ff5c9e8e767
+local               7b440a7d3fd72a75e91108cb6ca11c650f6a62be28e17b3e3a77fd4ac4cf8b37
+local               91d5f2b235a49044517c28c5ac2519119d2a93b189558c4c4cf380bdfa3b6e3e
+pxd                 cbvol
+local               da144d5ea169693f31cb2111d4ea5532f41b660a17c49d069292a4c0ae1a7508
+local               e856a14437bd9119e43feaf757644936820d80026a005d75a7578ff44adc0f28
+```
+
+== Couchbase
+
+. Create container: `docker container run -d --name db -v cbvol:/opt/couchbase/var -p 8091-8094:8091-8094 -p 11210:11210 arungupta/couchbase`
+. Create a bucket `pwx`
+. Kill the container `docker container rm -f db`
+. Restart the container and see the bucket is preserved because the data was stored on EBS volume
