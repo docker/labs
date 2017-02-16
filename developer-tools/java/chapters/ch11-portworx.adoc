@@ -16,18 +16,22 @@ Portworx is an easy-to-deploy container data services that provide persistence, 
 * Ease of deployment and provisioning – Portworx itself is deployed as a container and integrated with the orchestration tools. DevOps can programmatically provision container granular storage with any property such as size, class of service, encryption key etc.
 
 == AWS EC2 instance
+Portworx runs only on Linux or CoreOS. Setup an Ubuntu instance on AWS EC2:
 
-. Start https://aws.amazon.com/marketplace/pp/B00JV9JBDS[Ubuntu 14.04 LTS instance]
+. Start https://aws.amazon.com/marketplace/pp/B00JV9JBDS[Ubuntu 14.04 LTS instance] with m3.mdeium instance type. Make sure to add port 8091 to inbound security rules. This allows Couchbase Web Console to be accessible afterwards.
 . Login: `ssh -i ~/.ssh/arun-cb-west1.pem ubuntu@<public-ip>`
 . `sudo apt-get update`
-. Install Docker: `curl -sSL https://get.docker.com/ | sh`
+. Install Docker: `curl -sSL https://get.docker.com/ | sh` More detailed instructions are available at https://docs.docker.com/engine/installation/linux/ubuntu/[Get Docker for Ubuntu.]
 . Enable non-root access: `sudo usermod -aG docker ubuntu`
 . Logout and log back in
 
 == AWS EBS volume
 
-. Create an EBS volume for 10GB
+
+. Create an EBS volume for 10GB using EC2 console as explained in http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-creating-volume.html[docs].
+
 . Attach this volume to EC2 instance, use default device name as `/dev/sdf`
+
 . Use `lsblk` in EC2 instance to verify that the volume is attached to the instance:
 +
 ```
