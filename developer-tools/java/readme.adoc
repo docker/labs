@@ -17,6 +17,7 @@ This tutorial offers Java developers an intro-level and self-paced hands-on work
 ** link:chapters/ch08-azure.adoc[Docker for Azure] (coming)
 ** link:chapters/ch08-cloud.adoc[Docker Cloud]
 * link:chapters/ch09-cicd.adoc[CI/CD using Docker] (coming)
+* link:https://gist.github.com/arun-gupta/c26607e60d810ea7df4e839945e79480[Stateful Containers using Portworx and Couchbase]
 * link:chapters/ch10-monitoring.adoc[Monitoring Java Container] (coming)
 ** link:chapters/ch10-cli.adoc[Docker CLI]
 ** link:chapters/ch10-ddc.adoc[Docker Data Center]
