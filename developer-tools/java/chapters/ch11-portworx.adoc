@@ -147,6 +147,7 @@ Notice how /opt/couchbase/var where all Couchbase data is stored in the containe
 . Login to Couchbase Web Console at http://<public-ip>:8091, use the login `Administrator` and `password` as password.
 . Go to Data Buckets and create a bucket `pwx`
 . In EC2 instance, see the  list of containers:
++
 ```
 ubuntu@ip-172-31-25-21:~$ docker container ls
 CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                                                                                               NAMES
@@ -155,6 +156,7 @@ CONTAINER ID        IMAGE                  COMMAND  
 cf3c779a4459        portworx/etcd:latest   "/entrypoint.sh /b..."   21 minutes ago      Up 21 minutes       2379-2380/tcp, 7001/tcp, 0.0.0.0:4001->4001/tcp                                                     youthful_jepsen
 
 ```
++
 `etcd`, `px-dev` and `db` containers are running.
 
 . Kill the container `docker container rm -f db`
