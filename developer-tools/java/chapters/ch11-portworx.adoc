@@ -18,9 +18,9 @@ Portworx is an easy-to-deploy container data services that provide persistence, 
 == AWS EC2 instance
 Portworx runs only on Linux or CoreOS. Setup an Ubuntu instance on AWS EC2:
 
-. Start https://aws.amazon.com/marketplace/pp/B00JV9JBDS[Ubuntu 14.04 LTS instance] with m3.mdeium instance type. Make sure to add port 8091 to inbound security rules. This allows Couchbase Web Console to be accessible afterwards.
-. Login: `ssh -i ~/.ssh/arun-cb-west1.pem ubuntu@<public-ip>`
-. `sudo apt-get update`
+. Start https://aws.amazon.com/marketplace/pp/B00JV9JBDS[Ubuntu 14.04 LTS instance] with m3.mdeium instance type. Make sure to add port 8091 to inbound security rules. This allows https://developer.couchbase.com/documentation/server/current/admin/ui-intro.html[Couchbase Web Console] to be accessible afterwards.
+. Login to the EC2 instance using the command: `ssh -i ~/.ssh/arun-cb-west1.pem ubuntu@<public-ip>`
+. Update the Ubuntu instance: `sudo apt-get update`
 . Install Docker: `curl -sSL https://get.docker.com/ | sh` More detailed instructions are available at https://docs.docker.com/engine/installation/linux/ubuntu/[Get Docker for Ubuntu.]
 . Enable non-root access: `sudo usermod -aG docker ubuntu`
 . Logout and log back in
@@ -61,6 +61,7 @@ sudo mount --make-shared /
 This is explained more at http://docs.portworx.com/os-config-shared-mounts.html#ubuntu-configuration-and-shared-mounts[Ubuntu Configuration and Shared Mounts].
 
 . PX-Developer (px-dev) container on a server with Docker Engine turns that server into a scale-out storage node. PX-Enterprise, on the other hand, provides multi-cluster and multi-cloud support, where storage under management can be on-premise or in a public cloud like AWS.
++
 For this blog, we’ll start a px-dev container:
 +
 ```
@@ -110,6 +111,7 @@ Global Storage Pool
 	Total Used    	:  266 MiB
 	Total Capacity	:  10 GiB
 ```
++
 It shows the total capacity available and used.
 
 == Docker Volume
@@ -119,21 +121,17 @@ It shows the total capacity available and used.
 ```
 docker volume create -d pxd -o size=10G -o fs=ext4 --name cbvol`
 ```
++
 . Check the list of volumes available using `docker volume ls` command:
 +
 ```
 DRIVER              VOLUME NAME
-local               0be4571126391044d455626613d27c61308d4c28dcc6a960a0bf5b7ace3bd040
-local               379caf58b67ca6697231b6c739c6452847ffa351c05cdd68351952daf0dff440
-local               44ce0ebfffb90e0bc707c5f88a32dc6f36b07809643ee52b218f4051531ad77e
-local               51bebc1cd44fab5a37060c460d6d9c3158db754e501c5f57292e1ff5c9e8e767
-local               7b440a7d3fd72a75e91108cb6ca11c650f6a62be28e17b3e3a77fd4ac4cf8b37
-local               91d5f2b235a49044517c28c5ac2519119d2a93b189558c4c4cf380bdfa3b6e3e
+local               70f7b9a356df4c1f0c08e13a4e813f1ef3e174a91001f277a63b62d683a27159
 pxd                 cbvol
-local               da144d5ea169693f31cb2111d4ea5532f41b660a17c49d069292a4c0ae1a7508
-local               e856a14437bd9119e43feaf757644936820d80026a005d75a7578ff44adc0f28
+local               f7bc5fa455a88638c106881f1bce98244b670e094d5fdc47917b53a88e46c073
 ```
-As shown, `cbvol` is created with pxd driver.
++
+As shown, `cbvol` is created with `pxd` driver.
 
 == Couchbase with Portworx Volume
 
@@ -148,7 +146,7 @@ docker container run \
   -p 11210:11210 \
   arungupta/couchbase
 ```
-Notice how /opt/couchbase/var where all Couchbase data is stored in the container is mapped to the cbvol volume on the host. This volume is mapped by Portworx.
+Notice how `/opt/couchbase/var` where all Couchbase data is stored in the container is mapped to the `cbvol` volume on the host. This volume is mapped by Portworx.
 
 . Login to Couchbase Web Console at http://<public-ip>:8091, use the login `Administrator` and `password` as password.
 . Go to Data Buckets and create a bucket `pwx`
@@ -177,5 +175,5 @@ docker container run \
   -p 11210:11210 \
   arungupta/couchbase
 ```
-. Now, because cbvol is mapped to /opt/couchbase/var again, the data is preserved across restarts. This can be verified by accessing the Couchbase Web Consoleand checking on the pwx bucket created earlier.
+. Now, because `cbvol` is mapped to `/opt/couchbase/var` again, the data is preserved across restarts. This can be verified by accessing the Couchbase Web Console and checking on the `pwx` bucket created earlier.
 
