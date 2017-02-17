@@ -173,11 +173,3 @@ docker container run \
 ```
 . Now, because cbvol is mapped to /opt/couchbase/var again, the data is preserved across restarts. This can be verified by accessing the Couchbase Web Consoleand checking on the pwx bucket created earlier.
 
-Another interesting perspective is also at why database are not for containers?. Just because there is Docker, does not mean all your database needs should be Dockerized. But if you need to, then there are plenty of options and can be used in production-grade applications.
-
-Want to learn more about running Couchbase in containers?
-
-* http://couchbase.com/containers[Couchbase on Containers]
-* https://developer.couchbase.com/[Couchbase Developer Portal]
-* http://twitter.com/couchbasedev[@couchhasedev and @couchbase]
-
