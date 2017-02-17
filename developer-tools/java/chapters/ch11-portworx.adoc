@@ -54,9 +54,10 @@ docker run -v /data/varlib/etcd -p 4001:4001 -d portworx/etcd:latest
 NOTE: If `etcd` needs to be restarted, then make sure to remove `*.json` from `/etc/pwx/` directory
 +
 . By default root mounted volumes are not allowed to be shared. Enable this using the command:
-----
++
+```
 sudo mount --make-shared /
-----
+```
 This is explained more at http://docs.portworx.com/os-config-shared-mounts.html#ubuntu-configuration-and-shared-mounts[Ubuntu Configuration and Shared Mounts].
 
 . PX-Developer (px-dev) container on a server with Docker Engine turns that server into a scale-out storage node. PX-Enterprise, on the other hand, provides multi-cluster and multi-cloud support, where storage under management can be on-premise or in a public cloud like AWS.
@@ -113,8 +114,12 @@ It shows the total capacity available and used.
 
 == Docker Volume
 
-. Create volume: `docker volume create -d pxd -o size=10G -o fs=ext4 --name cbvol`
-. Check volumes using `docker volume ls`:
+. Let's create Docker volume: 
++
+```
+docker volume create -d pxd -o size=10G -o fs=ext4 --name cbvol`
+```
+. Check the list of volumes available using `docker volume ls` command:
 +
 ```
 DRIVER              VOLUME NAME
@@ -128,10 +133,49 @@ pxd                 cbvol
 local               da144d5ea169693f31cb2111d4ea5532f41b660a17c49d069292a4c0ae1a7508
 local               e856a14437bd9119e43feaf757644936820d80026a005d75a7578ff44adc0f28
 ```
+As shown, `cbvol` is created with pxd driver.
 
-== Couchbase
+== Couchbase with Portworx Volume
 
-. Create container: `docker container run -d --name db -v cbvol:/opt/couchbase/var -p 8091-8094:8091-8094 -p 11210:11210 arungupta/couchbase`
-. Create a bucket `pwx`
+. Create a Couchbase container using the Portworx volume:
++
+```
+docker container run -d --name db -v cbvol:/opt/couchbase/var -p 8091-8094:8091-8094 -p 11210:11210 arungupta/couchbase
+```
+Notice how /opt/couchbase/var where all Couchbase data is stored in the container is mapped to the cbvol volume on the host. This volume is mapped by Portworx.
+
+. Login to Couchbase Web Console at http://<public-ip>:8091, use the login `Administrator` and `password` as password.
+. Go to Data Buckets and create a bucket `pwx`
+. In EC2 instance, see the  list of containers:
+```
+ubuntu@ip-172-31-25-21:~$ docker container ls
+CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                                                                                               NAMES
+8ae763d9d53b        arungupta/couchbase    "/entrypoint.sh /o..."   5 minutes ago       Up 5 minutes        0.0.0.0:8091-8094->8091-8094/tcp, 11207/tcp, 11211/tcp, 0.0.0.0:11210->11210/tcp, 18091-18093/tcp   db
+5423bcd9b426        portworx/px-dev        "/docker-entry-poi..."   14 minutes ago      Up 14 minutes                                                                                                           px
+cf3c779a4459        portworx/etcd:latest   "/entrypoint.sh /b..."   21 minutes ago      Up 21 minutes       2379-2380/tcp, 7001/tcp, 0.0.0.0:4001->4001/tcp                                                     youthful_jepsen
+
+```
+`etcd`, `px-dev` and `db` containers are running.
+
 . Kill the container `docker container rm -f db`
 . Restart the container and see the bucket is preserved because the data was stored on EBS volume
++
+```
+docker container run \
+  -d \
+  --name db \
+  -v cbvol:/opt/couchbase/var \
+  -p 8091-8094:8091-8094 \
+  -p 11210:11210 \
+  arungupta/couchbase
+```
+. Now, because cbvol is mapped to /opt/couchbase/var again, the data is preserved across restarts. This can be verified by accessing the Couchbase Web Consoleand checking on the pwx bucket created earlier.
+
+Another interesting perspective is also at why database are not for containers?. Just because there is Docker, does not mean all your database needs should be Dockerized. But if you need to, then there are plenty of options and can be used in production-grade applications.
+
+Want to learn more about running Couchbase in containers?
+
+* http://couchbase.com/containers[Couchbase on Containers]
+* https://developer.couchbase.com/[Couchbase Developer Portal]
+* http://twitter.com/couchbasedev[@couchhasedev and @couchbase]
+
