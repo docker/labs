@@ -2,3 +2,81 @@
 
 = Monitoring Docker Container Using New Relic
 
+"Nobody cares about the container, it's the app that matters."
+
+https://twitter.com/docker/status/744950222543982592[--Solomon Hykes at DockerCon 2016]
+
+A primary goal of monitoring containers should be to get better visibility into the application itself. While container-level metrics are important for debugging and solving performance issues, they become even more useful when complemented with application data and metrics.
+
+This is a brief overview of New Relic's Docker monitoring capabilities as of early 2017 and how to get started.
+
+== Components of New Relic Docker Monitoring
+
+New Relic Docker monitoring has two components:
+
+- An infrastructure agent that runs in the host operating system alongside the Docker daemon.
+
+- A library that is installed alongside the application code in the container image. 
+
+In New Relic's documentation, these products are called "New Relic Infrastructure" and "New Relic APM", respectively. Once a New Relic account is created (a free trial is available) and these components are installed, then container metrics—alongside detailed application transaction traces—are sent to New Relic.
+
+If you're not able to instrument code running inside the container (perhaps it's a third party image), it's still possible to just get container and OS-level metrics using only the infrastructure agent.
+
+== Instrumenting your application code that runs inside the container
+
+In order to get detailed metrics and visibility of the application code running inside the container, follow https://docs.newrelic.com/docs/agents/manage-apm-agents/installation/installing-agent[instructions and requirements on installing the New Relic APM agent].
+
+Once the library is installed alongside your application code—or running in the JVM for the Java agent—popular frameworks and libraries will be automatically instrumented.
+
+For Java, many frameworks and application servers are supported. The full list is available in https://docs.newrelic.com/docs/agents/java-agent[New Relic's Java agent documentation].
+
+Using the example in this guide, after downloading the New Relic Java agent JAR file to a local directory, the -javaagent option informs the JVM to instantiate the language agent mounted on a Docker volume.
+
+```
+version: '3'
+services:
+  web:
+    image: arungupta/couchbase-javaee:travel
+    environment:
+      - COUCHBASE_URI=db
+    ports:
+      - 8080:8080
+      - 9990:9990
+    depends_on:
+      - db
+    environment:
+      - JAVA_OPTS=-server -javaagent:/newrelic/newrelic.jar
+    # After creating a New Relic account, the Java agent is available
+    # to download from https://rpm.newrelic.com/
+    # Next, unzip the New Relic Java Agent archive to the directory
+    # that contains this docker-compose.yml file.
+    volumes:
+      - ./newrelic:/newrelic
+  db:
+    image: arungupta/couchbase:travel
+    ports:
+      - 8091:8091
+      - 8092:8092
+      - 8093:8093
+      - 11210:11210
+```
+
+Installing the Infrastructure Agent to gather container and host operating system metrics
+
+Next, follow New Relic's documentation for installing the infrastructure agent on the host operating system that runs the docker daemon—not inside a container— using the https://docs.newrelic.com/docs/infrastructure/new-relic-infrastructure/installation/install-infrastructure-linux[apt or yum package manager].
+
+If installing on a fleet of hosts, cloud instances, or virtual machines, https://github.com/newrelic/infrastructure-agent-chef[Chef], https://github.com/newrelic/infrastructure-agent-puppet[Puppet] and https://github.com/newrelic/infrastructure-agent-ansible[Ansible] recipes are also available.
+
+It's the combination of the infrastructure agent with the instrumented code inside the container that allows you to combine container and application-level metrics.
+
+== Visualizing Container and Application Metrics 
+
+TBD.
+
+== Creating Custom Dashboards
+
+TBD.
+
+== Conclusion
+
+TBD.
