@@ -140,7 +140,13 @@ As shown, `cbvol` is created with pxd driver.
 . Create a Couchbase container using the Portworx volume:
 +
 ```
-docker container run -d --name db -v cbvol:/opt/couchbase/var -p 8091-8094:8091-8094 -p 11210:11210 arungupta/couchbase
+docker container run \
+  -d \
+  --name db \
+  -v cbvol:/opt/couchbase/var \
+  -p 8091-8094:8091-8094 \
+  -p 11210:11210 \
+  arungupta/couchbase
 ```
 Notice how /opt/couchbase/var where all Couchbase data is stored in the container is mapped to the cbvol volume on the host. This volume is mapped by Portworx.
 
