@@ -42,9 +42,9 @@ xvdb    202:16   0  30G  0 disk /mnt
 xvdf    202:80   0  10G  0 disk 
 ```
 
-== Portworx
+== Portworx Container
 
-. Start etcd:
+. Physical storage makeup of each node, all the provisioned volumes in the cluster as well as their container mappings is stored in an etcd cluster. Start an etcd cluster:
 +
 [source, text]
 ----
@@ -53,8 +53,14 @@ docker run -v /data/varlib/etcd -p 4001:4001 -d portworx/etcd:latest
 +
 NOTE: If `etcd` needs to be restarted, then make sure to remove `*.json` from `/etc/pwx/` directory
 +
-. Allow root mounted volumes to be shared: `sudo mount --make-shared /`
-. Start Portworx:
+. By default root mounted volumes are not allowed to be shared. Enable this using the command:
+----
+sudo mount --make-shared /
+----
+This is explained more at http://docs.portworx.com/os-config-shared-mounts.html#ubuntu-configuration-and-shared-mounts[Ubuntu Configuration and Shared Mounts].
+
+. PX-Developer (px-dev) container on a server with Docker Engine turns that server into a scale-out storage node. PX-Enterprise, on the other hand, provides multi-cluster and multi-cloud support, where storage under management can be on-premise or in a public cloud like AWS.
+For this blog, we’ll start a px-dev container:
 +
 ```
 docker run --restart=always --name px -d --net=host \
@@ -70,6 +76,7 @@ docker run --restart=always --name px -d --net=host \
   --ipc=host                                    \
   portworx/px-dev -daemon -k etcd://localhost:4001 -c cluster1 -s /dev/xvdf
 ```
+Complete details about this command are available at http://docs.portworx.com/run-with-docker.html[Run PX with Docker].
 +
 NOTE: `/dev/xvdf` is the mount name for `/dev/sdf` volume mounted earlier.
 +
@@ -102,6 +109,7 @@ Global Storage Pool
 	Total Used    	:  266 MiB
 	Total Capacity	:  10 GiB
 ```
+It shows the total capacity available and used.
 
 == Docker Volume
 
