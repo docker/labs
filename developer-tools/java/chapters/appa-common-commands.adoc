@@ -17,19 +17,19 @@ Here is the list of commonly used Docker commands:
 | Remove all images | `docker image rm $(docker image ls -aq)`
 2+^s| Containers
 | Run a container | `docker container run`
-| List of running containers | `docker container ps`
-| List of all containers | `docker container ps -a`
+| List of running containers | `docker container ls`
+| List of all containers | `docker container ls -a`
 | Stop a container | `docker container stop ${CID}`
-| Stop all running containers | `docker container stop $(docker container ps -q)`
-| List all exited containers with status 1 | `docker container ps -a --filter "exited=1"`
+| Stop all running containers | `docker container stop $(docker container ls -q)`
+| List all exited containers with status 1 | `docker container ls -a --filter "exited=1"`
 | Remove a container | `docker container rm ${CID}`
-| Remove container by a regular expression | `docker container ps -a \| grep wildfly \| awk '{print $1}' \| xargs docker container rm -f`
-| Remove all exited containers | `docker container rm -f $(docker container ps -a \| grep Exit \| awk '{ print $1 }')`
-| Remove all containers | `docker container rm $(docker container ps -aq)`
+| Remove container by a regular expression | `docker container ls -a \| grep wildfly \| awk '{print $1}' \| xargs docker container rm -f`
+| Remove all exited containers | `docker container rm -f $(docker container ls -a \| grep Exit \| awk '{ print $1 }')`
+| Remove all containers | `docker container rm $(docker container ls -aq)`
 | Find IP address of the container | `docker container inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID}`
 | Attach to a container | `docker container attach ${CID}`
 | Open a shell in to a container | `docker container 	exec -it ${CID} bash`
-| Get container id for an image by a regular expression | `docker container ps \| grep wildfly \| awk '{print $1}'`
+| Get container id for an image by a regular expression | `docker container ls \| grep wildfly \| awk '{print $1}'`
 |==================
 
 === Exit code status
