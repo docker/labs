@@ -11,3 +11,4 @@ We have these Windows and .NET tutorials:
 And these tutorials for [modernizing traditional apps](modernize-traditional-apps/README.md):
 
 * [Modernize ASP.NET Web Applications](modernize-traditional-apps/modernize-aspnet/README.md)
+* [Modernize ASP.NET Apps - for Ops](modernize-traditional-apps/modernize-aspnet-ops/README.md)
