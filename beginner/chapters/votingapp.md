@@ -140,8 +140,8 @@ ID            NAME         MODE        REPLICAS  IMAGE
 25wo6p7fltyn  vote_db      replicated  1/1       postgres:9.4
 2ot4sz0cgvw3  vote_worker  replicated  1/1       dockersamples/examplevotingapp_worker:latest
 9faz4wbvxpck  vote_redis   replicated  2/2       redis:alpine
-ocm8x2ijtt88  vote_vote    replicated  2/2       dockersamples/examplevotingapp_vote:latest
-p1dcwi0fkcbb  vote_result  replicated  2/2       dockersamples/examplevotingapp_result:latest
+ocm8x2ijtt88  vote_vote    replicated  2/2       dockersamples/examplevotingapp_vote:before
+p1dcwi0fkcbb  vote_result  replicated  2/2       dockersamples/examplevotingapp_result:before
 ```
 
 If you take a look at `docker-stack.yml`, you will see that the file defines
