@@ -27,9 +27,9 @@ The labs focus on specific application profiles, and the modernization benefits 
 - Modernize Messaging-Based Integration Apps
 
 
-## For IT Pros
+## For IT Pros and Ops
 
-- Migrate ASP.NET and SQL Server Apps to Docker
+- [Migrate ASP.NET Apps to Docker](modernize-aspnet-ops/README.md)
 
 - Migrate WCF Service Apps to Docker
 
