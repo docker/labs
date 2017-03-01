@@ -22,6 +22,8 @@ This tutorial offers Java developers an intro-level and self-paced hands-on work
 ** link:chapters/ch10-ddc.adoc[Docker Data Center]
 ** link:chapters/ch10-sysdig.adoc[Sysdig]
 ** link:chapters/ch10-newrelic.adoc[New Relic]
+* Stateful Containers
+** link:chapters/ch11-portworx.adoc[Portworx]
 * link:chapters/appa-common-commands.adoc[Common Docker Commands]
 * link:chapters/appb-troubleshooting.adoc[Troubleshooting]
 * link:chapters/appc-references.adoc[References]
