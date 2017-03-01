@@ -1,4 +1,157 @@
 :imagesdir: images
 
-= Monitoring Docker Container Using New Relic
+= Monitoring Docker with New Relic
 
+[quote,'https://twitter.com/docker/status/744950222543982592[Solomon Hykes at DockerCon 2016]']
+_____________________________________________________________________
+Nobody cares about the container, it's the app that matters.
+_____________________________________________________________________
+
+A primary goal of monitoring containers should be to get better visibility into the application itself. While container-level metrics are important for debugging and solving performance issues, they become even more useful when complemented with application metrics.
+
+This is a brief overview of https://newrelic.com[New Relic's] Docker monitoring capabilities as of early 2017 and how to get started.
+
+== Overview
+
+https://newrelic.com/java[New Relic] helps developers pinpoint and solve application issues quickly through full visiblilty into the different frameworks, apps, platforms, containers and operating systems that run services and applications.
+
+New Relic Docker monitoring has two components:
+
+- An infrastructure agent that runs in the host operating system alongside the Docker daemon.
+
+- A library that is installed alongside the application code running in the container. 
+
+In https://docs.newrelic.com[New Relic's documentation], these products are called https://newrelic.com/infrastructure[New Relic Infrastructure] and https://newrelic.com/java[New Relic APM], respectively. Once a New Relic account is created (see below) and these components are installed, then container metrics—alongside detailed application transaction traces—are sent to New Relic.
+
+If you're not able to instrument code running inside the container (perhaps it's a third party container image), it's still possible to get container and OS-level metrics using the infrastructure agent.
+
+== Signing up for New Relic
+
+An account is required to use New Relic's Docker, Infrastructure, and Application monitoring. The license key is how agents associate data from the application or container with an account. 
+
+A free trial account is available here: https://newrelic.com/signup
+
+To find your license key,
+
+- Sign in to your https://newrelic.com[New Relic account].
+- From the New Relic menu bar, select (account dropdown) > Account settings.
+- From the Account information section, copy your license key.
+
+== Instrumenting Application Code
+
+In order to get detailed metrics and visibility of the application code running inside the container, follow https://docs.newrelic.com/docs/agents/manage-apm-agents/installation/installing-agent[instructions and requirements for installing the New Relic APM agent].
+
+For Java, the installation process depends on the type of application server. For the examples in this guide the https://docs.newrelic.com/docs/agents/java-agent/installation/java-agent-self-installer[self-installer instructions] are recommended:
+
+- Log in to https://newrelic.com[New Relic].
+
+- Select Get Started. If you have existing applications, select "Add more".
+
+- From Choose your language, select Java.
+
+- Follow the online installation steps, and download the installer.
+
+After downloading the New Relic Java agent JAR file to a local directory, the `-javaagent` option for the `web` service informs the JVM to instantiate the New Relic language agent mounted on a Docker volume.
+
+While using a mounted volume is convenient for local development, in production the agent JAR is often added to container image alongside the application code or binary (an example from a customer on Github is https://github.com/Dwolla/docker-java-newrelic/blob/e91a510d6c09d80659ba03b45dea6e3eefeba4d8/Dockerfile[here]).
+
+The agent must know an account's license key in order to send data to New Relic. If you download the agent from New Relic, the bundled configuration file will already contain your account's license key.
+
+```
+version: '3'
+services:
+  web:
+    image: arungupta/couchbase-javaee:travel
+    environment:
+      - COUCHBASE_URI=db
+    ports:
+      - 8080:8080
+      - 9990:9990
+    depends_on:
+      - db
+    environment:
+      - JAVA_OPTS=-server -javaagent:/newrelic/newrelic.jar
+    # After creating a New Relic account, the Java agent is available
+    # to download from https://rpm.newrelic.com/
+    # Next, unzip the New Relic Java Agent archive to the directory
+    # that contains this docker-compose.yml file.
+    volumes:
+      - ./newrelic:/newrelic
+  db:
+    image: arungupta/couchbase:travel
+    ports:
+      - 8091:8091
+      - 8092:8092
+      - 8093:8093
+      - 11210:11210
+```
+
+== Installing New Relic Infrastructure
+
+Next, follow New Relic's documentation for installing the infrastructure agent on the host operating system that runs alongside the docker daemon—not inside a container— using the https://docs.newrelic.com/docs/infrastructure/new-relic-infrastructure/installation/install-infrastructure-linux[apt or yum package manager].
+
+If installing on a fleet of hosts, cloud instances, or virtual machines, https://github.com/newrelic/infrastructure-agent-chef[Chef], https://github.com/newrelic/infrastructure-agent-puppet[Puppet] and https://github.com/newrelic/infrastructure-agent-ansible[Ansible] recipes are also available.
+
+To verify the agent is installed, on Ubuntu or Debian run `dpkg -l | grep newrelic-infra`.
+
+On Amazon Linux, CentOS, or Red Hat, run `rpm -qa | grep newrelic-infra`.
+
+== Java Application Monitoring
+
+Once the New Relic Java agent is running inside the JVM and has incoming requests (we often generate load with a simple cURL script or https://newrelic.com/synthetics[New Relic Synthetics scripts] that poll HTTP endpoints), aggregate metrics across all JVMs and hosts running the application code—like response time and throughput—are immediately available. 
+
+With Java, many frameworks and application servers are automatically instrumented. The full list is available in https://docs.newrelic.com/docs/agents/java-agent[New Relic's Java agent documentation].
+
+.New Relic APM Overview
+image::newrelic-apm-overview.png[]
+
+It's also possible to idenitify all containers running the application on the overview page. In this listing, we can see the Java application running in two containers with response time, throughput, CPU and memory metrics.
+
+.New Relic APM Overview: Host listing
+image::newrelic-apm-overview-hosts.png[]
+
+Detailed information on exceptions, JVM statistics, and a breakdown of where time is being spent in application code is also available. The full list of metrics and other features is available in the https://docs.newrelic.com/docs/agents/java-agent[Java agent documentation].
+
+== Infrastructure Monitoring
+
+In New Relic Infrastructure's process view, it's possible to perform advanced filtering to see detailed metrics like CPU utilization, disk I/O, and memory metrics for processes running inside containers.
+
+Filtering all processes running inside containers is done by creating a filter on the `contained` attribute.
+
+.New Relic Infrastructure Processes: Filtering contained processes
+image::newrelic-infra-docker-filtering.png[]
+
+In this example, we're able to see all processes running inside different containers and their CPU usage. The associated container image ID is also available.
+
+.Filtering on the contained attribute
+image::newrelic-docker-filtering.gif[]
+
+== Custom Docker Dashboards
+
+All container, application, and infrastructure metrics are available in https://newrelic.com/insights[New Relic Insights] to create custom dashboards. 
+
+In this case, we've created a filter for the image named `arungupta/couchbase-javaee` and are viewing CPU usage metrics.
+
+.Metrics are available to be used in custom dashboards
+image::newrelic-infrastructure-to-insights.png[]
+
+By clicking on the "View in Insights" button, it's possible to create a new dashboard view with the same data. Using the SQL-like https://docs.newrelic.com/docs/insights/nrql-new-relic-query-language/nrql-resources/nrql-syntax-components-functions[NRQL] syntax, the visualization can be customized futher. Dashboards are often shared with team members or displayed on large monitors.
+
+The queries can be run ad-hoc or integrated into a persistent dashboard. For example, here's the result for the query that displays the average CPU usage for all instances of the example Java EE image: 
+
+```
+SELECT average(cpuPercent) from ProcessSample TIMESERIES WHERE containerImageName='arungupta/couchbase-javaee-travel'
+```
+
+There are dozens of attributes other than CPU usage available for querying. The full list is available on https://docs.newrelic.com/docs/infrastructure/new-relic-infrastructure/data-instrumentation/default-infrastructure-attributes-events[New Relic Infrastructure's documentation].
+
+.Creating a dashboard with Docker image CPU metrics
+image::newrelic-insights-docker.png[]
+
+== Additional resources
+
+- https://docs.newrelic.com/docs/agents/java-agent[New Relic Java Agent Documentation]
+
+- https://discuss.newrelic.com/c/language-agents/java-agent[New Relic Online Technical Community: Java Agent]
+
+- https://blog.newrelic.com/2015/08/12/app-centric-docker-monitoring-webinar/[It’s What’s Inside That Counts: New Relic’s App-centric Docker Monitoring]
