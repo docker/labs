@@ -1,4 +1,0 @@
-:imagesdir: images
-
-= Monitoring Docker Container Using Docker CLI
-
