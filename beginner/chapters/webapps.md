@@ -459,7 +459,11 @@ Here's a quick summary of the few basic commands we used in our Dockerfile.
   CMD ["/bin/bash", "echo", "Hello World"]
 ```
 
-* `EXPOSE` opens ports in your image to allow communication to the outside world when it runs in a container.
+* `EXPOSE` creates a hint for users of an image which ports provide services. It is included in the information which
+ can be retrieved via `$ docker inspect <container-id>`.     
+
+>**Note:** The `EXPOSE` command does not actually make any ports accessible to the host! Instead, this requires 
+publishing ports by means of the `-p` flag when using `$ docker run`.  
 
 * `PUSH` pushes your image to Docker Hub, or alternately to a [private registry](TODO: add URL)
 
