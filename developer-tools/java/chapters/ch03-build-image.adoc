@@ -41,7 +41,11 @@ CMD ["/bin/echo", "hello world"]
 
 This image uses `ubuntu` as the base image. `CMD` command defines the command that needs to run. It provides a different entry point of `/bin/echo` and gives the argument "`hello world`".
 
-Build the image:
+Build the image using the command:
+
+  docker image build . -t helloworld
+
+`.` in this command is the context for `docker image build`. `-t` adds a tag to the image.
 
 [source, text]
 ----
@@ -62,8 +66,6 @@ Step 2/2 : CMD /bin/echo hello world
 Removing intermediate container 7615d69d04ec
 Successfully built 61edf15e4cec
 ----
-
-`.` in this command is the context for `docker build`.
 
 List the images available using `docker image ls`:
 
