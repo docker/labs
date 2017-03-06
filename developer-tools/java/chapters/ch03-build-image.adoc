@@ -10,11 +10,12 @@ As explained in <<Docker_Basics>>, Docker image is the *build component* of Dock
 
 Docker build images by reading instructions from a _Dockerfile_. A _Dockerfile_ is a text document that contains all the commands a user could call on the command line to assemble an image. `docker build` command uses this file and executes all the commands in succession to create an image.
 
-`build` command is also passed a context that is used during image creation. This context can be a path on your local filesystem or a URL to a Git repository.
+`build` command is also passed a context that is used during image creation. This context can be a path to your local filesystem or a URL to a Git repository.
 
-_Dockerfile_ is usually called _Dockerfile_. The complete list of commands that can be specified in this file are explained at https://docs.docker.com/reference/builder/. The common commands are listed below:
+_Dockerfile_ is usually called _Automate Building of Images_. The complete list of commands that can be specified in this file are explained at https://docs.docker.com/reference/builder/. The common commands are listed below:
 
 .Common commands for Dockerfile
+
 [width="100%", options="header", cols="1,4,4"]
 |==================
 | Command | Purpose | Example
@@ -41,7 +42,9 @@ CMD ["/bin/echo", "hello world"]
 
 This image uses `ubuntu` as the base image. `CMD` command defines the command that needs to run. It provides a different entry point of `/bin/echo` and gives the argument "`hello world`".
 
-Build the image:
+Build the image using the following command
+
+    docker build -t helloworld . 
 
 [source, text]
 ----
