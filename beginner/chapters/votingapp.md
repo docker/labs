@@ -133,7 +133,7 @@ Creating service vote_worker
 Creating service vote_redis
 Creating service vote_db
 ```
-to verify your stack has deployed, use `docker stack services`
+to verify your stack has deployed, use `docker stack services vote`
 ```
 docker stack services vote
 ID            NAME         MODE        REPLICAS  IMAGE
