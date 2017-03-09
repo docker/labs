@@ -11,17 +11,9 @@ This section describes the hardware and software needed for this workshop, and h
 
 == Install Docker
 
-Docker runs natively on Mac, Windows and Linux. Follow the instructions to install Docker:
-
-. https://docs.docker.com/docker-for-mac/[Mac]
-. https://docs.docker.com/docker-for-windows/[Windows]
-. https://docs.docker.com/engine/installation/linux/centos/[Centos]
-. https://docs.docker.com/engine/installation/linux/debian/[Debian]
-. https://docs.docker.com/engine/installation/linux/ubuntulinux/[Ubuntu]
+Docker runs natively on Mac, Windows and Linux. This lab will use https://www.docker.com/community-edition[Docker Community Edition]. Follow the https://www.docker.com/community-edition[instructions] to install Docker.
 
 NOTE: Docker for Mac and Windows have requirements for a fairly recent operating system version. If your machine does not meet these requirements, then you need to install https://www.docker.com/products/docker-toolbox[Docker Toolbox]. 
-
-Complete set of operating systems are listed at http://docs.docker.com/engine/installation/[Install Docker Engine].
 
 === Additional components
 
