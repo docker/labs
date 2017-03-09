@@ -116,13 +116,13 @@ bxn1iivy8w7faeugpep76w50j    worker3   Ready   Active
 You can also find all your machines by running
 ```
 $ docker-machine ls
-NAME       ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER    ERRORS
-manager1   -        virtualbox   Running   tcp://192.168.99.100:2376           v1.12.1   
-manager2   -        virtualbox   Running   tcp://192.168.99.101:2376           v1.12.1   
-manager3   -        virtualbox   Running   tcp://192.168.99.102:2376           v1.12.1   
-worker1    -        virtualbox   Running   tcp://192.168.99.103:2376           v1.12.1   
-worker2    -        virtualbox   Running   tcp://192.168.99.104:2376           v1.12.1   
-worker3    -        virtualbox   Running   tcp://192.168.99.105:2376           v1.12.1   
+NAME       ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER      ERRORS
+manager1   -        virtualbox   Running   tcp://192.168.99.100:2376           v17.03.0-ce   
+manager2   -        virtualbox   Running   tcp://192.168.99.101:2376           v17.03.0-ce 
+manager3   -        virtualbox   Running   tcp://192.168.99.102:2376           v17.03.0-ce
+worker1    -        virtualbox   Running   tcp://192.168.99.103:2376           v17.03.0-ce
+worker2    -        virtualbox   Running   tcp://192.168.99.104:2376           v17.03.0-ce
+worker3    -        virtualbox   Running   tcp://192.168.99.105:2376           v17.03.0-ce
 ```
 
 The next step is to create a service and list out the services. This creates a single service called `web` that runs the latest nginx:
@@ -331,7 +331,7 @@ Resources:
 Plugins:
   Network:		bridge, host, null, overlay
   Volume:		local
-Engine Version:		1.12.1
+Engine Version:		17.03.0-ce
 Engine Labels:
  - provider = virtualbox
  ```

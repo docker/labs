@@ -1,7 +1,6 @@
 # Service deployment on a swarm in the Cloud
 
-Script that create a swarm cluster and deploy a simple service.
-Swarm is created with Swarm mode of Engine 1.12. Can be created on
+Script that create a swarm cluster and deploy a simple service. The Swarm is created with Swarm mode using Docker 1.12 or higher. Can be created on
 * Virtualbox
 * Microsoft Azure
 * Digitalocean
@@ -86,10 +85,10 @@ List all Docker host created
 ```
 $ docker-machine ls
 NAME          ACTIVE   DRIVER         STATE     URL                         SWARM   DOCKER        ERRORS
-manager1      -        virtualbox     Running   tcp://192.168.99.100:2376           v1.12.0-rc2
-manager2      -        virtualbox     Running   tcp://192.168.99.101:2376           v1.12.0-rc2
-worker1       -        virtualbox     Running   tcp://192.168.99.102:2376           v1.12.0-rc2
-worker2       -        virtualbox     Running   tcp://192.168.99.103:2376           v1.12.0-rc2
+manager1      -        virtualbox     Running   tcp://192.168.99.100:2376           v17.03.0-ce
+manager2      -        virtualbox     Running   tcp://192.168.99.101:2376           v17.03.0-ce
+worker1       -        virtualbox     Running   tcp://192.168.99.102:2376           v17.03.0-ce
+worker2       -        virtualbox     Running   tcp://192.168.99.103:2376           v17.03.0-ce
 ```
 
 # Service details

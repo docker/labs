@@ -9,21 +9,21 @@ First, make sure the Docker installation is working:
 ```
 > docker version
 Client:
- Version:      1.12.2
- API version:  1.24
- Go version:   go1.6.3
- Git commit:   bb80604
- Built:        Tue Oct 11 05:27:08 2016
+ Version:      17.03.0-ce
+ API version:  1.26
+ Go version:   go1.7.5
+ Git commit:   60ccb22
+ Built:        Thu Feb 23 10:40:59 2017
  OS/Arch:      windows/amd64
- Experimental: true
 
 Server:
- Version:      1.12.2-cs2-ws-beta
- API version:  1.25
- Go version:   go1.7.1
- Git commit:   050b611
- Built:        Tue Oct 11 02:35:40 2016
+ Version:      17.03.0-ce
+ API version:  1.26 (minimum version 1.24)
+ Go version:   go1.7.5
+ Git commit:   60ccb22
+ Built:        Thu Feb 23 10:40:59 2017
  OS/Arch:      windows/amd64
+ Experimental: true
 ```
 
 Next, pull a base image that’s compatible with the evaluation build, re-tag it and do a test-run:
