@@ -24,7 +24,7 @@ In this diagram we see the packet flow on an overlay network. Here are the steps
 
 
 
-###Overlay Driver Internal Architecture
+### Overlay Driver Internal Architecture
 The Docker Swarm control plane automates all of the provisioning for an overlay network. No VXLAN configuration or Linux networking configuration is required. Data-plane encryption, an optional feature of overlays, is also automatically configured by the overlay driver as networks are created. The user or network operator only has to define the network (`docker network create -d overlay ...`) and attach containers to that network.
  
 <span class="float-right">
