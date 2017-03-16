@@ -157,7 +157,7 @@ In this MVC application the UserController uses the findByLogin method in the Us
 To fix this, apply ROT13 to the password by adding
 
 ```
-import com.docker.UserSignup.utit.Rot13
+import com.docker.UserSignup.util.Rot13
 
 String passwd = Rot13.rot13(password);
 ```
