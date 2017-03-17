@@ -11,7 +11,7 @@ You need to have Docker and Docker Machine installed on your system. [Download D
 >
 * If you are using Docker for Mac or Docker for Windows, you already have Docker Machine, as it is installed with those applications. See [Download Docker for Mac](https://docs.docker.com/docker-for-mac/#/download-docker-for-mac) and [Download Docker for Windows](https://docs.docker.com/docker-for-windows/#/download-docker-for-windows) for install options and details on what gets installed.
 >
-* If you are using Docker for Windows you will need to use the Hypver-V driver for Docker Machine. That will require a bit more set-up. See the [Microsoft Hyper-V driver documentation](https://docs.docker.com/machine/drivers/hyper-v/) for directions on setting it up.
+* If you are using Docker for Windows you will need to use the Hyper-V driver for Docker Machine. That will require a bit more set-up. See the [Microsoft Hyper-V driver documentation](https://docs.docker.com/machine/drivers/hyper-v/) for directions on setting it up.
 >
 * If you are using Docker directly on a Linux system, you will need to [install Docker Machine](https://docs.docker.com/machine/install-machine/) (after installing [Docker Engine](https://docs.docker.com/engine/installation/linux/)).
 
