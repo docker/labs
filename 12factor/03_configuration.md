@@ -10,7 +10,7 @@ In _config/connections.js_, we define the _mongo_ connection and use MONGO_URL e
 module.exports.connections = {
   mongo: {
      adapter: 'sails-mongo',
-     url: process.env.MONGO_URL'
+     url: 'process.env.MONGO_URL'
   }
 };
 ```
