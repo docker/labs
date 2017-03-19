@@ -164,7 +164,7 @@ image::docker-bigdata-02.png[]
 
 When running integration tests, you want to test your application in an environment as close to production as possible, so you can test interactions between the several components, services, databases, network communication, etc. Fortunately, docker can help you a lot with integration tests.
 
-There are several strategies to run integration test, but in this application we are going to use the following:
+There are several strategies to run integration tests, but in this application we are going to use the following:
 
 . Start the services with a `docker-compose.yml` file created for testing purposes. This file won't have any volumes mapped, so when the test is over, no state will be saved. The test `docker-compose.yml` file won't publish any port on the host machine, so we can run simultaneous tests.
 . Run the application, using the services started with the `docker-compose.yml` test file.
