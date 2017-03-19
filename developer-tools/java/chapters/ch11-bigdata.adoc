@@ -152,13 +152,13 @@ This configuration will allow you to access the docker Hadoop cluster from your 
 
 Then, open your project on Netbeans (or any other IDE) and run the application file:
 
-image::docker-bigdata01.png[]
+image::docker-bigdata-01.png[]
 
 Note that you will be connecting to the docker services at localhost.
 
 You can also set a breakpoint and debug your application:
 
-image::docker-bigdata02.png[]
+image::docker-bigdata-02.png[]
 
 == Integration tests
 
