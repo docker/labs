@@ -35,7 +35,6 @@ WORKDIR /app
 RUN npm install
 
 # Expose API port to the outside
-PORT 80
 EXPOSE 80
 
 # Launch application

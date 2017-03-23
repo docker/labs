@@ -17,11 +17,7 @@ This tutorial offers Java developers an intro-level and self-paced hands-on work
 ** link:chapters/ch08-azure.adoc[Docker for Azure] (coming)
 ** link:chapters/ch08-cloud.adoc[Docker Cloud]
 * link:chapters/ch09-cicd.adoc[CI/CD using Docker] (coming)
-* link:chapters/ch10-monitoring.adoc[Monitoring Java Container] (coming)
-** link:chapters/ch10-cli.adoc[Docker CLI]
-** link:chapters/ch10-ddc.adoc[Docker Data Center]
-** link:chapters/ch10-sysdig.adoc[Sysdig]
-** link:chapters/ch10-newrelic.adoc[New Relic]
+* link:chapters/ch10-monitoring.adoc[Monitoring Java Container]
 * link:chapters/appa-common-commands.adoc[Common Docker Commands]
 * link:chapters/appb-troubleshooting.adoc[Troubleshooting]
 * link:chapters/appc-references.adoc[References]

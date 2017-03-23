@@ -2,7 +2,7 @@
 Docker includes swarm mode for natively managing a cluster of Docker Engines called a swarm. You can use the Docker CLI to create a swarm, deploy application services to a swarm, and manage swarm behavior. This tutorial uses [Docker Machine](https://docs.docker.com/machine/) to create multiple nodes on your desktop. If you prefer you can create those nodes in your own cloud or on multiple machines.
 
 >**Important Note**
-You don't need to use the Docker CLI to perform these operations. You can use `docker stack deploy --compose-file STACKNAME.yml STACKNAME` instead. for an introduction to this, check out the [Deploying an app to a Swarm](../beginner/chapters/votingapp.md) for an introduction to using a stack file in a compose file format to deploy an app for more information.
+You don't need to use the Docker CLI to perform these operations. You can use `docker stack deploy --compose-file STACKNAME.yml STACKNAME` instead. For an introduction to this, check out the [Deploying an app to a Swarm](https://github.com/docker/labs/blob/master/beginner/chapters/votingapp.md). For an introduction to using a stack file in a compose file format to deploy an app for more information.
 
 ## Preparation
 You need to have Docker and Docker Machine installed on your system. [Download Docker](https://docker.com/getdocker) for your platform and install it.
@@ -11,7 +11,7 @@ You need to have Docker and Docker Machine installed on your system. [Download D
 >
 * If you are using Docker for Mac or Docker for Windows, you already have Docker Machine, as it is installed with those applications. See [Download Docker for Mac](https://docs.docker.com/docker-for-mac/#/download-docker-for-mac) and [Download Docker for Windows](https://docs.docker.com/docker-for-windows/#/download-docker-for-windows) for install options and details on what gets installed.
 >
-* If you are using Docker for Windows you will need to use the Hypver-V driver for Docker Machine. That will require a bit more set-up. See the [Microsoft Hyper-V driver documentation](https://docs.docker.com/machine/drivers/hyper-v/) for directions on setting it up.
+* If you are using Docker for Windows you will need to use the Hyper-V driver for Docker Machine. That will require a bit more set-up. See the [Microsoft Hyper-V driver documentation](https://docs.docker.com/machine/drivers/hyper-v/) for directions on setting it up.
 >
 * If you are using Docker directly on a Linux system, you will need to [install Docker Machine](https://docs.docker.com/machine/install-machine/) (after installing [Docker Engine](https://docs.docker.com/engine/installation/linux/)).
 
@@ -116,13 +116,13 @@ bxn1iivy8w7faeugpep76w50j    worker3   Ready   Active
 You can also find all your machines by running
 ```
 $ docker-machine ls
-NAME       ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER    ERRORS
-manager1   -        virtualbox   Running   tcp://192.168.99.100:2376           v1.12.1   
-manager2   -        virtualbox   Running   tcp://192.168.99.101:2376           v1.12.1   
-manager3   -        virtualbox   Running   tcp://192.168.99.102:2376           v1.12.1   
-worker1    -        virtualbox   Running   tcp://192.168.99.103:2376           v1.12.1   
-worker2    -        virtualbox   Running   tcp://192.168.99.104:2376           v1.12.1   
-worker3    -        virtualbox   Running   tcp://192.168.99.105:2376           v1.12.1   
+NAME       ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER      ERRORS
+manager1   -        virtualbox   Running   tcp://192.168.99.100:2376           v17.03.0-ce   
+manager2   -        virtualbox   Running   tcp://192.168.99.101:2376           v17.03.0-ce 
+manager3   -        virtualbox   Running   tcp://192.168.99.102:2376           v17.03.0-ce
+worker1    -        virtualbox   Running   tcp://192.168.99.103:2376           v17.03.0-ce
+worker2    -        virtualbox   Running   tcp://192.168.99.104:2376           v17.03.0-ce
+worker3    -        virtualbox   Running   tcp://192.168.99.105:2376           v17.03.0-ce
 ```
 
 The next step is to create a service and list out the services. This creates a single service called `web` that runs the latest nginx:
@@ -331,7 +331,7 @@ Resources:
 Plugins:
   Network:		bridge, host, null, overlay
   Volume:		local
-Engine Version:		1.12.1
+Engine Version:		17.03.0-ce
 Engine Labels:
  - provider = virtualbox
  ```

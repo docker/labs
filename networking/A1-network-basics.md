@@ -62,7 +62,7 @@ NETWORK ID          NAME                DRIVER              SCOPE
 ef4896538cc7        none                null                local
 ```
 
-The output above shows the container networks that are created as part of a standard installation of Docker 1.12.
+The output above shows the container networks that are created as part of a standard installation of Docker.
 
 New networks that you create will also show up in the output of the `docker network ls` command.
 
