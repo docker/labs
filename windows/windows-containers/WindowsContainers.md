@@ -26,11 +26,10 @@ Server:
  Experimental: true
 ```
 
-Next, pull a base image that’s compatible with the evaluation build, re-tag it and do a test-run:
+Next, pull a base image that’s compatible with Windows and do a test-run:
 
 ```
-docker pull microsoft/windowsservercore:10.0.14393.321
-docker tag microsoft/windowsservercore:10.0.14393.321 microsoft/windowsservercore
+docker pull microsoft/windowsservercore
 docker run microsoft/windowsservercore hostname
 69c7de26ea48
 ```
@@ -62,7 +61,3 @@ Images stored on Docker Cloud are available in the web interface and public imag
 
 ### Next Steps
 Continue to Step 3: [Multi-Container Applications](MultiContainerApp.md "Multi-Container Applications")
-
-
-
-
