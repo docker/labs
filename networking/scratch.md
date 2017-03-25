@@ -11,7 +11,7 @@ When a new service (container) is created it should be able register itself with
 </p>
 
 
-The mechanisms that provide service discovery and load balancing can take many forms. They can be external service or provided natively within Docker without extra infrastructure. In Docker  1.12 automatic service discovery and load balancing is provided right out of the box by the Docker Engine. A service can be defined and traffic is load balanced via DNS to containers. DNS load balancing is covered later in this guide.
+The mechanisms that provide service discovery and load balancing can take many forms. They can be external service or provided natively within Docker without extra infrastructure. In Docker Swarm Mode automatic service discovery and load balancing is provided right out of the box. A service can be defined and traffic is load balanced via DNS to containers. DNS load balancing is covered later in this guide.
 
 External solutions for service discovery and/or load balancing is also possible and may be desired to levarage existing infrastructure or to take advantage of special features. Common external service discovery mechanisms include Consul, etcd, and Zookeeper. Common external load balancers include HAproxy, Nginx, F5, and many more. 
 <br>
