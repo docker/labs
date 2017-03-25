@@ -103,7 +103,7 @@ The trick to scale the nodes is to use dynamically allocated ports and let docke
 [source, text]
 ----
 nodemanager:
-  image: tail/hadoop:2.7.2
+  image: tailtarget/hadoop:2.7.2
   command: yarn nodemanager
   ports:
       - "8042" # local port dynamically assigned. allows node to be scaled up and down
