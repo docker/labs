@@ -16,3 +16,7 @@ services:
     image: arungupta/couchbase-javaee:travel
   couchbase:
     image: arungupta/couchbase:travel
+  hadoop:
+    image: tailtarget/hadoop:2.7.2
+  jenkins:
+    image: tailtarget/jenkins:2.32.3
