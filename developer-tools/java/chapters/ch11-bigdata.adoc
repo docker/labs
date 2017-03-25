@@ -32,6 +32,13 @@ Go to the `sample/docker` folder and start the services:
 docker-compose up -d
 ----
 
+See the logs and wait until everything is up:
+
+[source, text]
+----
+docker-compose logs -f
+----
+
 Open `http://localhost:8088/cluster` to see your if your cluster is running. You should see 1 active node when everything is up.
 
 == Running the application
