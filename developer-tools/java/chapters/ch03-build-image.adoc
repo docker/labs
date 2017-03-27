@@ -41,7 +41,11 @@ CMD ["/bin/echo", "hello world"]
 
 This image uses `ubuntu` as the base image. `CMD` command defines the command that needs to run. It provides a different entry point of `/bin/echo` and gives the argument "`hello world`".
 
-Build the image:
+Build the image using the command:
+
+  docker image build -t helloworld .
+
+The following output is shown:
 
 [source, text]
 ----
@@ -63,7 +67,7 @@ Removing intermediate container 7615d69d04ec
 Successfully built 61edf15e4cec
 ----
 
-`.` in this command is the context for `docker build`.
+`.` in this command is the context for `docker image build` command.
 
 List the images available using `docker image ls`:
 
@@ -209,7 +213,7 @@ Create the Docker image:
 
 [source, text]
 ----
-mvn -f docker-java-sample/helloworld/pom.xml package -Pdocker
+mvn -f docker-java-sample/pom.xml package -Pdocker
 ----
 
 This will show an output like:
@@ -232,7 +236,7 @@ Run the Docker container:
 
 [source, text]
 ----
-mvn -f docker-java-sample/helloworld/pom.xml install -Pdocker
+mvn -f docker-java-sample/pom.xml install -Pdocker
 ----
 
 This will show an output like:
