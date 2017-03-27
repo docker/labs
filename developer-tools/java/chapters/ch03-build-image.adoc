@@ -213,7 +213,7 @@ Create the Docker image:
 
 [source, text]
 ----
-mvn -f docker-java-sample/helloworld/pom.xml package -Pdocker
+mvn -f docker-java-sample/pom.xml package -Pdocker
 ----
 
 This will show an output like:
@@ -236,7 +236,7 @@ Run the Docker container:
 
 [source, text]
 ----
-mvn -f docker-java-sample/helloworld/pom.xml install -Pdocker
+mvn -f docker-java-sample/pom.xml install -Pdocker
 ----
 
 This will show an output like:
