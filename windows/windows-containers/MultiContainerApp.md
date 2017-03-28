@@ -1,6 +1,6 @@
 ## Multi-Container Applications
 
-This tutorial will walk you through using the sample Music Store application with Windows containers. The Music Store application is a standard .NET sample application, available in the [aspnet GitHub repository](https://github.com/aspnet/MusicStore "Music Store application"). We've [forked it](https://github.com/friism/MusicStore "link to forked version of Music Store App") to use Windows Containers.
+This tutorial will walk you through using the sample Music Store application with Windows containers. The Music Store application is a standard .NET sample application, available in the [aspnet GitHub repository](https://github.com/aspnet/MusicStore "Music Store application"). We've [forked it](https://github.com/dockersamples/dotnet-musicstore "link to forked version of Music Store App") to use Windows Containers.
 
 ## Using docker-compose on Windows
 Docker Compose is a great way develop complex multi-container consisting of databases, queues and web frontends.
@@ -14,7 +14,7 @@ Invoke-WebRequest https://github.com/docker/compose/releases/download/1.11.1/doc
 To try out Compose on Windows, clone a variant of the ASP.NET Core MVC MusicStore app, backed by a SQL Server Express 2016 database.
 
 ```
-git clone https://github.com/friism/Musicstore
+git clone https://github.com/dockersamples/dotnet-musicstore
 ...
 cd Musicstore
 docker-compose -f .\docker-compose.windows.yml build
