@@ -63,7 +63,7 @@ In this Compose file:
 . Image name for each service defined using `image` attribute
 . The `arungupta/couchbase:travel` image starts Couchbase server, configures it using http://developer.couchbase.com/documentation/server/current/rest-api/rest-endpoints-all.html[Couchbase REST API], and loads a sample bucket
 . The `arungupta/couchbase-javaee:travel` image starts WildFly and deploys application WAR file built from https://github.com/arun-gupta/couchbase-javaee. Clone that project if you want to build your own image.
-. `envrionment` attribute defines environment variables accessible by the application deployed in WildFly. `COUCHBASE_URI` refers to the database service. This is used in the application code as shown at https://github.com/arun-gupta/couchbase-javaee/blob/master/src/main/java/org/couchbase/sample/javaee/Database.java.
+. `environment` attribute defines environment variables accessible by the application deployed in WildFly. `COUCHBASE_URI` refers to the database service. This is used in the application code as shown at https://github.com/arun-gupta/couchbase-javaee/blob/master/src/main/java/org/couchbase/sample/javaee/Database.java.
 . Port forwarding is achieved using `ports` attribute
 . `depends_on` attribute allows to express dependency between services. In this case, Couchbase will be started before WildFly. Application-level health are still user's responsibility.
 
