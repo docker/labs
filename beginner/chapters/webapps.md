@@ -96,7 +96,7 @@ $ docker rm static-site
 Let's use a shortcut to remove the second site:
 
 ```
-$ docker rm -f static-site static-site-2
+$ docker rm -f static-site-2
 ```
 
 Run `docker ps` to make sure the containers are gone.
