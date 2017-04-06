@@ -7,9 +7,10 @@ This section describes the hardware and software needed for this workshop, and h
 == Hardware & Software
 
 . Memory: At least 4 GB+, strongly preferred 8 GB
-. Operating System: Mac OS X (10.10.3+), Windows 10 Pro+ 64-bit, Ubuntu 12+, CentOS 7+
-
-An older version of the operating system may be used. The installation instructions would differ slightly in that case and are explained in the next section.
+. Operating System: Mac OS X (10.10.3+), Windows 10 Pro+ 64-bit, Ubuntu 12+, CentOS 7+.
++
+NOTE: An older version of the operating system may be used. The installation instructions would differ slightly in that case and are explained in the next section.
+. Amazon Web Services credentials with https://docs.docker.com/docker-for-aws/iam-permissions/[following permissions]. This is only needed for some parts of the workshop.
 
 == Install Docker
 
