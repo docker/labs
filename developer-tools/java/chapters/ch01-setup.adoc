@@ -4,16 +4,18 @@
 
 This section describes the hardware and software needed for this workshop, and how to configure them. This workshop is designed for a BYOL (Brying Your Own Laptop) style hands-on-lab.
 
-== Hardware
+== Hardware & Software
 
-. Operating System: Mac OS X (10.10+), Windows 10 Pro+, Ubuntu 12+, CentOS 7+
-. Memory: At least 4 GB+, preferred 8 GB
+. Memory: At least 4 GB+, strongly preferred 8 GB
+. Operating System: Mac OS X (10.10.3+), Windows 10 Pro+ 64-bit, Ubuntu 12+, CentOS 7+
+
+An older version of the operating system may be used. The installation instructions would differ slightly in that case and are explained in the next section.
 
 == Install Docker
 
 Docker runs natively on Mac, Windows and Linux. This lab will use https://www.docker.com/community-edition[Docker Community Edition]. Follow the https://www.docker.com/community-edition[instructions] to install Docker.
 
-NOTE: Docker for Mac and Windows have requirements for a fairly recent operating system version. If your machine does not meet these requirements, then you need to install https://www.docker.com/products/docker-toolbox[Docker Toolbox]. 
+NOTE: Docker Community Edition have requirements for a fairly recent operating system version. If your machine does not meet these requirements, then you need to install https://www.docker.com/products/docker-toolbox[Docker Toolbox]. 
 
 === Additional components
 
@@ -23,7 +25,7 @@ Install the following additional components:
 
 === Docker Toolbox Notes
 
-Skip this section if you are not using Docker Toolbox for Mac or Windows.
+Skip this section if you are using Docker Community Edition.
 
 . *Default Docker Machine*: Docker Toolbox creates a Docker Machine named `default`. To make it easier to start/stop the containers, an entry is added into the host mapping table of your operating system. 
 +
@@ -36,7 +38,7 @@ docker-machine ip default
 This will provide the IP address associated with the Docker Machine created by Toolbox.
 +
 Edit `/etc/hosts` (Mac OS) or `C:\Windows\System32\drivers\etc\hosts` (Windows) and add:
-
++
 [source, text]
 ----
 <IP ADDRESS>  dockerhost
