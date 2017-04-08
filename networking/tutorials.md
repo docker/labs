@@ -168,7 +168,7 @@ To accomplish this policy we create a second overlay network, `catnet`, and atta
 $ docker network create -d overlay --subnet 10.2.0.0/24 --gateway 10.2.0.1 catnet
 $ docker service create --network catnet --name cat-db redis
 $ docker service create --network catnet -p 9000:5000 -e 'DB=cat-db' -e 'ROLE=cat' --name cat-web chrch/web
-$ docker service create --network dog-net --network cat-net -p 7000:5000 -e 'DB1=dog-db' -e 'DB2=cat-db' --name admin chrch/admin 
+$ docker service create --network dognet --network catnet -p 7000:5000 -e 'DB1=dog-db' -e 'DB2=cat-db' --name admin chrch/admin 
 ```
 
 This example uses the following logical topology:

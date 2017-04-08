@@ -12,7 +12,7 @@ Docker Swarm comes with integrated PKI. All managers and nodes in the Swarm have
 
 ###Securing the Data Plane
 
-In Docker Engine 1.12 Swarm mode the data path (e.g. application traffic) can be encrypted out-of-the-box. This feature uses IPSec tunnels to encrypt network traffic as it leaves the source container and decrypts it as it enters the destination container.  This ensure that your application traffic is highly secure when it's in transit regardless of the underlying networks. In a hybrid, multi-tenant, or multi-cloud environment, it is crucial to ensure data is secure as it traverses networks you might not have control over. 
+In Docker Swarm mode the data path (e.g. application traffic) can be encrypted out-of-the-box. This feature uses IPSec tunnels to encrypt network traffic as it leaves the source container and decrypts it as it enters the destination container.  This ensure that your application traffic is highly secure when it's in transit regardless of the underlying networks. In a hybrid, multi-tenant, or multi-cloud environment, it is crucial to ensure data is secure as it traverses networks you might not have control over. 
 
 This diagram illustrates how to secure communication between two containers running on different hosts in a Docker Swarm. 
 

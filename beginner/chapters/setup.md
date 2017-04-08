@@ -8,7 +8,7 @@ Getting all the tooling setup on your computer can be a daunting task, but getti
 
 The *getting started* guide on Docker has detailed instructions for setting up Docker on [Mac](https://docs.docker.com/docker-for-mac/), [Linux](https://docs.docker.com/engine/installation/linux/) and [Windows](https://docs.docker.com/docker-for-windows/).
 
-*If you're using Docker for Windows* make sure you have [shared your drive](https://docs.docker.com/docker-for-windows/#/shared-drives).
+*If you're using Docker for Windows* make sure you have [shared your drive](https://docs.docker.com/docker-for-windows/#shared-drives).
 
 *Important note* If you're using an older version of Windows or MacOS you may need to use [Docker Machine](https://docs.docker.com/machine/overview/) instead.
 
