@@ -43,7 +43,13 @@ This image uses `ubuntu` as the base image. `CMD` command defines the command th
 
 Build the image using the command:
 
-  docker image build -t helloworld .
+[source, text]
+----
+  docker image build . -t helloworld
+----
+
+`.` in this command is the context for `docker image build`. `-t` adds a tag to the image.
+
 
 The following output is shown:
 
@@ -66,8 +72,6 @@ Step 2/2 : CMD /bin/echo hello world
 Removing intermediate container 7615d69d04ec
 Successfully built 61edf15e4cec
 ----
-
-`.` in this command is the context for `docker image build` command.
 
 List the images available using `docker image ls`:
 
