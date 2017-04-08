@@ -107,11 +107,13 @@ sudo docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compos
 . We are running the commands with sudo because we are actually running the Docker socket on the host. Jenkins runs with the jenkins user and we added the jenkins user to the sudoers list in our image. Obviously, this can have security consequences in a production environment, since one could create a build that would access root level services on the host. You can avoid this by configuring the jenkins user on the host, so it will have access to the Docker socket and then run the commands without sudo.
 ====
 
-9. Save the build and then click on Build now to run it. You should see a progress bar when the build is running. You can click on the progress bar to see the build console output.
+
+9 . Save the build and then click on `Build now` to run it. You should see a progress bar when the build is running. You can click on the progress bar to see the build console output.
 
 image::docker-ci-cd-06.png[]
 
-10. If the build is successfull, you should see this on the build console output:
+
+10 . If the build is successfull, you should see this on the build console output:
 
 image::docker-ci-cd-07.png[]
 
