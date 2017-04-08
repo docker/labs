@@ -113,9 +113,58 @@ sudo docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compos
 image::docker-ci-cd-06.png[]
 
 
-10 . If the build is successfull, you should see this on the build console output:
+10 . If the build is successful, you should see this on the build console output:
 
 image::docker-ci-cd-07.png[]
+
+== Running and debugging integration tests outside Jenkins
+
+When creating integration tests, it is useful to be able to run and debug them outside Jenkins. In order to do that, you can simply run the same commands you ran in the Jenkins build:
+
+[source, text]
+----
+# Generates the images
+mvn clean install -Papp-docker-image
+
+# Starts mongo service
+docker-compose --file src/test/resources/docker-compose.yml up -d mongo 
+
+# Waits for services do start
+sleep 30
+
+# Run our application
+docker-compose --file src/test/resources/docker-compose.yml \
+               run mongo-docker-demo \
+               java -jar /maven/jar/mongo-docker-demo-1.0-SNAPSHOT-jar-with-dependencies.jar mongo 
+
+# Run our integration tests
+docker-compose --file src/test/resources/docker-compose.yml \
+               run mongo-docker-demo-tests mvn -f /maven/code/pom.xml \
+               -Dmaven.repo.local=/m2/repository -Pintegration-test verify 
+
+# Stop all the services
+docker-compose --file src/test/resources/docker-compose.yml down
+----
+
+
+If you want to debug your integration tests, run the tests with this command:
+
+[source, text]
+----
+# Run integration tests in debug mode
+docker run -v ~/.m2/repository:/m2/repository \
+       -p 5005:5005 --link mongo:mongo \
+       --net resources_default mongo-docker-demo-tests \
+       mvn -f /maven/code/pom.xml \
+       -Dmaven.repo.local=/m2/repository \
+       -Pintegration-test verify -Dmaven.failsafe.debug
+----
+
+This will make your test wait for a connection on port 5005 for debugging. You can then attach your IDE to this port and debug. Here is how this is done on Netbeans:
+
+image::docker-ci-cd-08.png[]
+
+image::docker-ci-cd-09.png[]
 
 == Continuous Delivery with Docker and Jenkins
 
