@@ -4,9 +4,9 @@
 
 *PURPOSE*: This chapter explains how to use Docker to create a Hadoop cluster and a Big Data application in Java. It highlights several concepts like service scale, dynamic port allocation, container links, integration tests, debugging, etc.
 
-Big Data applications usually involves distributed processing using tools like Hadoop or Spark. These services can be scaled up, running with several nodes to support more parallelism. Running tools like Hadoop and Spark on Docker makes it easy to scale them up and down. This is very useful to simulate a cluster on development time and also to run integration tests before taking your application to production.
+Big Data applications usually involve distributed processing using tools like Hadoop or Spark. These services can be scaled up, running with several nodes to support more parallelism. Running tools like Hadoop and Spark on Docker makes it easy to scale them up and down. This is very useful to simulate a cluster on development time and also to run integration tests before taking your application to production.
 
-The application on this example reads a file, count how many words are on that file using a MapReduce implemented on Hadoop and then saves the result on MongoDB. In order to do that, we will run a Hadoop cluster and a MongoDB server on Docker.
+The application on this example reads a file, count how many words are on that file using a MapReduce job implemented on Hadoop and then saves the result on a MongoDB database. In order to do that, we will run a Hadoop cluster and a MongoDB server on Docker.
 
 [NOTE]
 ====
@@ -49,7 +49,7 @@ See the logs and wait until everything is up:
 docker-compose logs -f
 ----
 
-In order to see if everything is up, open `http://localhost:8088/cluster`. You should see 1 active node when everything is up.
+In order to see if everything is up, open `http://localhost:8088/cluster`. You should see 1 active node when everything is up and running.
 
 image::docker-bigdata-03.png[]
 
