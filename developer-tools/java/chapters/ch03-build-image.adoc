@@ -43,9 +43,15 @@ This image uses `ubuntu` as the base image. `CMD` command defines the command th
 
 Build the image using the command:
 
+[source, text]
+----
   docker image build . -t helloworld
+----
 
 `.` in this command is the context for `docker image build`. `-t` adds a tag to the image.
+
+
+The following output is shown:
 
 [source, text]
 ----

@@ -220,13 +220,14 @@ https://github.com/google/cadvisor[cAdvisor] (Container Advisor) provides resour
 . Run `cAdvisor`
 +
 ```
-docker run \
-  -d \
-  --name=cadvisor \
-  -p 8080:8080 \
+docker container run \
+  --volume=/:/rootfs:ro \
   --volume=/var/run:/var/run:rw \
   --volume=/sys:/sys:ro \
   --volume=/var/lib/docker/:/var/lib/docker:ro \
+  --publish=8080:8080 \
+  --detach=true \
+  --name=cadvisor \
   google/cadvisor:latest
 ```
 +

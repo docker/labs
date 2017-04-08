@@ -126,7 +126,7 @@ If you want the container to accept incoming connections, you will need to provi
 
 [source, text]
 ----
-docker container stop `docker conatiner ps | grep wildfly | awk '{print $1}'`
+docker container stop `docker container ps | grep wildfly | awk '{print $1}'`
 ----
 
 Restart the container as:
