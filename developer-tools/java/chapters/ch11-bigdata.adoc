@@ -1,10 +1,19 @@
 :imagesdir: images
 
-= Example: Big Data Processing with Docker and Hadoop
+= Big Data Processing with Docker and Hadoop
 
 *PURPOSE*: This chapter explains how to use Docker to create a Hadoop cluster and a Big Data application in Java. It highlights several concepts like service scale, dynamic port allocation, container links, integration tests, debugging, etc.
 
-== Download images and application
+Big Data applications usually involves distributed processing using tools like Hadoop or Spark. These services can be scaled up, running with several nodes to support more parallelism. Running tools like Hadoop and Spark on Docker makes it easy to scale them up and down. This is very useful to simulate a cluster on development time and also to run integration tests before taking your application to production.
+
+The application on this example reads a file, count how many words are on that file using a MapReduce implemented on Hadoop and then saves the result on MongoDB. In order to do that, we will run a Hadoop cluster and a MongoDB server on Docker.
+
+[NOTE]
+====
+Apache Hadoop is an open-source software framework used for distributed storage and processing of big data sets using the MapReduce programming model. The core of Apache Hadoop consists of a storage part, known as Hadoop Distributed File System (HDFS), and a processing part which is a MapReduce programming model. Hadoop splits files into large blocks and distributes them across nodes in a cluster. It then transfers packaged code into nodes to process the data in parallel. The Hadoop framework itself is mostly written in Java.
+====
+
+== Clone the sample application
 
 Clone the project at `https://github.com/fabianenardon/hadoop-docker-demo`
 
@@ -18,7 +27,7 @@ cd sample
 mvn clean install -Papp-docker-image
 ----
 
-In the command above, `-Papp-docker-image` will fire up the `app-docker-image` profile, defined in the application pom.xml. This profile will create a dockerized version of the application, creating two images: 
+In the command above, `-Papp-docker-image` will fire up the `app-docker-image` profile, defined in the application `pom.xml`. This profile will create a dockerized version of the application, creating two images: 
 
 . `docker-hadoop-example`: docker image used to run the application
 . `docker-hadoop-example-tests`: docker image used to run integration tests
@@ -29,6 +38,7 @@ Go to the `sample/docker` folder and start the services:
 
 [source, text]
 ----
+cd docker
 docker-compose up -d
 ----
 
@@ -39,34 +49,47 @@ See the logs and wait until everything is up:
 docker-compose logs -f
 ----
 
-Open `http://localhost:8088/cluster` to see your if your cluster is running. You should see 1 active node when everything is up.
+In order to see if everything is up, open `http://localhost:8088/cluster`. You should see 1 active node when everything is up.
+
+image::docker-bigdata-03.png[]
 
 == Running the application
 
-This application reads a text file from hdfs and counts how many words it has. The result is saved on MongoDB.
+This application reads a text file from HDFS and counts how many words it has. The result is saved on MongoDB.
 
-First, create a folder on hdfs. We will save the file to be processed on it:
+First, create a folder on HDFS. We will save the file to be processed on it:
 
 [source, text]
 ----
 docker-compose exec yarn hdfs dfs -mkdir /files/
 ----
 
-Put the file we are going to process on hdfs:
+In the command above, we are executing `hdfs dfs -mkdir /files/` on the service `yarn`. This command creates a new folder called `/files/` on HDFS, the distributed file system used by Hadoop.
+
+Put the file we are going to process on HDFS:
 
 [source, text]
 ----
-docker-compose  run docker-hadoop-example hdfs dfs -put /maven/test-data/text_for_word_count.txt /files/
+docker-compose run docker-hadoop-example \
+               hdfs dfs -put /maven/test-data/text_for_word_count.txt /files/
 ----
 
-The `text_for_word_count.txt` was added to the application image by maven when we built it, so we can use it to test. 
+The `text_for_word_count.txt` file was added to the application image by maven when we built it, so we can use it to test. The command above will transfer the `text_for_word_count.txt` file from the local disk to the `/files/` folder on HDFS, so the Hadoop process can access it.
 
 Run our application
 
 [source, text]
 ----
-docker-compose run docker-hadoop-example hadoop jar /maven/jar/docker-hadoop-example-1.0-SNAPSHOT-mr.jar hdfs://namenode:9000 /files mongo yarn:8050
+docker-compose run docker-hadoop-example \
+        hadoop jar /maven/jar/docker-hadoop-example-1.0-SNAPSHOT-mr.jar \
+        hdfs://namenode:9000 /files mongo yarn:8050
 ----
+
+The command above will run our jar file on the Hadoop cluster. The `hdfs://namenode:9000` parameter is the HDFS address. The `/files` parameter is where the file to process can be found on HDFS. The `mongo` parameter is the MongoDB host address. The `yarn:8050` parameter is the Hadoop yarn address, where the MapReduce job will be deployed. Note that since we are running the Hadoop components (namenode, yarn), MongoDB and our application as Docker services, they can all find each other and we can use the service names as host addresses.
+
+If you go to `http://localhost:8088/cluster`, you can see your job running. When the job finishes, you should see this:
+
+image::docker-bigdata-04.png[]
 
 If everything ran successful, you should be able to see the results on MongoDB.
 
@@ -105,7 +128,7 @@ docker-compose scale nodemanager=2
 
 This means that you want to have 2 nodes in your Hadoop cluster. Go to `http://localhost:8088/cluster` and refresh until you see 2 active nodes.
 
-The trick to scale the nodes is to use dynamically allocated ports and let docker assign a different port to each new nodemanager. See this approach in this snippet of the docker-compose.yml file:
+The trick to scale the nodes is to use dynamically allocated ports and let docker assign a different port to each new nodemanager. See this approach in this snippet of the `docker-compose.yml` file:
 
 [source, text]
 ----
@@ -130,7 +153,7 @@ Stop all the services
 docker-compose down
 ----
 
-Note that since our docker-compose.yml file defines volume mappings for hdfs and mongoDB, next time you start the services again, your data will still be there.
+Note that since our `docker-compose.yml` file defines volume mappings for HDFS and MongoDB, next time you start the services again, your data will still be there.
 
 
 == Debugging your code
@@ -198,7 +221,9 @@ Put the test file on hdfs:
 
 [source, text]
 ----
-docker-compose --file src/test/resources/docker-compose.yml run docker-hadoop-example hdfs dfs -put /maven/test-data/text_for_word_count.txt /files/
+docker-compose --file src/test/resources/docker-compose.yml \
+               run docker-hadoop-example \
+               hdfs dfs -put /maven/test-data/text_for_word_count.txt /files/
 ----
 
 
@@ -206,14 +231,19 @@ Run the application
 
 [source, text]
 ----
-docker-compose --file src/test/resources/docker-compose.yml run docker-hadoop-example hadoop jar /maven/jar/docker-hadoop-example-1.0-SNAPSHOT-mr.jar hdfs://namenode:9000 /files mongo yarn:8050
+docker-compose --file src/test/resources/docker-compose.yml \
+               run docker-hadoop-example \
+               hadoop jar /maven/jar/docker-hadoop-example-1.0-SNAPSHOT-mr.jar \
+               hdfs://namenode:9000 /files mongo yarn:8050
 ----
 
 Run our integration tests:
 
 [source, text]
 ----
-docker-compose --file src/test/resources/docker-compose.yml run docker-hadoop-example-tests mvn -f /maven/code/pom.xml -Dmaven.repo.local=/m2/repository -Pintegration-test verify 
+docker-compose --file src/test/resources/docker-compose.yml \
+               run docker-hadoop-example-tests mvn -f /maven/code/pom.xml \
+               -Dmaven.repo.local=/m2/repository -Pintegration-test verify 
 ----
 
 Stop all the services:
@@ -227,7 +257,14 @@ If you want to remote debug tests, run the tests this way instead:
 
 [source, text]
 ----
-docker run -v ~/.m2:/m2 -p 5005:5005 --link mongo:mongo --net resources_default docker-hadoop-example-tests mvn -f /maven/code/pom.xml -Dmaven.repo.local=/m2/repository -Pintegration-test verify -Dmaven.failsafe.debug
+docker run -v ~/.m2:/m2 -p 5005:5005 \
+           --link mongo:mongo \
+           --net resources_default \
+           docker-hadoop-example-tests \
+           mvn -f /maven/code/pom.xml \
+           -Dmaven.repo.local=/m2/repository \
+           -Pintegration-test verify \
+           -Dmaven.failsafe.debug
 ----
 
 Running with this configuration, the application will wait until an IDE connects for remote debugging on port 5005. 
