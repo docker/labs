@@ -17,7 +17,7 @@ You will complete the following steps as part of this lab.
 
 You will need all of the following to complete this lab:
 
-- A Linux-based Docker Host running Docker 1.12 or higher
+- A Linux-based Docker Host running Docker 1.13 or higher
 
 # <a name="cap_intro"></a>Step 1: Introduction to capabilities
 
@@ -87,7 +87,7 @@ In this step you will start various new containers. Each time you will use the c
 1. Start a new container and prove that the container's root account can change the ownership of files.
 
    ```
-   $ sudo docker run --rm -it alpine chown nobody /
+   $ docker container run --rm -it alpine chown nobody /
    ```
 
    The command gives no return code indicating that the operation succeeded. The command works because the default behavior is for new containers to be started with a root user. This root user has the CAP_CHOWN capability by default.
@@ -95,7 +95,7 @@ In this step you will start various new containers. Each time you will use the c
 2. Start another new container and drop all capabilities for the containers root account other than the CAP\_CHOWN capability. Remember that Docker does not use the "CAP_" prefix when addressing capability constants.
 
    ```
-   $ sudo docker run --rm -it --cap-drop ALL --cap-add CHOWN alpine chown nobody /
+   $ docker container run --rm -it --cap-drop ALL --cap-add CHOWN alpine chown nobody /
    ```
 
    This command also gives no return code, indicating a successful run. The operation succeeds because although you dropped all capabilities for the container's `root` account, you added the `chown` capability back. The `chown` capability is all that is needed to change the ownership of a file.
@@ -103,7 +103,7 @@ In this step you will start various new containers. Each time you will use the c
 3. Start another new container and drop only the `CHOWN` capability form its root account.
 
    ```
-   $ sudo docker run --rm -it --cap-drop CHOWN alpine chown nobody /
+   $ docker container run --rm -it --cap-drop CHOWN alpine chown nobody /
    chown: /: Operation not permitted
    ```
 
@@ -112,7 +112,7 @@ In this step you will start various new containers. Each time you will use the c
 4. Create another new container and try adding the `CHOWN` capability to the non-root user called `nobody`. As part of the same command try and change the ownership of a file or folder.
 
    ```
-   $ sudo docker run --rm -it --cap-add chown -u nobody alpine chown nobody /
+   $ docker container run --rm -it --cap-add chown -u nobody alpine chown nobody /
    chown: /: Operation not permitted
    ```
 
@@ -130,7 +130,7 @@ There are two main sets of tools for managing capabilities:
 
 Below are some useful commands from both.
 
-> You may need to manually install the packages required for some of these commands.
+> You may need to manually install the packages required for some of these commands.`sudo apt-get install libcap-dev`, `sudo apt-get install libcap-ng-dev`, `sudo apt-get install libcap-ng-utils`.
 
 ## **libcap**
 
@@ -151,7 +151,7 @@ The remainder of this step will show you some examples of `libcap` and `libcap-n
 The following command will start a new container using Alpine Linux, install the `libcap` package and then list capabilities.
 
    ```
-   $ sudo docker run --rm -it alpine sh -c 'apk add -U libcap; capsh --print'
+   $ docker container run --rm -it alpine sh -c 'apk add -U libcap; capsh --print'
 
    (1/1) Installing libcap (2.25-r0)
    Executing busybox-1.24.2-r9.trigger
@@ -167,7 +167,7 @@ The following command will start a new container using Alpine Linux, install the
    groups=0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy),20(dialout),26(tape),27(video)
    ```
 
-**Current** is multiple sets separated by spaces. Multiple capabilities within the same set are separated by commas `,`. The letters following the `+` at the end of each set are as follows:
+In the output above, **Current** is multiple sets separated by spaces. Multiple capabilities within the same *set* are separated by commas `,`. The letters following the `+` at the end of each set are as follows:
 - `e` is effective
 - `i` is inheritable
 - `p` is permitted
@@ -203,7 +203,7 @@ usage: capsh [args ...]
 ```
 
 > Warning:
-> `--drop` sounds like what you want to do, but it only affects the bounding set. This can be very confusing because it doesn't actually take away the capability from the effective or inheritable set. You almost always want to use `--caps`.
+> `--drop` sounds like what you want to do, but it only affects the bounding set. This can be very confusing because it doesn't actually take away the capability from the effective or inheritable set. You almost always want to use `--caps`, `sudo apt-get install attr`.
 
 ### Modifying capabilities
 
@@ -214,7 +214,7 @@ Libcap and libcap-ng can both be used to modify capabilities.
    The command below shows how to set the CAP_NET_RAW capability as *effective* and *permitted* on the file represented by `$file`. The `setcap` command calls on libcap to do this.
 
    ```
-   $ setcap cap_net_raw=ep $file
+   $ sudo setcap cap_net_raw=ep $file
    ```
 
 2. Use libcap-ng to set the capabilities of a file.
