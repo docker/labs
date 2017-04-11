@@ -154,7 +154,7 @@ services:
   app:
     image: lucj/message-app
     ports:
-      - "80"
+      - "1337"
     links:
       - mongo
     depends_on:
@@ -221,7 +221,7 @@ services:
   app:
     image: message-app
     expose:
-      - "80"
+      - "1337"
     links:
       - mongo
     depends_on:
