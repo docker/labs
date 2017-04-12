@@ -73,6 +73,7 @@ Removing intermediate container 7615d69d04ec
 Successfully built 61edf15e4cec
 ----
 
+
 List the images available using `docker image ls`:
 
 [source, text]
