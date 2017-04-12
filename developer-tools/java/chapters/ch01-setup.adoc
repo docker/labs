@@ -56,7 +56,7 @@ This tutorial uses a few Docker images and software. Let's download them before 
 Download the file from https://github.com/docker/labs/blob/master/developer-tools/java/scripts/docker-compose-pull-images.yml and give the command to pull all the images:
 
 ```console
-docker-compose -f docker-compose-pull-images.yml pull
+docker-compose -f docker-compose-pull-images.yml pull --parallel
 ```
 
 NOTE: For Linux, `docker-compose` and `docker` commands need `sudo` access. So prefix all commands with `sudo`.

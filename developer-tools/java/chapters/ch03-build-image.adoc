@@ -50,6 +50,7 @@ Build the image using the command:
 
 `.` in this command is the context for `docker image build`. `-t` adds a tag to the image.
 
+
 The following output is shown:
 
 [source, text]
