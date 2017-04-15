@@ -282,7 +282,7 @@ In this step we'll show how a custom AppArmor profile could have protected Docke
         - NET_BIND_SERVICE
     # **YOUR WORK HERE**
     # Add an apparmor profile to this image
-mysql:
+   mysql:
     image: mariadb:10.1.10
     environment:
         - MYSQL_DATABASE=wordpress
