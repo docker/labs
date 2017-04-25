@@ -86,7 +86,7 @@ Now that you have a Swarm initialized it's time to create an **overlay** network
     8eqnahrmp9lv        ingress             overlay     swarm
     ef4896538cc7        none                null        local
     0cihm9yiolp0        overnet             overlay     swarm
-```
+    ```
 
     The new "overnet" network is shown on the last line of the output above. Notice how it is associated with the **overlay** driver and is scoped to the entire Swarm.
 
@@ -130,7 +130,7 @@ Now that you have a Swarm initialized it's time to create an **overlay** network
         "Labels": null
     }
 ]
-```
+    ```
 
 # <a name="create_service"></a>Step 3: Create a service
 
