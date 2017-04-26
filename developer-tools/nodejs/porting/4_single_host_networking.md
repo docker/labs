@@ -107,7 +107,7 @@ Run db and application containers in the new bridge network
 
 ```
 $ docker run --name mongo --net mongonet -d mongo:3.2
-$ docker run --name app --net mongonet -p “8000:80” -d -e “MONGO_URL=mongodb://mongo/messageApp” message-app:v1
+$ docker run --name app --net mongonet -p 8000:1337 -d -e “MONGO_URL=mongodb://mongo/messageApp” message-app:v1
 ```
 
 Note: MONGO_URL environment variable directly uses **mongo** container’s name
@@ -154,7 +154,7 @@ services:
   app:
     image: lucj/message-app
     ports:
-      - "80"
+      - "1337"
     links:
       - mongo
     depends_on:
@@ -221,7 +221,7 @@ services:
   app:
     image: message-app
     expose:
-      - "80"
+      - "1337"
     links:
       - mongo
     depends_on:
