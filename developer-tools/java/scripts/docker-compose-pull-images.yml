@@ -1,0 +1,22 @@
+version: '3'
+services:
+  ubuntu:
+    image: ubuntu:latest
+  busybox:
+    image: busybox:latest
+  openjdk:
+    image: openjdk:latest
+  wildfly:
+    image: jboss/wildfly:latest
+  mysql:
+    image: mysql:latest
+  javaee7-hol:
+    image: arungupta/javaee7-hol:latest
+  couchbase-javaee:
+    image: arungupta/couchbase-javaee:travel
+  couchbase:
+    image: arungupta/couchbase:travel
+  hadoop:
+    image: tailtarget/hadoop:2.7.2
+  jenkins:
+    image: tailtarget/jenkins:2.32.3

@@ -28,81 +28,89 @@ _Dockerfile_ is usually called _Dockerfile_. The complete list of commands that 
 
 === Create your first Docker image
 
-Create a new directory.
+Create a new directory `hellodocker`.
 
-Create a new text file, name it _Dockerfile_, and use the following contents:
+In that directory, create a new text file `Dockerfile`. Use the following contents:
 
 [source, text]
 ----
-FROM ubuntu
+FROM ubuntu:latest
 
 CMD ["/bin/echo", "hello world"]
 ----
 
 This image uses `ubuntu` as the base image. `CMD` command defines the command that needs to run. It provides a different entry point of `/bin/echo` and gives the argument "`hello world`".
 
-Build the image:
+Build the image using the command:
 
 [source, text]
 ----
-> docker build -t helloworld .
+  docker image build . -t helloworld
+----
+
+`.` in this command is the context for `docker image build`. `-t` adds a tag to the image.
+
+
+The following output is shown:
+
+[source, text]
+----
 Sending build context to Docker daemon 2.048 kB
-Step 1 : FROM ubuntu
+Step 1/2 : FROM ubuntu:latest
 latest: Pulling from library/ubuntu
-90d6565b970a: Pull complete 
-40553bdb8474: Pull complete 
-c3129e7479ab: Pull complete 
-091663bd70db: Pull complete 
-Digest: sha256:ba1688fec34f66d8a7ff5b42e6971625d8232c72bf0e38ad06dda10cad157293
+8aec416115fd: Pull complete 
+695f074e24e3: Pull complete 
+946d6c48c2a7: Pull complete 
+bc7277e579f0: Pull complete 
+2508cbcde94b: Pull complete 
+Digest: sha256:71cd81252a3563a03ad8daee81047b62ab5d892ebbfbf71cf53415f29c130950
 Status: Downloaded newer image for ubuntu:latest
- ---> cf62323fa025
-Step 2 : CMD /bin/echo hello world
- ---> Running in 3ea56763bbdc
- ---> f3573ec571c5
-Removing intermediate container 3ea56763bbdc
-Successfully built f3573ec571c5
+ ---> f49eec89601e
+Step 2/2 : CMD /bin/echo hello world
+ ---> Running in 7615d69d04ec
+ ---> 61edf15e4cec
+Removing intermediate container 7615d69d04ec
+Successfully built 61edf15e4cec
 ----
 
-`.` in this command is the context for `docker build`.
 
-List the images available:
+List the images available using `docker image ls`:
 
 [source, text]
 ----
-> docker images
-REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-helloworld          latest              a85376e122e2        4 seconds ago       125 MB
-ubuntu              latest              cf62323fa025        5 days ago          125 MB
+REPOSITORY            TAG                 IMAGE ID            CREATED              SIZE
+helloworld            latest              61edf15e4cec        About a minute ago   129 MB
+ubuntu                latest              f49eec89601e        21 hours ago         129 MB
 ----
 
-Run the container:
+Other images may be seen as well but we are interested in these images for now.
 
-  docker run helloworld
+Run the container using the command:
+
+  docker container run helloworld
 
 to see the output:
 
   hello world
 
-If you do not see the expected output, check your Dockerfile, build the image again, and now run it!
+If you do not see the expected output, check your Dockerfile that the content exactly matches as shown above. build the image again and now run it!
 
 Change the base image from `ubuntu` to `busybox` in `Dockerfile`. Build the image again:
 
   docker build -t helloworld:2 .
 
-and view the images using `docker images` command:
+and view the images using `docker image ls` command:
 
 [source, text]
 ----
-REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
-helloworld          2                   f74665e81a75        8 seconds ago        1.093 MB
-helloworld          latest              a85376e122e2        About a minute ago   125 MB
-ubuntu              latest              cf62323fa025        5 days ago           125 MB
-busybox             latest              2b8fd9751c4c        2 weeks ago          1.093 MB
+REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
+helloworld            2                   fd5297466a74        43 seconds ago      1.11 MB
+helloworld            latest              61edf15e4cec        3 minutes ago       129 MB
+ubuntu                latest              f49eec89601e        21 hours ago        129 MB
+busybox               latest              7968321274dc        7 days ago          1.11 MB
 ----
 
 `helloworld:2` is the format that allows to specify the image name and assign a tag/version to it separated by `:`.
-
-Also note how base images for Ubuntu and Busybox are downloaded as well.
 
 === Create your first Docker image using Java
 
@@ -141,28 +149,21 @@ Let's package this application as a Docker image.
 
 ==== Java Docker image
 
-Pull the latest Docker image for Java:
-
-[source, text]
-----
-docker pull openjdk
-----
-
-Run the container in an interactive manner:
+Run the OpenJDK container in an interactive manner:
 
 [source, text]
 ----
 docker run -it openjdk
 ----
 
-Check the version of Java:
+This will open a terminal in the container. Check the version of Java:
 
 [source, text]
 ----
-root@e6eb7c32b32d:/# java -version
-openjdk version "1.8.0_102"
-OpenJDK Runtime Environment (build 1.8.0_102-8u102-b14.1-1~bpo8+1-b14)
-OpenJDK 64-Bit Server VM (build 25.102-b14, mixed mode)
+root@84904fb904da:/# java -version
+openjdk version "1.8.0_111"
+OpenJDK Runtime Environment (build 1.8.0_111-8u111-b14-2~bpo8+1-b14)
+OpenJDK 64-Bit Server VM (build 25.111-b14, mixed mode)
 ----
 
 A different version may be seen in your case. Exit out of the container by typing `exit` in the shell.
@@ -173,7 +174,7 @@ Create a new Dockerfile in `helloworld` directory and use the following content:
 
 [source, text]
 ----
-FROM java
+FROM openjdk:latest
 
 COPY target/helloworld-1.0-SNAPSHOT.jar /usr/src/helloworld-1.0-SNAPSHOT.jar
 
@@ -192,7 +193,7 @@ This displays the output:
 
     Hello World!
 
-This shows that the `java` CLI and Docker image are priting the same output.
+This shows the exactly same output that was printed when the Java class was invoked using Java CLI.
 
 ==== Package and Run Java Application using Docker Maven Plugin
 
@@ -209,35 +210,38 @@ https://github.com/fabric8io/docker-maven-plugin[Docker Maven Plugin] allows you
 | `docker:logs` | Show container logs
 |====
 
+Complete set of goals are listed at https://github.com/fabric8io/docker-maven-plugin.
+
 Clone the sample code from https://github.com/arun-gupta/docker-java-sample/.
 
 Create the Docker image:
 
 [source, text]
 ----
-mvn -f docker-java-sample/helloworld/pom.xml package -Pdocker
+mvn -f docker-java-sample/pom.xml package -Pdocker
 ----
 
 This will show an output like:
 
 [source, text]
 ----
-[INFO] DOCKER> [hello-java] : Built image sha256:428f7
+[INFO] DOCKER> docker-build.tar: Created [hello-java] in 116 milliseconds
+[INFO] DOCKER> [hello-java]: Built image sha256:ea64a
+[INFO] DOCKER> [hello-java]: Removed old image sha256:954b1
 ----
 
-The list of images can be checked:
+The list of images can be checked using the command `docker image ls | grep hello-java`:
 
 [source, text]
 ----
-docker images | grep hello-java
-hello-java          latest              428f7ac0195d        58 seconds ago      669.2 MB
+hello-java                            latest              ea64a9f5011e        5 seconds ago       643 MB
 ----
 
 Run the Docker container:
 
 [source, text]
 ----
-mvn -f docker-java-sample/helloworld/pom.xml install -Pdocker
+mvn -f docker-java-sample/pom.xml install -Pdocker
 ----
 
 This will show an output like:
@@ -265,13 +269,13 @@ Only one change was required in the project to enable Docker packaging and runni
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.14.2</version>
+                    <version>0.19.0</version>
                     <configuration>
                         <images>
                             <image>
                                 <name>hello-java</name>
                                 <build>
-                                    <from>java</from>
+                                    <from>openjdk:latest</from>
                                     <assembly>
                                         <descriptorRef>artifact</descriptorRef>
                                     </assembly>
@@ -279,7 +283,7 @@ Only one change was required in the project to enable Docker packaging and runni
                                 </build>
                                 <run>
                                     <wait>
-                                        <log>Hello</log>
+                                        <log>Hello World!</log>
                                     </wait>
                                 </run>
                             </image>
@@ -348,11 +352,11 @@ This command overrides the entry point to the container to `/bin/cat`. The argum
 
 ==== Import and export images
 
-Docker images can be saved using `save` command to a .tar file:
+Docker images can be saved using `image save` command to a `.tar` file:
 
-  docker save helloworld > helloworld.tar
+  docker image save helloworld > helloworld.tar
 
 These tar files can then be imported using `load` command:
 
-  docker load -i helloworld.tar
+  docker image load -i helloworld.tar
 

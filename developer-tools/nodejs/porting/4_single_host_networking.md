@@ -107,7 +107,7 @@ Run db and application containers in the new bridge network
 
 ```
 $ docker run --name mongo --net mongonet -d mongo:3.2
-$ docker run --name app --net mongonet -p “8000:80” -d -e “MONGO_URL=mongodb://mongo/messageApp” message-app:v1
+$ docker run --name app --net mongonet -p 8000:1337 -d -e “MONGO_URL=mongodb://mongo/messageApp” message-app:v1
 ```
 
 Note: MONGO_URL environment variable directly uses **mongo** container’s name
@@ -143,7 +143,7 @@ The application container (named **app**) is connected to mongo container using 
 The following file (docker-compose.yml) defines the whole application
 
 ```
-version: '2'
+version: '3'
 services:
   mongo:
     image: mongo:3.2
@@ -154,7 +154,7 @@ services:
   app:
     image: lucj/message-app
     ports:
-      - "80"
+      - "1337"
     links:
       - mongo
     depends_on:
@@ -202,7 +202,7 @@ It will update it's configuration each time a container is started / stopped.
 The new version of our docker-compose.yml is
 
 ```
-version: '2'
+version: '3'
 services:
   mongo:
     image: mongo:3.2
@@ -221,7 +221,7 @@ services:
   app:
     image: message-app
     expose:
-      - "80"
+      - "1337"
     links:
       - mongo
     depends_on:

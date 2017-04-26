@@ -2,9 +2,9 @@
 
 This tutorial starts with a simple Node.js application (HTTP Rest API built with [Sails.js](http://sailsjs.org/)) and details the steps needed to *Dockerize* it and ensure its scalability.
 
-The application stores data in a MongoDB dabatase. This tutorial does not address the scaling of the MongoDB part.
+The application stores data in a MongoDB database. This tutorial does not address the scaling of the MongoDB part.
 
-Node: do not hesitate to provide any comments / feedback you may have, that will help make this tutorial better.
+Note: Do not hesitate to provide any comments / feedback you may have, that will help make this tutorial better.
 
 # Pre-requisites
 

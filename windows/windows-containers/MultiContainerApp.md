@@ -1,6 +1,6 @@
 ## Multi-Container Applications
 
-This tutorial will walk you through using the sample Music Store application with Windows containers. The Music Store application is a standard .NET sample application, available in the [aspnet GitHub repository](https://github.com/aspnet/MusicStore "Music Store application"). We've [forked it](https://github.com/friism/MusicStore "link to forked version of Music Store App") to use Windows Containers.
+This tutorial will walk you through using the sample Music Store application with Windows containers. The Music Store application is a standard .NET sample application, available in the [aspnet GitHub repository](https://github.com/aspnet/MusicStore "Music Store application"). We've [forked it](https://github.com/dockersamples/dotnet-musicstore "link to forked version of Music Store App") to use Windows Containers.
 
 ## Using docker-compose on Windows
 Docker Compose is a great way develop complex multi-container consisting of databases, queues and web frontends.
@@ -8,13 +8,13 @@ Docker Compose is a great way develop complex multi-container consisting of data
 To develop with Docker Compose on a Windows Server 2016 system, install compose too (this is not required on Windows 10 with Docker for Windows installed):
 
 ```
-Invoke-WebRequest https://dl.bintray.com/docker-compose/master/docker-compose-Windows-x86_64.exe -UseBasicParsing -OutFile $env:ProgramFiles\docker\docker-compose.exe
+Invoke-WebRequest https://github.com/docker/compose/releases/download/1.11.1/docker-compose-Windows-x86_64.exe -UseBasicParsing -OutFile $env:ProgramFiles\docker\docker-compose.exe
 ```
 
 To try out Compose on Windows, clone a variant of the ASP.NET Core MVC MusicStore app, backed by a SQL Server Express 2016 database.
 
 ```
-git clone https://github.com/friism/Musicstore
+git clone https://github.com/dockersamples/dotnet-musicstore
 ...
 cd Musicstore
 docker-compose -f .\docker-compose.windows.yml build
@@ -36,10 +36,10 @@ If using Windows Server 2016 and accessing from outside the VM or host, simply u
 Take a closer look at the `docker-compose.windows.yml` file.
 
 ```
-version: '2'
+version: '3'
 services:
   db:
-    image: microsoft/mssql-server-2016-express-windows
+    image: microsoft/mssql-server-windows-express
     environment:
       sa_password: "Password1"
     ports:

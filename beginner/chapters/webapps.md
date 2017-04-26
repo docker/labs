@@ -6,10 +6,10 @@ Great! So you have now looked at `docker run`, played with a Docker container an
 
 Let's start by taking baby-steps. First, we'll use Docker to run a static website in a container. The website is based on an existing image. We'll pull a Docker image from Docker Hub, run the container, and see how easy it is to set up a web server.
 
-The image that you are going to use is a single-page website that was already created for this demo and is available on the Docker Hub as [`seqvence/static-site`](https://hub.docker.com/r/seqvence/static-site/). You can download and run the image directly in one go using `docker run` as follows.
+The image that you are going to use is a single-page website that was already created for this demo and is available on the Docker Hub as [`dockersamples/static-site`](https://hub.docker.com/r/dockersamples/static-site/). You can download and run the image directly in one go using `docker run` as follows.
 
 ```
-$ docker run -d seqvence/static-site
+$ docker run -d dockersamples/static-site
 ```
 
 >**Note:** The current version of this image doesn't run without the `-d` flag. The `-d` flag enables **detached mode**, which detaches the running container from the terminal/shell and returns your prompt after the container starts. We are debugging the problem with this image but for now, use `-d` even for this first example.
@@ -31,7 +31,7 @@ Since we ran the container in detached mode, we don't have to launch another ter
 ```
 $ docker ps
 CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS               NAMES
-a7a0e504ca3e        seqvence/static-site   "/bin/sh -c 'cd /usr/"   28 seconds ago      Up 26 seconds       80/tcp, 443/tcp     stupefied_mahavira
+a7a0e504ca3e        dockersamples/static-site   "/bin/sh -c 'cd /usr/"   28 seconds ago      Up 26 seconds       80/tcp, 443/tcp     stupefied_mahavira
 ```
 
 Check out the `CONTAINER ID` column. You will need to use this `CONTAINER ID` value, a long sequence of characters, to identify the container you want to stop, and then to remove it. The example below provides the `CONTAINER ID` on our system; you should use the value that you see in your terminal.
@@ -45,7 +45,7 @@ $ docker rm   a7a0e504ca3e
 Now, let's launch a container in **detached** mode as shown below:
 
 ```
-$ docker run --name static-site -e AUTHOR="Your Name" -d -P seqvence/static-site
+$ docker run --name static-site -e AUTHOR="Your Name" -d -P dockersamples/static-site
 e61d12292d69556eabe2a44c16cbd54486b2527e2ce4f95438e504afb7b02810
 ```
 
@@ -78,7 +78,7 @@ You can now open `http://<YOUR_IPADDRESS>:[YOUR_PORT_FOR 80/tcp]` to see your si
 You can also run a second webserver at the same time, specifying a custom host port mapping to the container's webserver.
 
 ```
-$ docker run --name static-site-2 -e AUTHOR="Your Name" -d -p 8888:80 seqvence/static-site
+$ docker run --name static-site-2 -e AUTHOR="Your Name" -d -p 8888:80 dockersamples/static-site
 ```
 <img src="../images/static.png" title="static">
 
@@ -96,7 +96,7 @@ $ docker rm static-site
 Let's use a shortcut to remove the second site:
 
 ```
-$ docker rm -f static-site static-site-2
+$ docker rm -f static-site-2
 ```
 
 Run `docker ps` to make sure the containers are gone.
@@ -109,12 +109,12 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 In this section, let's dive deeper into what Docker images are. You will build your own image, use that image to run an application locally, and finally, push some of your own images to Docker Hub.
 
-Docker images are the basis of containers. In the previous example, you **pulled** the *seqvence/static-site* image from the registry and asked the Docker client to run a container **based** on that image. To see the list of images that are available locally on your system, run the `docker images` command.
+Docker images are the basis of containers. In the previous example, you **pulled** the *dockersamples/static-site* image from the registry and asked the Docker client to run a container **based** on that image. To see the list of images that are available locally on your system, run the `docker images` command.
 
 ```
 $ docker images
 REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
-seqvence/static-site   latest              92a386b6e686        2 hours ago        190.5 MB
+dockersamples/static-site   latest              92a386b6e686        2 hours ago        190.5 MB
 nginx                  latest              af4b3d7d5401        3 hours ago        190.5 MB
 python                 2.7                 1c32174fd534        14 hours ago        676.8 MB
 postgres               9.4                 88d845ac7a88        14 hours ago        263.6 MB
@@ -268,12 +268,12 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
   We'll start by specifying our base image, using the `FROM` keyword:
 
   ```
-  FROM alpine:latest
+  FROM alpine:3.5
   ```
 
 2. The next step usually is to write the commands of copying the files and installing the dependencies. But first we will install the Python pip package to the alpine linux distribution. This will not just install the pip package but any other dependencies too, which includes the python interpreter. Add the following [RUN](https://docs.docker.com/engine/reference/builder/#run) command next:
   ```
-  RUN apk add --update py-pip
+  RUN apk add --update py2-pip
   ```
 
 3. Let's add the files that make up the Flask Application.
@@ -311,10 +311,10 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
 
   ```
   # our base image
-  FROM alpine:latest
+  FROM alpine:3.5
 
   # Install python and pip
-  RUN apk add --update py-pip
+  RUN apk add --update py2-pip
 
   # install Python modules needed by the Python app
   COPY requirements.txt /usr/src/app/
@@ -405,10 +405,10 @@ Removing intermediate container 78e324d26576
 Successfully built 2f7357a0805d
 ```
 
-If you don't have the `alpine:latest` image, the client will first pull the image and then create your image. Therefore, your output on running the command will look different from mine. If everything went well, your image should be ready! Run `docker images` and see if your image (`<YOUR_USERNAME>/myfirstapp`) shows.
+If you don't have the `alpine:3.5` image, the client will first pull the image and then create your image. Therefore, your output on running the command will look different from mine. If everything went well, your image should be ready! Run `docker images` and see if your image (`<YOUR_USERNAME>/myfirstapp`) shows.
 
 ### 2.3.4 Run your image
-The last step in this section is to run the image and see if it actually works.
+The next step in this section is to run the image and see if it actually works.
 
 ```
 $ docker run -p 8888:5000 --name myfirstapp YOUR_USERNAME/myfirstapp
@@ -421,7 +421,13 @@ Head over to `http://localhost:8888` and your app should be live. **Note** If yo
 
 Hit the Refresh button in the web browser to see a few more cat images.
 
-OK, now that you are done with this container, stop and remove it since you won't be using it again.
+### 2.3.4 Push your image
+Now that you've created and tested your image, you can push it to [Docker Hub](https://hub.docker.com). All you have to do is:
+
+```
+docker push YOUR_USERNAME/myfirstapp
+```
+Now that you are done with this container, stop and remove it since you won't be using it again.
 
 Open another terminal window and execute the following commands:
 
@@ -453,7 +459,13 @@ Here's a quick summary of the few basic commands we used in our Dockerfile.
   CMD ["/bin/bash", "echo", "Hello World"]
 ```
 
-* `EXPOSE` opens ports in your image to allow communication to the outside world when it runs in a container.
+* `EXPOSE` creates a hint for users of an image which ports provide services. It is included in the information which
+ can be retrieved via `$ docker inspect <container-id>`.     
+
+>**Note:** The `EXPOSE` command does not actually make any ports accessible to the host! Instead, this requires 
+publishing ports by means of the `-p` flag when using `$ docker run`.  
+
+* `PUSH` pushes your image to Docker Hub, or alternately to a [private registry](TODO: add URL)
 
 >**Note:** If you want to learn more about Dockerfiles, check out [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/).
 

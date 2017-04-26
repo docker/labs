@@ -4,7 +4,7 @@
 
 > **Time**: Approximately 25 minutes
 
-AppArmor (Application Armor) is a Linux Security Module (LSM). It protects the operating system by applying profiles to individual applications. In contrast to managing *capabilities* with `CAP_DROP` and syscalls with *seccomp*, AppArmor allows for much finer-grained control. For example, AppArmor can restrict file operations on specified paths.
+AppArmor (Application Armor) is a Linux Security Module (LSM). It protects the operating system by applying profiles to individual applications or containers. In contrast to managing *capabilities* with `CAP_DROP` and syscalls with *seccomp*, AppArmor allows for much finer-grained control. For example, AppArmor can restrict file operations on specified paths.
 
 In this lab you will learn the basics of AppArmor and how to use it with Docker for improved security.
 
@@ -24,7 +24,7 @@ You will need all of the following to complete this lab:
 - A Linux-based Docker Host with AppArmor enabled in the kernel (most Debian-based distros)
 - Docker 1.12 or higher
 
-The following command shows you how to check if AppArmor is enabled in your system's kernel:
+The following command shows you how to check if AppArmor is enabled in your system's kernel and available to Docker:
 
    Check from Docker 1.12 or higher
    ```
@@ -36,11 +36,11 @@ The following command shows you how to check if AppArmor is enabled in your syst
 
 # <a name="primer"></a>Step 1: AppArmor primer
 
-By default, Docker applies the `docker-default` AppArmor profile to new containers. This profile is located in `/etc/apparmor.d/docker/` and you can find more information about it in the [documentation](https://docs.docker.com/engine/security/apparmor/#understand-the-policies).  
+By default, Docker applies the `docker-default` AppArmor profile to new **containers**. In Docker 1.13 and later this is profile is created in `tmpfs` and then loaded into the kernel. On Docker 1.12 and earlier it is located in `/etc/apparmor.d/docker/`. You can find more information about it in the [documentation](https://docs.docker.com/engine/security/apparmor/#understand-the-policies).  
 
 Here are some quick pointers for how to understand AppArmor profiles:
 
-  - `Include` statements, such as `#include <abstractions/base>`, behave just like their `C` counterparts by expanding to additional AppArmor profile contents.
+  - `include` statements, such as `#include <abstractions/base>`, behave just like their `C` counterparts by expanding to additional AppArmor profile contents.
 
   - AppArmor `deny` rules have precedence over `allow` and `owner` rules. This means that `deny` rules cannot be overridden by subsequent `allow` or `owner` rules for the same resource. Moreover, an `allow` will be overridden by a subsequent `deny` on the same resource
 
@@ -52,7 +52,7 @@ For more information, see the [official AppArmor documentation wiki](http://wiki
 
 In this step you will check the status of AppArmor on your Docker Host and learn how to identify whether or not Docker containers are running with an AppArmor profile.
 
-1.  View the status of AppArmor on your Docker Host with the `apparmor_status` command.
+1.  View the status of AppArmor on your Docker Host with the `apparmor_status` command. You may need to preceed the command with `sudo`.
 
    ```
    $ apparmor_status
@@ -77,22 +77,20 @@ In this step you will check the status of AppArmor on your Docker Host and learn
    0 processes are unconfined but have a profile defined.
    ```
 
-   The command may require admin credentials.
-
    Notice the `docker-default` profile is in enforce mode. This is the AppArmor profile that will be applied to new containers unless overridden with the `--security-opts` flag.
 
 2.  Run a new container and put it in the back ground.
 
    ```
-   $ sudo docker run -dit alpine sh
+   $ docker container run -dit --name apparmor1 alpine sh
    ```
 
 3. Confirm that the container is running.
 
    ```
-   $ sudo docker ps
-   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-1bb16561bc06        alpine              "sh"                2 seconds ago       Up 2 seconds                            sick_booth
+   $ docker container ls
+   CONTAINER ID    IMAGE     COMMAND      CREATED     STATUS        PORTS  NAMES
+   1bb16561bc06    alpine    "sh"         2 secs ago  Up 2 seconds         apparmor1
    ```
 
 4. Run the `apparmor_status` command again.
@@ -120,10 +118,8 @@ In this step you will check the status of AppArmor on your Docker Host and learn
 
 5. Stop and remove the container started in the previous steps.
 
-   The example below uses the Container ID "1bb16561bc06". This will be different in your environment.
-
    ```
-   $ sudo docker rm -f 1bb16561bc06
+   $ docker container rm -f appamror1
    1bb16561bc06
    ```
 
@@ -136,22 +132,24 @@ In this step you will see how to run a new container without an AppArmor profile
 1. If you haven't already done so, stop and remove all containers on your system.
 
    ```
-   $ sudo docker rm -f $(docker ps -aq)
+   $ docker container rm -f $(docker container ls -aq)
    ```
 
 2. Use the `--security-opt apparmor=unconfined` flag to start a new container in the background without an AppArmor profile.
 
    ```
-   $ sudo docker run -dit --security-opt apparmor=unconfined alpine sh
-   ace79581a19ace7b85009480a64fd378d43844f82559bd1178fce431e292277d
+   $ docker container run -dit --name apparmor2 \
+     --security-opt apparmor=unconfined \
+     alpine sh
+   ace79581a19a....559bd1178fce431e292277d
    ```
 
 3. Confirm that the container is running.
 
    ```
-   $ sudo docker ps
-   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-ace79581a19a        alpine              "sh"                41 seconds ago      Up 40 seconds                           sharp_knuth
+   $ docker container ls
+   CONTAINER ID   IMAGE     COMMAND   CREATED       STATUS         PORTS    NAMES
+   ace79581a19a   alpine    "sh"      41 secs ago   Up 40 secs              apparmor2
    ```
 
 4. Use the `apparmor_status` command to verify that the new container is not running with an AppArmor profile.
@@ -170,10 +168,8 @@ ace79581a19a        alpine              "sh"                41 seconds ago      
 
 5. Stop and remove the container started in the previous steps.
 
-   The example below uses the Container ID "ace79581a19a". This will be different in your environment.
-
    ```
-   $ sudo docker rm -f ace79581a19a
+   $ docker container rm -f apparmor2
    ace79581a19a
    ```
 
@@ -181,20 +177,20 @@ In this step you learned that the `--security-opt apparmor=unconfined` flag will
 
 # <a name="depth"></a>Step 4: AppArmor and defense in depth
 
-Defense in depth is a model where multiple different lines of defense work together to provide increased overall defensive capabilities. Docker uses AppArmor, seccomp, and Capabilities to form a deep defense system.
+Defense in depth is a model where multiple different lines of defense work together to provide increased overall defensive capabilities. Docker uses many Linux technologies, such as AppArmor, seccomp, and Capabilities, to form a deep defense system.
 
 In this step you will see how AppArmor can protect a Docker Host even when other lines of defense such as seccomp and Capabilities are not effective.
 
 1. If you haven't already done so, stop and remove all containers on your system.
 
    ```
-   $ sudo docker rm -f $(docker ps -aq)
+   $ docker container rm -f $(docker container ls -aq)
    ```
 
 2. Start a new Ubuntu container with seccomp disabled and the `SYS_ADMIN` *capability* added.
 
    ```
-   $ sudo docker run --rm -it --cap-add SYS_ADMIN --security-opt seccomp=unconfined ubuntu sh
+   $ docker container run --rm -it --cap-add SYS_ADMIN --security-opt seccomp=unconfined ubuntu sh
    #
    ```
 
@@ -211,12 +207,12 @@ In this step you will see how AppArmor can protect a Docker Host even when other
 
    The operation failed because the `default-docker` AppArmor profile denied the operation.
 
-4. Exit the container.
+4. Exit the container using the `exit` command.
 
 5. Confirm that it was the `default-docker` AppArmor profile that denied the operation by starting a new container without an AppArmor profile and retrying the same operation.
 
    ```
-   $ sudo docker run --rm -it --cap-add SYS_ADMIN --security-opt seccomp=unconfined --security-opt apparmor=unconfined ubuntu sh
+   $ docker container run --rm -it --cap-add SYS_ADMIN --security-opt seccomp=unconfined --security-opt apparmor=unconfined ubuntu sh
 
    # mkdir 1; mkdir 2; mount --bind 1 2
    # ls -l
@@ -229,6 +225,8 @@ In this step you will see how AppArmor can protect a Docker Host even when other
    ```
 
    The operation succeeded this time. This proves that it was the `default-docker` AppArmor profile that prevented the operation in the previous attempt.
+
+6. Exit the container with the `exit` command.
 
 In this step you have seen how AppArmor works together with seccomp and Capabilities to form a defense in depth security model for Docker. You saw a scenario where even with seccomp and Capabilities not preventing an action, AppArmor still prevented it.
 
@@ -265,7 +263,7 @@ In this step we'll show how a custom AppArmor profile could have protected Docke
 3. View the contents of the Docker Compose YAML file.
 
    ```
-   cat docker-compose.yml
+   $ cat docker-compose.yml
    wordpress:
     image: endophage/wordpress:lean
     links:
@@ -284,7 +282,7 @@ In this step we'll show how a custom AppArmor profile could have protected Docke
         - NET_BIND_SERVICE
     # **YOUR WORK HERE**
     # Add an apparmor profile to this image
-mysql:
+   mysql:
     image: mariadb:10.1.10
     environment:
         - MYSQL_DATABASE=wordpress
@@ -299,8 +297,12 @@ mysql:
 
 4. Bring the application up.
 
+   It may take a minute or two to bring the application up. Once the application is up you will need to hit the <Return> key to bring the prompt to the foreground.
+
+   You may need to install `docker-compose` to complete this step. If your lab machine does not already have Docker Compose isntalled, you can install it with the following commands `sudo apt-get update` and `sudo apt-get install docker-compose`.
+
    ```
-   $ sudo docker-compose up &
+   $ docker-compose up &
    Pulling mysql (mariadb:10.1.10)...
    10.1.10: Pulling from library/mariadb
    03e1855d4f31: Pull complete
@@ -330,19 +332,28 @@ In the next few steps you'll apply a new Apparmor profile to a new WordPress con
 
 9. Bring the WordPress application down.
 
-   Run this command from the shell of your Docker Host, not the shell of the `wordpress` container.
+   Run these commands from the shell of your Docker Host, not the shell of the `wordpress` container.
 
    ```
-   $ sudo docker-compose down
-   Stopping wordpress_wordpress_1 ...
-   Stopping wordpress_mysql_1 ...
-   <SNIP>
+   $ docker-compose stop
+   Stopping wordpress_wordpress_1 ... done
    Stopping wordpress_mysql_1 ... done
+   $
+   $ docker-compose rm
+   Going to remove wordpress_wordpress_1, wordpress_mysql_1
+   Are you sure? [yN] y
    Removing wordpress_wordpress_1 ... done
    Removing wordpress_mysql_1 ... done
    ```
 
-10. Add the `wparmor` profile to the `wordpress` service in the `docker-compose.yml` file.
+10. Add the `wparmor` profile to the `wordpress` service in the `docker-compose.yml` file. You do this by deleting the two lines starting with `#` and replacing them with the following two lines:
+
+   ```
+   security_opt:
+       - apparmor=wparmor
+   ```
+
+   Be sure to add the lines with the correct indentation as shown below.
 
    ```
    wordpress:
@@ -387,7 +398,7 @@ In the next few steps you'll apply a new Apparmor profile to a new WordPress con
 13. Bring the Docker Compose WordPress app back up.
 
    ```
-   $ sudo docker-compose up &
+   $ docker-compose up &
    Pulling mysql (mariadb:10.1.10)...
    10.1.10: Pulling from library/mariadb
    03e1855d4f31: Pull complete
@@ -401,7 +412,7 @@ In the next few steps you'll apply a new Apparmor profile to a new WordPress con
 14. Verify that the app is up.
 
    ```
-   $ sudo docker-compose ps
+   $ docker-compose ps
    Name                      Command              State            Ports
    --------------------------------------------------------------------------------------
    wordpress_mysql_1       /docker-entrypoint.sh mysqld   Up      0.0.0.0:32770->3306/tcp
@@ -413,7 +424,15 @@ In the next few steps you'll apply a new Apparmor profile to a new WordPress con
 16. Bring the application down.
 
    ```
-   $ sudo docker-compose down
+   $ docker-compose stop
+   Stopping wordpress_wordpress_1 ... done
+   Stopping wordpress_mysql_1 ... done
+   $
+   $ docker-compose rm
+   Going to remove wordpress_wordpress_1, wordpress_mysql_1
+   Are you sure? [yN] y
+   Removing wordpress_wordpress_1 ... done
+   Removing wordpress_mysql_1 ... done
    ```
 
 Congratulations!  You've secured a WordPress instance against adding malicious plugins :)

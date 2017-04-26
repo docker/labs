@@ -3,3 +3,4 @@
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
+./out/*

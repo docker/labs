@@ -16,7 +16,7 @@ This chapter will show how to use TomEE Docker image and deploy it using Docker 
 
 === Docker Cloud CLI
 
-Install Docker Cloud CLI following the https://docs.docker.com/docker-cloud/tutorials/installing-cli/[instructions].
+Install Docker Cloud CLI following the https://docs.docker.com/docker-cloud/installing-cli/[instructions].
 
 == Create new Docker Cloud Node
 
@@ -24,14 +24,16 @@ Create a new node cluster:
 
 [source, text]
 ----
-docker-cloud nodecluster create -t 1 --tag tomee tomee aws us-west-1 m3.large
+docker-cloud nodecluster create -t 1 --tag wildfly wildfly-node aws us-west-1 m3.large
 ----
 
-This node cluster has a single node (`-t 1`) and uses the tag "`couchbase`" (`--tag couchbase`). Last four parameters are nodecluster name (`couchbase-node`), provider (`aws`), region (`us-west-1`) and nodetype (`m3.large`).
+This node cluster has a single node (`-t 1`) and uses the tag "`wildfly`" (`--tag wildfly`). Last four parameters are nodecluster name (`couchbase-node`), provider (`aws`), region (`us-west-1`) and node type (`m3.large`).
 
 Each node in this node cluster will be given the assigned tag. This will be used later to assign services to a specific node or node cluster.
 
-Deploying a node can take up to 10 minutes.
+Deploying a node can take a few minutes. Current status can also be seen https://cloud.docker.com/app/arungupta/nodecluster/list/1?page_size=10[Docker Cloud dashboard]:
+
+image::docker-cloud-nodecluster.png[]
 
 == Create a new Docker Cloud Service
 
@@ -39,99 +41,117 @@ Create a Docker Cloud Service:
 
 [source, text]
 ----
-docker-cloud service create --tag tomee -p 8080:8080 tomee
-8d3572ae-ad9a-4092-afbc-2b99f26016bc
+docker-cloud service create --name wildfly --tag wildfly -p 8080:8080 jboss/wildfly
+124aa470-4e44-4f19-b0f0-d0c2616510a7
 ----
+
+https://cloud.docker.com/app/arungupta/service/list/1?name__icontains=wildfly&page=1&page_size=10[Docker Cloud dashboard] will look like:
+
+image::docker-cloud-services.png[]
 
 Start the Service:
 
 [source, text]
 ----
-docker-cloud service start 8d3572ae-ad9a-4092-afbc-2b99f26016bc
+docker-cloud service start 124aa470-4e44-4f19-b0f0-d0c2616510a7
 ----
 
 Check the service logs:
 
 [source, text]
 ----
-docker-cloud service logs 8d3572ae-ad9a-4092-afbc-2b99f26016bc
+docker-cloud service logs 124aa470-4e44-4f19-b0f0-d0c2616510a7
 ----
 
 It shows the output as:
 
 [source, text]
 ----
-tomee-4eb05078-1 | 2016-03-15T01:15:12.629119545Z INFO - Server version:        Apache Tomcat (TomEE)/8.0.32 (7.0.0-M3)
-tomee-4eb05078-1 | 2016-03-15T01:15:12.629539055Z INFO - Server built:          Feb 2 2016 19:34:53 UTC
-tomee-4eb05078-1 | 2016-03-15T01:15:12.629896543Z INFO - Server number:         8.0.32.0
-tomee-4eb05078-1 | 2016-03-15T01:15:12.630188415Z INFO - OS Name:               Linux
-tomee-4eb05078-1 | 2016-03-15T01:15:12.630430719Z INFO - OS Version:            3.13.0-61-generic
-tomee-4eb05078-1 | 2016-03-15T01:15:12.630779071Z INFO - Architecture:          amd64
-tomee-4eb05078-1 | 2016-03-15T01:15:12.631063161Z INFO - Java Home:             /usr/lib/jvm/java-8-openjdk-amd64/jre
+wildfly-1 | 2017-02-04T00:00:22.752881989Z =========================================================================
+wildfly-1 | 2017-02-04T00:00:22.752982683Z 
+wildfly-1 | 2017-02-04T00:00:22.753058247Z   JBoss Bootstrap Environment
+wildfly-1 | 2017-02-04T00:00:22.753149954Z 
+wildfly-1 | 2017-02-04T00:00:22.753228180Z   JBOSS_HOME: /opt/jboss/wildfly
+wildfly-1 | 2017-02-04T00:00:22.753313935Z 
+wildfly-1 | 2017-02-04T00:00:22.753385039Z   JAVA: /usr/lib/jvm/java/bin/java
+wildfly-1 | 2017-02-04T00:00:22.753537123Z 
+wildfly-1 | 2017-02-04T00:00:22.753926931Z   JAVA_OPTS:  -server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true
 
 . . .
 
-tomee-4eb05078-1 | 2016-03-15T01:15:15.283837628Z INFO - Assembling app: /usr/local/tomee/webapps/docs
-tomee-4eb05078-1 | 2016-03-15T01:15:15.291932146Z INFO - Deployed Application(path=/usr/local/tomee/webapps/docs)
-tomee-4eb05078-1 | 2016-03-15T01:15:15.311051364Z INFO - At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
-tomee-4eb05078-1 | 2016-03-15T01:15:15.336165182Z INFO - Deployment of web application directory /usr/local/tomee/webapps/docs has finished in 76 ms
-tomee-4eb05078-1 | 2016-03-15T01:15:15.341409256Z INFO - Starting ProtocolHandler ["http-nio-8080"]
-tomee-4eb05078-1 | 2016-03-15T01:15:15.348118092Z INFO - Starting ProtocolHandler ["ajp-nio-8009"]
-tomee-4eb05078-1 | 2016-03-15T01:15:15.349340425Z INFO - Server startup in 1162 ms
+wildfly-1 | 2017-02-04T00:00:28.062486850Z 00:00:28,062 INFO  [org.jboss.ws.common.management] (MSC service thread 1-2) JBWS022052: Starting JBossWS 5.1.5.Final (Apache CXF 3.1.6) 
+wildfly-1 | 2017-02-04T00:00:28.360806943Z 00:00:28,359 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
+wildfly-1 | 2017-02-04T00:00:28.361466490Z 00:00:28,360 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990
+wildfly-1 | 2017-02-04T00:00:28.362342136Z 00:00:28,361 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 10.1.0.Final (WildFly Core 2.2.0.Final) started in 5505ms - Started 331 of 577 services (393 services are lazy, passive or on-demand)
 ----
 
-== Access Couchbase Server in Docker Cloud
+== Access WildFly Server in Docker Cloud
 
 Inspect the Docker Cloud service for the exposed container ports:
 
-[source, text]
-----
-docker-cloud service inspect 8d3572ae-ad9a-4092-afbc-2b99f26016bc | jq ".container_ports"
-----
+```
+docker-cloud service inspect 124aa470-4e44-4f19-b0f0-d0c2616510a7 | jq ".container_ports"
+```
 
-To be more specific, exact URI for the http://tomee.apache.org/apache-tomee.html[TomEE] main page can be obtained as:
+This shows the output as:
 
-[source, text]
-----
-docker-cloud service inspect 8d3572ae-ad9a-4092-afbc-2b99f26016bc | jq ".container_ports[0].endpoint_uri" | sed 's/tcp/http/g'
-"http://tomee-4eb05078.8d3572ae.svc.dockerapp.io:8080/"
-----
+```
+[
+  {
+    "protocol": "tcp",
+    "outer_port": 8080,
+    "inner_port": 8080,
+    "port_name": "http-alt",
+    "published": true,
+    "endpoint_uri": "http://wildfly.124aa470.svc.dockerapp.io:8080/"
+  }
+]
+```
 
-Access the main page of TomEE at http://tomee-4eb05078.8d3572ae.svc.dockerapp.io:8080/ to see:
+Access the main page of TomEE at http://wildfly.124aa470.svc.dockerapp.io:8080/ to see:
 
-image::docker-cloud-tomee-landing-page.png[]
+image::docker-cloud-wildfly.png[]
 
 == Terminate the Docker Cloud Service and Node
 
-Check the list of Docker Cloud services running:
+Check the list of Docker Cloud services running using the command `docker-cloud service ps`:
+
+```
+NAME     UUID      STATUS       #CONTAINERS  IMAGE                 DEPLOYED       PUBLIC DNS                           STACK
+wildfly  124aa470  ▶ Running              1  jboss/wildfly:latest  7 minutes ago  wildfly.124aa470.svc.dockerapp.io
+```
+
+Use the UUID to terminate the service:
 
 [source, text]
 ----
-docker-cloud service ps
-NAME            UUID      STATUS       #CONTAINERS  IMAGE         DEPLOYED       PUBLIC DNS                                  STACK
-tomee-4eb05078  8d3572ae  ▶ Running              1  tomee:latest  4 minutes ago  tomee-4eb05078.8d3572ae.svc.dockerapp.io
+docker-cloud service terminate 124aa470
 ----
 
-Terminate the service:
+Check the list of nodes using `docker-cloud node ls` command:
 
-[source, text]
-----
-docker-cloud service terminate tomee-4eb05078
-----
-
-Check the list of nodes:
-
-[source, text]
-----
-docker-cloud node ls
-UUID      FQDN                                                    LASTSEEN        STATUS      CLUSTER        DOCKER_VER
-31572d65  31572d65-5cca-4389-bc4d-4fd473f80b09.node.dockerapp.io  15 seconds ago  ▶ Deployed  tomee-cluster  1.9.1-cs2
-----
+```
+UUID      FQDN                                                    LASTSEEN        STATUS      CLUSTER       DOCKER_VER
+0240951d  0240951d-27b6-4295-8ff8-ea443d668765.node.dockerapp.io  28 seconds ago  ▶ Deployed  wildfly-node  1.11.2-cs5
+```
 
 Terminate the node as:
 
-[source, text]
-----
-docker-cloud node rm 31572d65
-----
+```
+docker-cloud node rm 0240951d
+```
+
+Check the list of nodecluster using `docker-cloud nodecluster ls` command:
+
+```
+NAME          UUID      REGION     TYPE      DEPLOYED        STATUS           CURRENT#NODES    TARGET#NODES
+wildfly-node  fb2f6292  us-west-1  m3.large  23 minutes ago  Empty cluster                0               0
+```
+
+Remove the nodecluster as:
+
+```
+docker-cloud nodecluster rm wildfly-node
+```
+
 
