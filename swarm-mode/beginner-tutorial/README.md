@@ -29,9 +29,8 @@ This first step creates three machines, and names the machines manager1, manager
 
 # Swarm mode using Docker Machine
 
-#This configures the number of workers and managers in the swarm
+#This configures the number of managers in the swarm
 managers=3
-workers=3
 
 # This creates the manager machines
 echo "======> Creating $managers manager machines ...";
@@ -44,6 +43,11 @@ done
 
 This second step creates three more machines, and names them worker1, worker2, and worker3
 ```
+#!/bin/bash
+
+#This configures the number of workers in the swarm
+workers=3
+
 # This create worker machines
 echo "======> Creating $workers worker machines ...";
 for node in $(seq 1 $workers);
