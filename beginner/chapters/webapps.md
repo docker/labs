@@ -465,7 +465,7 @@ Here's a quick summary of the few basic commands we used in our Dockerfile.
 >**Note:** The `EXPOSE` command does not actually make any ports accessible to the host! Instead, this requires 
 publishing ports by means of the `-p` flag when using `$ docker run`.  
 
-* `PUSH` pushes your image to Docker Hub, or alternately to a [private registry](TODO: add URL)
+* `PUSH` pushes your image to Docker Hub, or alternately to a [private registry](https://docs.docker.com/registry/)
 
 >**Note:** If you want to learn more about Dockerfiles, check out [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/).
 
