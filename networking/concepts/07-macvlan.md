@@ -28,7 +28,7 @@ PING 127.0.0.1 (127.0.0.1): 56 data bytes
 
 As you can see in this diagram, `c1` and `c2` are attached via the MACVLAN network called `macvlan` attached to `eth0` on the host.
 
-###VLAN Trunking with MACVLAN
+### VLAN Trunking with MACVLAN
 
 Trunking 802.1q to a Linux host is notoriously painful for many in operations. It requires configuration file changes in order to be persistent through a reboot. If a bridge is involved, a physical NIC needs to be moved into the bridge, and the bridge then gets the IP address. The `macvlan` driver completely manages sub-interfaces and other components of the MACVLAN network through creation, destruction, and host reboots.
 

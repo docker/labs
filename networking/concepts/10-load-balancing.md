@@ -1,8 +1,8 @@
-##<a name="lb"></a>Load Balancing Design Considerations
+## <a name="lb"></a>Load Balancing Design Considerations
 
 Load balancing is a major requirement in modern, distributed applications. Docker Swarm mode introduced in 1.12 comes with a native internal and external load balancing functionalities that utilize both `iptables` and `ipvs`, a transport-layer load balancing inside the Linux kernel.
 
-###Internal Load Balancing
+### Internal Load Balancing
 When services are created in a Docker Swarm cluster, they are automatically assigned a Virtual IP (VIP) that is part of the service's network. The VIP is returned when resolving the service's name. Traffic to that VIP will be automatically sent to all healthy tasks of that service across the overlay network. This approach avoids any client-side load balancing because only a single IP is returned to the client. Docker takes care of routing and equally distributing the traffic across the healthy service tasks.
 
 

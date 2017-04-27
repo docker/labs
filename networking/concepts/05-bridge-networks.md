@@ -1,8 +1,8 @@
-##<a name="drivers"></a>Docker Bridge Network Driver Architecture
+## <a name="drivers"></a>Docker Bridge Network Driver Architecture
 
 This section explains the default Docker bridge network as well as user-defined bridge networks.
 
-###Default Docker Bridge Network
+### Default Docker Bridge Network
 On any host running Docker Engine, there will, by default, be a local Docker network named `bridge`. This network is created using a `bridge` network driver which instantiates a Linux bridge called `docker0`. This may sound confusing. 
 
 - `bridge` is the name of the Docker network
@@ -57,7 +57,7 @@ By default `bridge` will be assigned one subnet from the ranges 172.[17-31].0.0/
 
 
 
-###<a name="userdefined"></a>User-Defined Bridge Networks
+### <a name="userdefined"></a>User-Defined Bridge Networks
 In addition to the default networks, users can create their own networks called **user-defined networks** of any network driver type. In the case of user-defined `bridge` networks, Docker will create a new Linux bridge on the host. Unlike the default `bridge` network, user-defined networks supports manual IP address and subnet assignment. If an assignment isn't given, then Docker's default IPAM driver will assign the next subnet available in the private IP space. 
 
 ![User-Defined Bridge Network](./img/bridge2.png)
@@ -101,7 +101,7 @@ $ ip link
 ...
 ```
 
-###External and Internal Connectivity
+### External and Internal Connectivity
 By default all containers on the same `bridge` driver network will have connectivity with each other without extra configuration. This is an aspect of most types of Docker networks. By virtue of the Docker network the containers are able to communicate across their network namespaces and (for multi-host drivers) across external networks as well. **Communication between different Docker networks is firewalled by default.** This is a fundamental security aspect that allows us to provide network policy using Docker networks. For example, in the figure above containers `c2` and `c3` have reachability but they cannot reach `c1`.
 
 Docker `bridge` networks are not exposed on the external (underlay) host network by default. Container interfaces are given IPs on the private subnets of the bridge network. Containers communicating with the external network are port mapped or masqueraded so that their traffic uses an IP address of the host. The example below shows outbound and inbound container traffic passing between the host interface and a user-defined `bridge` network.
