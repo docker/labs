@@ -268,20 +268,20 @@ the secret from memory.
 In this step you will remove all secrets and services,as well as clean up any other artifacts created in this lab.
 
 
-1. Remove all secrets on the host.
-
-   This command will remove **all** secrets on your Docker host. Only perform this step if you know you will not use these secrets again.
-
-   ```
-   $ docker secret rm $(docker secret ls -q)
-   <Snip>
-   ```
-2. Remove all services on the host.
+1. Remove all services on the host.
 
    This command will remove **all** services on your Docker host. Only perform this step if you know you know you do not need any of the services running on your system.
 
    ```
    $ docker service rm $(docker service ls -q)
+   <Snip>
+   ```
+2. Remove all secrets on the host.
+
+   This command will remove **all** secrets on your Docker host. Only perform this step if you know you will not use these secrets again.
+
+   ```
+   $ docker secret rm $(docker secret ls -q)
    <Snip>
    ```
 
