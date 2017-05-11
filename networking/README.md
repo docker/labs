@@ -19,6 +19,6 @@ This tutorial allows you to dive right in and try code in the [Quick Tutorials](
 1. [Networking Basics](A1-network-basics.md)
 1. [Bridge Networking](A2-bridge-networking.md)
 1. [Overlay Networking](A3-overlay-networking.md)
-1. [HTTP Routing Mesh](A4-HTTP Routing Mesh.md)
+1. [HTTP Routing Mesh](A4-HTTP%20Routing%20Mesh.md)
 
 Or you can first dive deep into the [Network Concepts](concepts/) before trying in out in code yourself.
