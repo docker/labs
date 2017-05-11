@@ -1,0 +1,72 @@
+:imagesdir: images
+
+= Setup Environments
+
+This section describes the hardware and software needed for this workshop, and how to configure them. This workshop is designed for a BYOL (Brying Your Own Laptop) style hands-on-lab.
+
+== Hardware & Software
+
+. Memory: At least 4 GB+, strongly preferred 8 GB
+. Operating System: Mac OS X (10.10.3+), Windows 10 Pro+ 64-bit, Ubuntu 12+, CentOS 7+.
++
+NOTE: An older version of the operating system may be used. The installation instructions would differ slightly in that case and are explained in the next section.
+. Amazon Web Services credentials with https://docs.docker.com/docker-for-aws/iam-permissions/[following permissions]. This is only needed for some parts of the workshop.
+
+== Install Docker
+
+Docker runs natively on Mac, Windows and Linux. This lab will use https://www.docker.com/community-edition[Docker Community Edition]. Follow the https://www.docker.com/community-edition[instructions] to install Docker.
+
+NOTE: Docker Community Edition have requirements for a fairly recent operating system version. If your machine does not meet these requirements, then you need to install https://www.docker.com/products/docker-toolbox[Docker Toolbox]. 
+
+=== Additional components
+
+Install the following additional components:
+
+. https://docs.docker.com/compose/install/[Docker Compose]
+
+=== Docker Toolbox Notes
+
+Skip this section if you are using Docker Community Edition.
+
+. *Default Docker Machine*: Docker Toolbox creates a Docker Machine named `default`. To make it easier to start/stop the containers, an entry is added into the host mapping table of your operating system. 
++
+Find out the IP address of your Docker Machine:
++
+```
+docker-machine ip default
+```
++
+This will provide the IP address associated with the Docker Machine created by Toolbox.
++
+Edit `/etc/hosts` (Mac OS) or `C:\Windows\System32\drivers\etc\hosts` (Windows) and add:
++
+[source, text]
+----
+<IP ADDRESS>  dockerhost
+----
++
+This allows to access Docker containers using `dockerhost`.
++
+. *Docker CLI Shell*: Any Docker CLI command needs to be issued from the Terminal or Command Prompt where `eval $(docker-machine env default)` command was issued. This will make sure Docker CLI is configured to talk to the VM created by Docker Toolbox.
+
+=== Download Images
+
+This tutorial uses a few Docker images and software. Let's download them before we start the tutorial.
+
+Download the file from https://github.com/docker/labs/blob/master/developer-tools/java/scripts/docker-compose-pull-images.yml and give the command to pull all the images:
+
+```console
+docker-compose -f docker-compose-pull-images.yml pull --parallel
+```
+
+NOTE: For Linux, `docker-compose` and `docker` commands need `sudo` access. So prefix all commands with `sudo`.
+
+=== Other Software
+
+. Download Java IDE based upon your choice and install.
+.. https://netbeans.org/downloads/[NetBeans 8.2] (`"Java SE"` version)
+.. https://www.jetbrains.com/idea/download/[IntelliJ IDEA Community or Ultimate]
+.. http://www.eclipse.org/downloads/eclipse-packages/[Eclipse IDE for Java EE Developers]
+. Download https://maven.apache.org/download.cgi[Maven] and install.
+. Install Docker Cloud CLI following the https://docs.docker.com/docker-cloud/installing-cli/[instructions].
+

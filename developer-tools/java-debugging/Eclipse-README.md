@@ -9,36 +9,29 @@
 
 ### Getting Started
 
-In Eclipse, clone the [registration-docker](https://github.com/spara/registration-docker.git) repository
+On the command line clone the [registration-docker](https://github.com/docker/labs) repository
 
-`File`> `Import`
-Select `Git`> `Projects`> `Next`
+```
+git clone https://github.com/docker/labs
+cd labs/developer-tools/java-debugging
+```
 
-![](images/eclipse_git_import_repo2.png)
+In Eclipse, import the app directory of that project as an existing maven project
 
-Select `Clone URI`> `Next`
+`File`> `Import` Select `Maven`> `Existing Maven Projects`> `Next`
 
-![](images/eclipse_git_clone_uri2.png)
+![](images/eclipse_import_existing_maven_project_1.png)
+ 
+ 
+Select the app subdirectory of the directory where you cloned the project.
+ 
+![](images/eclipse_import_existing_maven_project_2.png)
+ 
+ 
+Select the pom.xml from the app directory, click `Finish`. 
+ 
+![](images/eclipse_import_existing_maven_project_3.png)
 
-Enter the [`repositoryurl`](https://github.com/spara/registration-docker.git)> `Next`
-
-![](images/eclipse_git_repo_uri2.png)
-
-`Select the master branch`> `Next`
-
-![](images/eclipse_git_select_branch2.png)
-
-`Enter the destination directory`> `Next`
-
-![](images/eclipse_git_local_destination2.png)
-
-Select the import wizard, `Import existing Eclipse project`> `Next`
-
-![](images/eclipse_git_import_wizard2.png)
-
-Select `registration-docker`> `Finish`
-
-![](images/eclipse_git_import_project2.png)
 
 ### Building the application
 
@@ -161,13 +154,28 @@ Try to log into the application. Look at the value for password in the Eclipse v
 
 In this MVC application the UserController uses the findByLogin method in the UserServiceImpl class which uses the findByUsername method to retrieve the information from the database. It then checks to see if the password from the form matches the user password. Since the password from the login form is not scrambled using ROT13, it does not match the user password and you cannot log into the application.
 
-To fix this, apply ROT13 to the password by adding
+To fix this, apply ROT13 to the password by adding an import near the top of the file
 
 ```
-import com.docker.UserSignup.utit.Rot13
-
-String passwd = Rot13.rot13(password);
+import com.docker.UserSignup.util.Rot13
 ```
+
+and replace the contents of `findByLogin` with
+
+```
+public boolean findByLogin(String userName, String password) {  
+    User usr = userRepository.findByUserName(userName);
+
+    String passwd = Rot13.rot13(password);
+
+    if(usr != null && usr.getPassword().equals(passwd)) {
+        return true;
+    }
+
+    return false;
+}
+```
+
 ![](images/eclipse_debug_UserServiceImpl_code.png)
 
 Set a breakpoint in UserServiceImpl on the findByLogin method. Log in again and look at the values for the breakpoint. The 'passwd' variable is `z0ol` which matches the password for the user moby.

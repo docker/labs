@@ -1,6 +1,13 @@
 # Windows and .NET Tutorials
 
-We have two Windows and .NET tutorials
+We have these Windows and .NET tutorials:
 
-* [Run .NET Core in a Linux Container](dotnet-core/index.md)
-* [Running a Heterogeneous Azure-hosted Swarm Cluster](dotnet-linux-het/readme.md)
+* [Getting Started with Windows Containers](windows-containers/)
+* [Beginning ASP.NET Web application](aspnet-web/README.md)
+* [SQL Server Database](sql-server/README.md)
+* [Run a local Docker Registry](registry/README.md)
+
+And these tutorials for [modernizing traditional apps](modernize-traditional-apps/README.md):
+
+* [Modernize ASP.NET Web Applications](modernize-traditional-apps/modernize-aspnet/README.md)
+* [Modernize ASP.NET Apps - for Ops](modernize-traditional-apps/modernize-aspnet-ops/README.md)

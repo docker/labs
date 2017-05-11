@@ -1,0 +1,11 @@
+version: "2"
+
+services:
+  web:
+    build: .
+    command: nodemon --debug=5858
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+      - "5858:5858"

@@ -1,0 +1,6 @@
+#SSDT 
+
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+./out/*

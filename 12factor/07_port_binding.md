@@ -11,7 +11,7 @@ The host has the responsibility to route the request to the correct application 
 Docker already handles that for us, as we can see in the docker-compose file. The **app** container exposes port 80 internally and the host maps it against its port 8000.
 
 ```
-version: '2'
+version: '3'
 services:
   mongo:
     image: mongo:3.2

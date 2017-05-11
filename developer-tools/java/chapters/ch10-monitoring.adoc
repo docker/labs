@@ -1,0 +1,249 @@
+:imagesdir: images
+
+= Monitoring Docker Containers
+
+This chapter will cover different ways to monitor a Docker container.
+
+== Docker CLI
+
+`docker container stats` command displays a live stream of container(s) resource usage statistics.
+
+. Start a container: `docker container run --name db -d arungupta/couchbase`
+. Check the container stats using `docker container stats db`. It shows the output as:
++
+```
+CONTAINER           CPU %               MEM USAGE / LIMIT       MEM %               NET I/O             BLOCK I/O           PIDS
+db                  2.02%               374.9 MiB / 1.952 GiB   18.76%              648 B / 648 B       0 B / 156 kB        156
+```
++
+The output is continually updated. It shows:
++
+.. Container name
+.. Percent CPU utilization
+.. Total memory usage vs amount available to the container
+.. Percent memory utilization
+.. Network activity
+.. Disk activity
+.. PIDS??
++
+. Start another container: `docker container run -d --name web jboss/wildfly`
+. Check the stats for two containers using the command `docker container stats db web`. The output is shown:
++
+```
+CONTAINER           CPU %               MEM USAGE / LIMIT       MEM %               NET I/O             BLOCK I/O           PIDS
+db                  4.61%               393.1 MiB / 1.952 GiB   19.67%              2.61 kB / 928 B     24.6 kB / 799 kB    219
+web                 0.18%               266.1 MiB / 1.952 GiB   13.31%              782 B / 718 B       0 B / 4.1 kB        53
+```
++
+. Stats for all the containers can be displayed using the command `docker container stats`
++
+```
+CONTAINER           CPU %               MEM USAGE / LIMIT       MEM %               NET I/O             BLOCK I/O           PIDS
+88b04695855e        0.03%               265.9 MiB / 1.952 GiB   13.30%              916 B / 788 B       0 B / 4.1 kB        51
+109d917d17e2        5.61%               394.9 MiB / 1.952 GiB   19.76%              2.75 kB / 928 B     24.6 kB / 807 kB    219
+```
++
+Note that the container id is shown in this case instead of container's name.
++
+. Display only container id and percent CPU utilization using the command `docker container stats --format "{{.Container}}: {{.CPUPerc}}"`:
++
+```
+88b04695855e: 0.14%
+109d917d17e2: 4.83%
+```
++
+. Format the output in a table. The results should include container name, percent CPU utilization and percent memory utilization. This can be achieved using the command `docker container stats --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"`:
++
+```
+NAME                CPU %               MEM USAGE / LIMIT
+web                 0.13%               266.1 MiB / 1.952 GiB
+db                  3.06%               398.9 MiB / 1.952 GiB
+```
++
+. Display only the first result using the command `docker container stats --no-stream`:
++
+```
+CONTAINER           CPU %               MEM USAGE / LIMIT       MEM %               NET I/O             BLOCK I/O           PIDS
+88b04695855e        0.15%               263.6 MiB / 1.952 GiB   13.19%              1.38 kB / 928 B     0 B / 4.1 kB        51
+109d917d17e2        3.19%               398.6 MiB / 1.952 GiB   19.94%              3.21 kB / 998 B     24.6 kB / 1.16 MB   220
+```
+
+== Docker Remote API
+
+Docker Remote API provides a lot more details about the health of the container. It can be invoked using the following format:
+
+```
+curl --unix-socket /var/run/docker.sock http://localhost/containers/<name>/stats
+```
+
+On Docker for Mac, enabling remote HTTP API still requires a few steps. So this command uses the `--unix-socket` option to invoke the Remote API.
+
+A specific invocation using `curl --unix-socket /var/run/docker.sock http://localhost/containers/db/stats` will show the output:
+
+```
+{"read":"2017-02-28T02:40:29.595511475Z","preread":"0001-01-01T00:00:00Z","pids_stats":{"current":220},"blkio_stats":{"io_service_bytes_recursive":[{"major":254,"minor":0,"op":"Read","value":212992},{"major":254,"minor":0,"op":"Write","value":1339392},{"major":254,"minor":0,"op":"Sync","value":1257472},{"major":254,"minor":0,"op":"Async","value":294912},{"major":254,"minor":0,"op":"Total","value":1552384}],"io_serviced_recursive":[{"major":254,"minor":0,"op":"Read","value":3},{"major":254,"minor":0,"op":"Write","value":249},{"major":254,"minor":0,"op":"Sync","value":230},{"major":254,"minor":0,"op":"Async","value":22},{"major":254,"minor":0,"op":"Total","value":252}],"io_queue_recursive":[],"io_service_time_recursive":[],"io_wait_time_recursive":[],"io_merged_recursive":[],"io_time_recursive":[],"sectors_recursive":[]},"num_procs":0,"storage_stats":{},"cpu_stats":{"cpu_usage":{"total_usage":83724160991,"percpu_usage":[30641144914,10843586791,11798818901,30440610385],"usage_in_kernelmode":12390000000,"usage_in_usermode":15170000000},"system_cpu_usage":132730290000000,"throttling_data":{"periods":0,"throttled_periods":0,"throttled_time":0}},"precpu_stats":{"cpu_usage":{"total_usage":0,"usage_in_kernelmode":0,"usage_in_usermode":0},"throttling_data":{"periods":0,"throttled_periods":0,"throttled_time":0}},"memory_stats":{"usage":419139584,"max_usage":426778624,"stats":{"active_anon":404185088,"active_file":20480,"cache":1589248,"dirty":12288,"hierarchical_memory_limit":9223372036854771712,"hierarchical_memsw_limit":9223372036854771712,"inactive_anon":0,"inactive_file":1568768,"mapped_file":122880,"pgfault":226379,"pgmajfault":2,"pgpgin":202886,"pgpgout":103818,"rss":404193280,"rss_huge":0,"swap":0,"total_active_anon":404185088,"total_active_file":20480,"total_cache":1589248,"total_dirty":12288,"total_inactive_anon":0,"total_inactive_file":1568768,"total_mapped_file":122880,"total_pgfault":226379,"total_pgmajfault":2,"total_pgpgin":202886,"total_pgpgout":103818,"total_rss":404193280,"total_rss_huge":0,"total_swap":0,"total_unevictable":0,"total_writeback":0,"unevictable":0,"writeback":0},"limit":2095898624},"name":"/db","id":"109d917d17e241713341b3d03470444c0144510f1e6de726eb72e1d6786a3e5d","networks":{"eth0":{"rx_bytes":3342,"rx_packets":57,"rx_errors":0,"rx_dropped":0,"tx_bytes":998,"tx_packets":13,"tx_errors":0,"tx_dropped":0}}}
+```
+
+As you can see, far more details about container's health are shown here. These stats are refereshed every one second. The continuous refresh of metrics can be terminated using `Ctrl + C`.
+
+== Docker Events
+
+`docker system events` provide real time events for the Docker host.
+
+. In one terminal (T1), type `docker system events`. The command does not show output and waits for any event worth reporting to occur. The list of events is listed at https://docs.docker.com/engine/reference/commandline/events/#/extended-description.
+. In a new terminal (T2), kill existing container using `docker container rm -f web`.
+. T1 shows the updated list of events as:
++
+```
+2017-02-27T18:48:30.413053776-08:00 container kill 88b04695855ecf5390e57a6955a25f1ff507f7b066c2cd6397a5773a9e7e683f (build-date=20161214, image=jboss/wildfly, license=GPLv2, name=web, signal=9, vendor=CentOS)
+2017-02-27T18:48:30.551760207-08:00 container die 88b04695855ecf5390e57a6955a25f1ff507f7b066c2cd6397a5773a9e7e683f (build-date=20161214, exitCode=137, image=jboss/wildfly, license=GPLv2, name=web, vendor=CentOS)
+2017-02-27T18:48:30.954543362-08:00 network disconnect 83f14a590c9b8875cca8d050d47ec1e0dbff6db67180a56571496cadbe579e10 (container=88b04695855ecf5390e57a6955a25f1ff507f7b066c2cd6397a5773a9e7e683f, name=bridge, type=bridge)
+2017-02-27T18:48:31.192092236-08:00 container destroy 88b04695855ecf5390e57a6955a25f1ff507f7b066c2cd6397a5773a9e7e683f (build-date=20161214, image=jboss/wildfly, license=GPLv2, name=web, vendor=CentOS)
+```
++
+The output shows a list of events, one in each line. The events shown here are `container kill`, `container die`, `network disconnect` and `container destroy`. Date and timestamp for each event is displayed at the beginning of the line. Other event specific information is displayed as well.
++
+. In T2, create a new container: `docker container run -d --name web jboss/wildfly`
+. The output in T1 is updated to show:
++
+```
+2017-02-27T18:49:24.218079500-08:00 container create 3cc3e2bf3c43e278e0e4bd2ea238a829610d0a620ab069010b4881c1bf8e096e (build-date=20161214, image=jboss/wildfly, license=GPLv2, name=web, vendor=CentOS)
+2017-02-27T18:49:24.383788816-08:00 network connect 83f14a590c9b8875cca8d050d47ec1e0dbff6db67180a56571496cadbe579e10 (container=3cc3e2bf3c43e278e0e4bd2ea238a829610d0a620ab069010b4881c1bf8e096e, name=bridge, type=bridge)
+2017-02-27T18:49:24.930142017-08:00 container start 3cc3e2bf3c43e278e0e4bd2ea238a829610d0a620ab069010b4881c1bf8e096e (build-date=20161214, image=jboss/wildfly, license=GPLv2, name=web, vendor=CentOS)
+```
++
+The list of events shown here are `container create`, `network connect`, and `container start`.
+
+=== Use filters
+
+The list of events can be restricted by filters specified using `--filter` or `-f` option. The currently supported filters are:
+
+. container (`container=<name or id>`)
+. daemon (`daemon=<name or id>`)
+. event (`event=<event action>`)
+. image (`image=<tag or id>`)
+. label (`label=<key>` or `label=<key>=<value>`)
+. network (`network=<name or id>`)
+. plugin (`plugin=<name or id>`)
+. type (`type=<container or image or volume or network or daemon>`)
+. volume (`volume=<name or id>`)
+
+Let's use these filters.
+
+. Show events for a container by name
+.. In T1, give the command `docker system events -f container=db`.
+.. In T2, terminate the `web` container as `docker container rm -f web`. 
+.. T1 does not show any events because its only listening for events from `db` container.
+. Show events for an event
+.. In T1, give the command `docker system events -f event=create`.
+.. In T2, create a container `docker container run -d --name web2 jboss/wildfly`
+.. T1 shows the event for container creation
++
+```
+2017-02-28T12:55:45.631795937-08:00 container create 4728dab7c27816351423d64e60adf21a0246c1006b1131655d8b66fc82e8b324 (build-date=20161214, image=jboss/wildfly, license=GPLv2, name=dreamy_lamport, vendor=CentOS)
+```
++
+.. In T2, terminate the container `docker container rm -f web2`
+.. T1 does not show any additional events because its only looking for create events
+.. More samples are explained at https://docs.docker.com/engine/reference/commandline/events/#/filter-events-by-criteria.
+
+== Prometheus
+
+Docker 1.13 adds an experimental Prometheus-style endpoint with basic metrics on containers, images and other daemon state. This support is only available in Experimental build.
+
+. For Docker for Mac, click on Docker icon in the status menu
+. Select `Preferences...`, `Daemon`, `Advanced` tab
+. Update daemon settings:
++
+```
+{
+  "metrics-addr" : "0.0.0.0:1337",
+  "experimental" : true
+}
+```
++
+. Click on `Apply & Restart` to restart the daemon
++
+image::docker-mac-metrics-endpoint.png[]
++
+. Show the complete list of metrics using `curl http://localhost:1337/metrics`
+. Show the list of engine metrics using `curl http://localhost:1337/metrics | grep engine`
+
+=== Prometheus node scraper
+
+Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.
+
+. Create a new directory `prometheus` and change directory
+. Create `prometheus.yml`
++
+```
+# A scrape configuration scraping a Node Exporter and the Prometheus server
+# itself.
+scrape_configs:
+  # Scrape Prometheus itself every 5 seconds.
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+```
++
+This will be scraping metrics for the Prometheus container that will be started on port 9090.
++
+. Start Prometheus container:
++
+```
+docker run \
+  -d \
+  --name metrics \
+  -p 9090:9090 \
+  -v `pwd`:/etc/prometheus \
+  prom/prometheus
+```
++
+. Prometheus dashboard is at http://localhost:9090
+. Show the list of metrics
++
+image::prometheus-metrics.png[]
++
+. Choose `http_request_duration_microseconds`
+. Switch from `Console` to `Graph`
+.. Change the duration from `1h` to `5m`
++
+image::prometheus-metrics2.png[]
++
+. Stop the container: `docker container rm -f metrics`
+
+== cAdvisor
+
+https://github.com/google/cadvisor[cAdvisor] (Container Advisor) provides resource usage and performance characteristics running containers.
+
+. Run `cAdvisor`
++
+```
+docker container run \
+  --volume=/:/rootfs:ro \
+  --volume=/var/run:/var/run:rw \
+  --volume=/sys:/sys:ro \
+  --volume=/var/lib/docker/:/var/lib/docker:ro \
+  --publish=8080:8080 \
+  --detach=true \
+  --name=cadvisor \
+  google/cadvisor:latest
+```
++
+. Dashboard is available at http://localhost:8080
++
+image::cadvisor-default-dashboard.png[]
++
+. A high-level CPU and Memory utilization is shown. More details about CPU, memory, network and filesystem usage is shown in the same page. CPU usage looks like as shown:
++
+image::cadvisor-cpu-snapshot.png[]
++
+. All Docker containers are in `/docker` sub-container.
++
+image::cadvisor-docker-metrics.png[]
++
+Click on any of the containers and see more details about the container.
+
+cAdvisor samples once a second and has historical data for only one minute. The data generated from https://github.com/google/cadvisor/blob/master/docs/storage/influxdb.md[cAdvisor can be exported to InfluxDB]. Optionally, you may use a Grafana front end to visualize the data as explained in https://www.brianchristner.io/how-to-setup-docker-monitoring/[How to setup Docker monitoring].
+

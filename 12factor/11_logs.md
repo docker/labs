@@ -4,7 +4,7 @@ Logs need to be handle as a timeseries of textual events
 
 The application should not handle or save logs locally but must write them in stdout / stderr.
 
-A lot of services offer a centralized log management ([Elastic Stack / ELK](https://www.elastic.co/products) , [Splunk](http://splunk.com), [Logentries](https:logentries.com), ...), and most of them are very easily integrated with Docker.
+A lot of services offer a centralized log management ([Elastic Stack / ELK](https://www.elastic.co/products) , [Splunk](http://splunk.com), [Logentries](https://logentries.com), ...), and most of them are very easily integrated with Docker.
 
 Example of Logentries dashboard:
 

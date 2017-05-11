@@ -1,0 +1,25 @@
+wordpress:
+    image: endophage/wordpress:lean
+    links:
+        - mysql
+    ports:
+        - "8080:80"
+    environment:
+        - DB_PASSWORD=2671d40f658f595f49cd585db8e522cc955d916ee92b67002adcf8127196e6b2
+    cpuset: "0"
+    cap_drop:
+        - ALL
+    cap_add:
+        - SETUID
+        - SETGID
+        - DAC_OVERRIDE
+        - NET_BIND_SERVICE
+    # **YOUR WORK HERE**
+    # Add an apparmor profile to this image
+mysql:
+    image: mariadb:10.1.10
+    environment:
+        - MYSQL_DATABASE=wordpress
+        - MYSQL_ROOT_PASSWORD=2671d40f658f595f49cd585db8e522cc955d916ee92b67002adcf8127196e6b2
+    ports:
+        - "3306"

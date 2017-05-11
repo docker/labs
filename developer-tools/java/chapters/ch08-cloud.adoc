@@ -1,0 +1,157 @@
+:imagesdir: images
+
+= Docker Cloud
+
+== Key Concepts
+
+Docker Cloud is a SaaS that allows you to build, deploy and manage Docker containers in physical servers, virtual machine or cloud providers.
+
+The main concepts of Docker Cloud are: 
+
+- *Nodes* are individual Linux hosts/VMs used to deploy and run your applications. New nodes can be provisioned to increase the capacity. Docker Cloud does not provide hosting services. Nodes are provisioned using physical servers, virtual machine or cloud providers.
+- *Node Clusters* are logical groups of nodes of the same type. Node Clusters allow to scale the infrastructure easily by provisioning more nodes.
+- *Services* are logical groups of containers from the same image. Services make it simple to scale your application across different nodes.
+
+This chapter will show how to use TomEE Docker image and deploy it using Docker Cloud CLI.
+
+=== Docker Cloud CLI
+
+Install Docker Cloud CLI following the https://docs.docker.com/docker-cloud/installing-cli/[instructions].
+
+== Create new Docker Cloud Node
+
+Create a new node cluster:
+
+[source, text]
+----
+docker-cloud nodecluster create -t 1 --tag wildfly wildfly-node aws us-west-1 m3.large
+----
+
+This node cluster has a single node (`-t 1`) and uses the tag "`wildfly`" (`--tag wildfly`). Last four parameters are nodecluster name (`couchbase-node`), provider (`aws`), region (`us-west-1`) and node type (`m3.large`).
+
+Each node in this node cluster will be given the assigned tag. This will be used later to assign services to a specific node or node cluster.
+
+Deploying a node can take a few minutes. Current status can also be seen https://cloud.docker.com/app/arungupta/nodecluster/list/1?page_size=10[Docker Cloud dashboard]:
+
+image::docker-cloud-nodecluster.png[]
+
+== Create a new Docker Cloud Service
+
+Create a Docker Cloud Service:
+
+[source, text]
+----
+docker-cloud service create --name wildfly --tag wildfly -p 8080:8080 jboss/wildfly
+124aa470-4e44-4f19-b0f0-d0c2616510a7
+----
+
+https://cloud.docker.com/app/arungupta/service/list/1?name__icontains=wildfly&page=1&page_size=10[Docker Cloud dashboard] will look like:
+
+image::docker-cloud-services.png[]
+
+Start the Service:
+
+[source, text]
+----
+docker-cloud service start 124aa470-4e44-4f19-b0f0-d0c2616510a7
+----
+
+Check the service logs:
+
+[source, text]
+----
+docker-cloud service logs 124aa470-4e44-4f19-b0f0-d0c2616510a7
+----
+
+It shows the output as:
+
+[source, text]
+----
+wildfly-1 | 2017-02-04T00:00:22.752881989Z =========================================================================
+wildfly-1 | 2017-02-04T00:00:22.752982683Z 
+wildfly-1 | 2017-02-04T00:00:22.753058247Z   JBoss Bootstrap Environment
+wildfly-1 | 2017-02-04T00:00:22.753149954Z 
+wildfly-1 | 2017-02-04T00:00:22.753228180Z   JBOSS_HOME: /opt/jboss/wildfly
+wildfly-1 | 2017-02-04T00:00:22.753313935Z 
+wildfly-1 | 2017-02-04T00:00:22.753385039Z   JAVA: /usr/lib/jvm/java/bin/java
+wildfly-1 | 2017-02-04T00:00:22.753537123Z 
+wildfly-1 | 2017-02-04T00:00:22.753926931Z   JAVA_OPTS:  -server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true
+
+. . .
+
+wildfly-1 | 2017-02-04T00:00:28.062486850Z 00:00:28,062 INFO  [org.jboss.ws.common.management] (MSC service thread 1-2) JBWS022052: Starting JBossWS 5.1.5.Final (Apache CXF 3.1.6) 
+wildfly-1 | 2017-02-04T00:00:28.360806943Z 00:00:28,359 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
+wildfly-1 | 2017-02-04T00:00:28.361466490Z 00:00:28,360 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990
+wildfly-1 | 2017-02-04T00:00:28.362342136Z 00:00:28,361 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 10.1.0.Final (WildFly Core 2.2.0.Final) started in 5505ms - Started 331 of 577 services (393 services are lazy, passive or on-demand)
+----
+
+== Access WildFly Server in Docker Cloud
+
+Inspect the Docker Cloud service for the exposed container ports:
+
+```
+docker-cloud service inspect 124aa470-4e44-4f19-b0f0-d0c2616510a7 | jq ".container_ports"
+```
+
+This shows the output as:
+
+```
+[
+  {
+    "protocol": "tcp",
+    "outer_port": 8080,
+    "inner_port": 8080,
+    "port_name": "http-alt",
+    "published": true,
+    "endpoint_uri": "http://wildfly.124aa470.svc.dockerapp.io:8080/"
+  }
+]
+```
+
+Access the main page of TomEE at http://wildfly.124aa470.svc.dockerapp.io:8080/ to see:
+
+image::docker-cloud-wildfly.png[]
+
+== Terminate the Docker Cloud Service and Node
+
+Check the list of Docker Cloud services running using the command `docker-cloud service ps`:
+
+```
+NAME     UUID      STATUS       #CONTAINERS  IMAGE                 DEPLOYED       PUBLIC DNS                           STACK
+wildfly  124aa470  ▶ Running              1  jboss/wildfly:latest  7 minutes ago  wildfly.124aa470.svc.dockerapp.io
+```
+
+Use the UUID to terminate the service:
+
+[source, text]
+----
+docker-cloud service terminate 124aa470
+----
+
+Check the list of nodes using `docker-cloud node ls` command:
+
+```
+UUID      FQDN                                                    LASTSEEN        STATUS      CLUSTER       DOCKER_VER
+0240951d  0240951d-27b6-4295-8ff8-ea443d668765.node.dockerapp.io  28 seconds ago  ▶ Deployed  wildfly-node  1.11.2-cs5
+```
+
+Terminate the node as:
+
+```
+docker-cloud node rm 0240951d
+```
+
+Check the list of nodecluster using `docker-cloud nodecluster ls` command:
+
+```
+NAME          UUID      REGION     TYPE      DEPLOYED        STATUS           CURRENT#NODES    TARGET#NODES
+wildfly-node  fb2f6292  us-west-1  m3.large  23 minutes ago  Empty cluster                0               0
+```
+
+Remove the nodecluster as:
+
+```
+docker-cloud nodecluster rm wildfly-node
+```
+
+

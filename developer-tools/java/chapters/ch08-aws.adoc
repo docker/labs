@@ -1,0 +1,364 @@
+:imagesdir: images
+
+= Docker for AWS
+
+https://docs.docker.com/docker-for-aws/[Docker for AWS] is a CloudFormation template that configures Docker in swarm-mode, running on EC2 instances backed by custom AMIs. This allows to create a cluster of Docker Engine in swarm-mode with a single click. This workshop will take the https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch06-swarm.adoc#multi-container-application[multi-container application] and deploy it on multiple hosts.
+
+=== Requirements
+
+What is required for creating this CloudFormation template?
+
+. https://docs.docker.com/docker-for-aws/iam-permissions/[Permissions]
+. SSH key in AWS in the region where you want to deploy (required to access the completed Docker install). http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html[Amazon EC2 Key Pair] explains how to add SSH key to your account
+. AWS account that support EC2-VPC
+
+=== Create swarm-mode cluster
+
+https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=Docker&templateURL=https://editions-us-east-1.s3.amazonaws.com/aws/stable/Docker.tmpl[Launch Stack] to create the CloudFormation template.
+
+.Select template
+image::docker-aws-1.png[]
+
+Click on `Next`
+
+.Swarm size
+image::docker-aws-2.png[]
+
+Select the number of Swarm manager (1) and worker (3) nodes. This wll create a 4 node cluster. Select the SSH key that will be used to access the cluster.
+
+By default, the template is configured to redirect all log statements to CloudWatch. Until https://github.com/docker/docker/issues/30691[#30691] is fixed, the logs will only be available using CloudWatch. Alternatively, you may select to not redirect logs to CloudWatch. In this case, the usual command to get the logs will work.
+
+Scroll down to select manager and worker properties.
+
+.Swarm manager/worker properties
+image::docker-aws-3.png[]
+
+`m3.medium` (1 vCPU and 3.75 GB memory) is a good start for manager. `m3.large` (2 vCPU and 7.5 GB memory) is a good start for worker node. Make sure the EC2 instance size is chosen to accommodate the processing and memory needs of containers that will run there.
+
+Click on `Next`
+
+.Swarm options
+image::docker-aws-4.png[]
+
+Take default for all the options and click on `Next`.
+
+.Swarm review
+image::docker-aws-5.png[]
+
+.Swarm IAM accept
+image::docker-aws-6.png[]
+
+Accept the checkbox for CloudFormation to create IAM resources. Click on `Create` to create the Swarm cluster.
+
+It will take a few minutes for the CloudFormation template to complete. For example, it took about 10-12 minutes for this cluster to be created in `us-west-2` region. The output will look like:
+
+.Swarm CloudFormation complete
+image::docker-aws-7.png[]
+
+https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#Instances:search=docker;sort=instanceState[EC2 Console] will show the EC2 instances for manager and worker.
+
+.EC2 console
+image::docker-aws-8.png[]
+
+Select the manager node, copy the public IP address:
+
+[[Swarm_manager]]
+.Swarm manager
+image::docker-aws-9.png[]
+
+Create a SSH tunnel using the command `ssh -i ~/.ssh/arun-cb-west2.pem -NL localhost:2374:/var/run/docker.sock docker@ec2-52-37-65-169.us-west-2.compute.amazonaws.com &`
+
+Get more details about the cluster using the command `docker -H localhost:2374 info`. This shows the output:
+
+```
+Containers: 5
+ Running: 4
+ Paused: 0
+ Stopped: 1
+Images: 5
+Server Version: 1.13.0
+Storage Driver: overlay2
+ Backing Filesystem: extfs
+ Supports d_type: true
+ Native Overlay Diff: true
+Logging Driver: awslogs
+Cgroup Driver: cgroupfs
+Plugins: 
+ Volume: local
+ Network: bridge host ipvlan macvlan null overlay
+Swarm: active
+ NodeID: ep8668sq4y8n7qdkvm8l2lecf
+ Is Manager: true
+ ClusterID: mw186ukvx9rx5h87vxzkr0ic0
+ Managers: 1
+ Nodes: 4
+ Orchestration:
+  Task History Retention Limit: 5
+ Raft:
+  Snapshot Interval: 10000
+  Number of Old Snapshots to Retain: 0
+  Heartbeat Tick: 1
+  Election Tick: 3
+ Dispatcher:
+  Heartbeat Period: 5 seconds
+ CA Configuration:
+  Expiry Duration: 3 months
+ Node Address: 172.31.42.42
+ Manager Addresses:
+  172.31.42.42:2377
+Runtimes: runc
+Default Runtime: runc
+Init Binary: docker-init
+containerd version: 03e5862ec0d8d3b3f750e19fca3ee367e13c090e
+runc version: 2f7393a47307a16f8cee44a37b262e8b81021e3e
+init version: 949e6fa
+Security Options:
+ seccomp
+  Profile: default
+Kernel Version: 4.9.4-moby
+Operating System: Alpine Linux v3.5
+OSType: linux
+Architecture: x86_64
+CPUs: 1
+Total Memory: 3.67 GiB
+Name: ip-172-31-42-42.us-west-2.compute.internal
+ID: NNAE:BGOF:DU6D:DE2V:TLEO:PBUL:CD5S:H5QB:MEA5:DBAW:DTIQ:ASVP
+Docker Root Dir: /var/lib/docker
+Debug Mode (client): false
+Debug Mode (server): true
+ File Descriptors: 69
+ Goroutines: 182
+ System Time: 2017-02-02T19:35:33.882319271Z
+ EventsListeners: 0
+Username: arungupta
+Registry: https://index.docker.io/v1/
+Experimental: true
+Insecure Registries:
+ 127.0.0.0/8
+Live Restore Enabled: false
+```
+
+List of nodes in the cluster can be seen using `docker -H localhost:2374 node ls`:
+
+```
+ID                           HOSTNAME                                     STATUS  AVAILABILITY  MANAGER STATUS
+4gj5tt6f2rtv9bmmtegn3sw7l    ip-172-31-22-34.us-west-2.compute.internal   Ready   Active        
+jul7u4x2yue1pz46lxb62n3lt *  ip-172-31-45-44.us-west-2.compute.internal   Ready   Active        Leader
+trg4x49872k5w178q306pljhz    ip-172-31-36-119.us-west-2.compute.internal  Ready   Active        
+zyg7i7pki0jqdq9kjzp92vq0j    ip-172-31-7-184.us-west-2.compute.internal   Ready   Active        
+```
+
+=== Multi-container application to multi-host
+
+Use the Compose file as defined at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch06-swarm.adoc#multi-container-application[Multi-container Application] to deploy a multi-container application to this Docker cluster. This will deploy a multi-container application to multiple hosts. The command is:
+
+```
+docker -H localhost:2374 stack deploy --compose-file=docker-compose.yml webapp
+```
+
+The output is:
+
+```
+Creating network webapp_default
+Creating service webapp_db
+Creating service webapp_web
+```
+
+WildFly and Couchbase services are started on this cluster. Each service has a single container. A new overlay network is created. This allows multiple containers on different hosts to communicate with each other.
+
+=== Verify service/containers in application
+
+Verify that the WildFly and Couchbase services are running using `docker -H localhost:2374 service ls`:
+
+```
+ID            NAME        MODE        REPLICAS  IMAGE
+bfi9s7t5sdjo  webapp_db   replicated  1/1       arungupta/couchbase:travel
+ij04s9di00xw  webapp_web  replicated  1/1       arungupta/couchbase-javaee:travel
+```
+
+`REPLICAS` colum shows that one of one replica for the container is running for each service. It might take a few minutes for the service to be running as the image needs to be downloaded on the host where the container is started.
+
+More details about the service can be obtained using `docker -H localhost:2374 service inspect webapp_web`:
+
+```
+[
+    {
+        "ID": "ssf0kj0hagl7c1tcpw8bbsiue",
+        "Version": {
+            "Index": 29
+        },
+        "CreatedAt": "2017-02-02T22:38:20.424806786Z",
+        "UpdatedAt": "2017-02-02T22:38:20.428265482Z",
+        "Spec": {
+            "Name": "webapp_web",
+            "Labels": {
+                "com.docker.stack.namespace": "webapp"
+            },
+            "TaskTemplate": {
+                "ContainerSpec": {
+                    "Image": "arungupta/couchbase-javaee:travel@sha256:e48e05c0327e30e1d11f226b7b68e403e6c9c8d977bf09cb23188c6fff46bf39",
+                    "Labels": {
+                        "com.docker.stack.namespace": "webapp"
+                    },
+                    "Env": [
+                        "COUCHBASE_URI=db"
+                    ]
+                },
+                "Resources": {},
+                "Placement": {},
+                "ForceUpdate": 0
+            },
+            "Mode": {
+                "Replicated": {
+                    "Replicas": 1
+                }
+            },
+            "Networks": [
+                {
+                    "Target": "poh9n7fbrl3mlue6lkl6qwbst",
+                    "Aliases": [
+                        "web"
+                    ]
+                }
+            ],
+            "EndpointSpec": {
+                "Mode": "vip",
+                "Ports": [
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 8080,
+                        "PublishedPort": 8080,
+                        "PublishMode": "ingress"
+                    },
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 9990,
+                        "PublishedPort": 9990,
+                        "PublishMode": "ingress"
+                    }
+                ]
+            }
+        },
+        "Endpoint": {
+            "Spec": {
+                "Mode": "vip",
+                "Ports": [
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 8080,
+                        "PublishedPort": 8080,
+                        "PublishMode": "ingress"
+                    },
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 9990,
+                        "PublishedPort": 9990,
+                        "PublishMode": "ingress"
+                    }
+                ]
+            },
+            "Ports": [
+                {
+                    "Protocol": "tcp",
+                    "TargetPort": 8080,
+                    "PublishedPort": 8080,
+                    "PublishMode": "ingress"
+                },
+                {
+                    "Protocol": "tcp",
+                    "TargetPort": 9990,
+                    "PublishedPort": 9990,
+                    "PublishMode": "ingress"
+                }
+            ],
+            "VirtualIPs": [
+                {
+                    "NetworkID": "vsr5otzk5gwz7afwafjmiiv40",
+                    "Addr": "10.255.0.7/16"
+                },
+                {
+                    "NetworkID": "poh9n7fbrl3mlue6lkl6qwbst",
+                    "Addr": "10.0.0.2/24"
+                }
+            ]
+        },
+        "UpdateStatus": {
+            "StartedAt": "0001-01-01T00:00:00Z",
+            "CompletedAt": "0001-01-01T00:00:00Z"
+        }
+    }
+]
+```
+
+Logs for the service cannot be seen using `docker service logs`. This will be fixed with https://github.com/docker/docker/issues/30691[#30691]. Instead they are visible using https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logs:prefix=Docker[CloudWatch Logs].
+
+.CloudWatch log group
+image::docker-aws-10.png[]
+
+Select the log group:
+
+.CloudWatch log stream
+image::docker-aws-11.png[]
+
+Pick `webapp_db.xxx` log stream to see log statements from the Couchbase image:
+
+.CloudWatch database log stream
+image::docker-aws-12.png[]
+
+Pick `webapp_db.xxx` log stream to see log statements from the WildFly application server:
+
+.CloudWatch application log stream
+image::docker-aws-13.png[]
+
+=== Access application
+
+Application is accessed using manager's IP address and on port 8080. By default, the port 8080 is not open. In <<Swarm_manager>>, click on `Docker-Managerxxx` in `Security groups`. Click on `Inbound`, `Edit`, `Add Rule`, and create a rule to enable TCP traffic on port 8080.
+
+.Open port 8080 in Docker manager
+image::docker-aws-14.png[]
+
+Click on `Save` to save the rules.
+
+Now, the application is accessible using the command `curl -v http://ec2-52-37-65-169.us-west-2.compute.amazonaws.com:8080/airlines/resources/airline` and shows output:
+
+```
+*   Trying 52.37.65.169...
+* Connected to ec2-52-37-65-169.us-west-2.compute.amazonaws.com (52.37.65.169) port 8080 (#0)
+> GET /airlines/resources/airline HTTP/1.1
+> Host: ec2-52-37-65-169.us-west-2.compute.amazonaws.com:8080
+> User-Agent: curl/7.43.0
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Connection: keep-alive
+< X-Powered-By: Undertow/1
+< Server: WildFly/10
+< Content-Type: application/octet-stream
+< Content-Length: 1402
+< Date: Thu, 02 Feb 2017 23:42:41 GMT
+< 
+* Connection #0 to host ec2-52-37-65-169.us-west-2.compute.amazonaws.com left intact
+[{"travel-sample":{"country":"United States","iata":"Q5","callsign":"MILE-AIR","name":"40-Mile Air","icao":"MLA","id":10,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"TQ","callsign":"TXW","name":"Texas Wings","icao":"TXW","id":10123,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"A1","callsign":"atifly","name":"Atifly","icao":"A1F","id":10226,"type":"airline"}}, {"travel-sample":{"country":"United Kingdom","iata":null,"callsign":null,"name":"Jc royal.britannica","icao":"JRB","id":10642,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"ZQ","callsign":"LOCAIR","name":"Locair","icao":"LOC","id":10748,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"K5","callsign":"SASQUATCH","name":"SeaPort Airlines","icao":"SQH","id":10765,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"KO","callsign":"ACE AIR","name":"Alaska Central Express","icao":"AER","id":109,"type":"airline"}}, {"travel-sample":{"country":"United Kingdom","iata":"5W","callsign":"FLYSTAR","name":"Astraeus","icao":"AEU","id":112,"type":"airline"}}, {"travel-sample":{"country":"France","iata":"UU","callsign":"REUNION","name":"Air Austral","icao":"REU","id":1191,"type":"airline"}}, {"travel-sample":{"country":"France","iata":"A5","callsign":"AIRLINAIR","name":"Airlinair","icao":"RLA","id":1203,"type":"airline"}}]
+```
+
+Complete set of commands are shown at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch05-compose.adoc#access-application. Make sure to replace `localhost` with public IP address of the manager.
+
+=== Shutdown application
+
+Shutdown the application using the command `docker -H localhost:2374 stack rm webapp`:
+
+```
+Removing service webapp_db
+Removing service webapp_web
+Removing network webapp_default
+```
+
+This stops the container in each service and removes the services. It also deletes any networks that were created as part of this application.
+
+=== Shutdown cluster
+
+Docker cluster can be shutdown by deleting the stack created by CloudFormataion:
+
+.Delete CloudFormation template
+image::docker-aws-15.png[]
+

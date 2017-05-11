@@ -1,24 +1,35 @@
 # Docker Swarm Tutorial
-Docker Engine 1.12 includes swarm mode for natively managing a cluster of Docker Engines called a swarm. You can use the Docker CLI to create a swarm, deploy application services to a swarm, and manage swarm behavior. This tutorial uses [Docker Machine](https://docs.docker.com/machine/) to create multiple nodes on your desktop. If you prefer you can create those nodes in your own cloud or on multiple machines.
+Docker includes swarm mode for natively managing a cluster of Docker Engines called a swarm. You can use the Docker CLI to create a swarm, deploy application services to a swarm, and manage swarm behavior. This tutorial uses [Docker Machine](https://docs.docker.com/machine/) to create multiple nodes on your desktop. If you prefer you can create those nodes in your own cloud or on multiple machines.
+
+>**Important Note**
+You don't need to use the Docker CLI to perform these operations. You can use `docker stack deploy --compose-file STACKNAME.yml STACKNAME` instead. For an introduction to this, check out the [Deploying an app to a Swarm](https://github.com/docker/labs/blob/master/beginner/chapters/votingapp.md). For an introduction to using a stack file in a compose file format to deploy an app for more information.
 
 ## Preparation
-You need to have Docker and Docker Machine installed on your machine. [Download Docker](https://docker.com/getdocker) and install it.
+You need to have Docker and Docker Machine installed on your system. [Download Docker](https://docker.com/getdocker) for your platform and install it.
+
+>**Tips:**
+>
+* If you are using Docker for Mac or Docker for Windows, you already have Docker Machine, as it is installed with those applications. See [Download Docker for Mac](https://docs.docker.com/docker-for-mac/#/download-docker-for-mac) and [Download Docker for Windows](https://docs.docker.com/docker-for-windows/#/download-docker-for-windows) for install options and details on what gets installed.
+>
+* If you are using Docker for Windows you will need to use the Hyper-V driver for Docker Machine. That will require a bit more set-up. See the [Microsoft Hyper-V driver documentation](https://docs.docker.com/machine/drivers/hyper-v/) for directions on setting it up.
+>
+* If you are using Docker directly on a Linux system, you will need to [install Docker Machine](https://docs.docker.com/machine/install-machine/) (after installing [Docker Engine](https://docs.docker.com/engine/installation/linux/)).
 
 ## Creating the nodes and Swarm
 [Docker Machine](https://docs.docker.com/machine/overview/) can be used to:
 * Install and run Docker on Mac or Windows
 * Provision and manage multiple remote Docker hosts
-* Provision Swarm clusters 
+* Provision Swarm clusters
 
-But it can also be used to create multiple nodes on your local machine. There's a [bash script](https://github.com/ManoMarks/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-vbox-setup.sh) in this repository that does just that and creates a swarm. Let's walk through the different steps of this script.
+But it can also be used to create multiple nodes on your local machine. There's a [bash script](https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-vbox-setup.sh) in this repository that does just that and creates a swarm. There's also [a powershell Hyper-V version](https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-hyperv-setup.ps1). On this page we're walking through the bash script, but the steps, aside from set-up, are a basically the same for the Hyper-V version.
 
-This first step creates three machines, and names the machines manager1, manager2, and manager3 
+This first step creates three machines, and names the machines manager1, manager2, and manager3
 ```
 #!/bin/bash
 
 # Swarm mode using Docker Machine
 
-#This configures the number of workers and managers in the swarm 
+#This configures the number of workers and managers in the swarm
 managers=3
 workers=3
 
@@ -28,6 +39,17 @@ for node in $(seq 1 $managers);
 do
 	echo "======> Creating manager$node machine ...";
 	docker-machine create -d virtualbox manager$node;
+done
+```
+
+This second step creates three more machines, and names them worker1, worker2, and worker3
+```
+# This create worker machines
+echo "======> Creating $workers worker machines ...";
+for node in $(seq 1 $workers);
+do
+	echo "======> Creating worker$node machine ...";
+	docker-machine create -d virtualbox worker$node;
 done
 
 # This lists all machines created
@@ -94,13 +116,13 @@ bxn1iivy8w7faeugpep76w50j    worker3   Ready   Active
 You can also find all your machines by running
 ```
 $ docker-machine ls
-NAME       ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER    ERRORS
-manager1   -        virtualbox   Running   tcp://192.168.99.100:2376           v1.12.1   
-manager2   -        virtualbox   Running   tcp://192.168.99.101:2376           v1.12.1   
-manager3   -        virtualbox   Running   tcp://192.168.99.102:2376           v1.12.1   
-worker1    -        virtualbox   Running   tcp://192.168.99.103:2376           v1.12.1   
-worker2    -        virtualbox   Running   tcp://192.168.99.104:2376           v1.12.1   
-worker3    -        virtualbox   Running   tcp://192.168.99.105:2376           v1.12.1   
+NAME       ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER      ERRORS
+manager1   -        virtualbox   Running   tcp://192.168.99.100:2376           v17.03.0-ce   
+manager2   -        virtualbox   Running   tcp://192.168.99.101:2376           v17.03.0-ce 
+manager3   -        virtualbox   Running   tcp://192.168.99.102:2376           v17.03.0-ce
+worker1    -        virtualbox   Running   tcp://192.168.99.103:2376           v17.03.0-ce
+worker2    -        virtualbox   Running   tcp://192.168.99.104:2376           v17.03.0-ce
+worker3    -        virtualbox   Running   tcp://192.168.99.105:2376           v17.03.0-ce
 ```
 
 The next step is to create a service and list out the services. This creates a single service called `web` that runs the latest nginx:
@@ -260,7 +282,7 @@ ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
 7eljvvg0icxlw20od5f51oq8t    manager2  Ready   Active        Reachable
 8awcmkj3sd9nv1pi77i6mdb1i    worker1   Ready   Drain         
 avu80ol573rzepx8ov80ygzxz    worker2   Ready   Active        
-bxn1iivy8w7faeugpep76w50j    worker3   Ready   Active 
+bxn1iivy8w7faeugpep76w50j    worker3   Ready   Active
 ```
 
 You can also scale down the service
@@ -288,12 +310,12 @@ aivwszsjhhpky43t3x7o8ezz9  web.10      nginx:latest  worker2   Shutdown       Sh
 7zg9eki4610maigr1xwrx7zqk  web.14      nginx:latest  manager3  Shutdown       Shutdown 54 seconds ago  
 4z2c9j20gwsasosvj7mkzlyhc  web.15      nginx:latest  manager2  Shutdown       Shutdown 54 seconds ago  
 ```
-	
+
 Now bring `worker1` back online and show it's new availability
 ```
 $ docker-machine ssh manager1 "docker node update --availability active worker1"
 worker1
-Manos-MacBook-Pro:beginner-tutorial manomarks$ docker-machine ssh manager1 "docker node inspect worker1 --pretty"
+$ docker-machine ssh manager1 "docker node inspect worker1 --pretty"
 ID:			8awcmkj3sd9nv1pi77i6mdb1i
 Hostname:		worker1
 Joined at:		2016-08-23 22:30:15.556517377 +0000 utc
@@ -309,7 +331,7 @@ Resources:
 Plugins:
   Network:		bridge, host, null, overlay
   Volume:		local
-Engine Version:		1.12.1
+Engine Version:		17.03.0-ce
 Engine Labels:
  - provider = virtualbox
  ```
@@ -329,7 +351,7 @@ ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
 7eljvvg0icxlw20od5f51oq8t *  manager2  Ready   Active        Leader
 8awcmkj3sd9nv1pi77i6mdb1i    worker1   Ready   Active        
 avu80ol573rzepx8ov80ygzxz    worker2   Ready   Active        
-bxn1iivy8w7faeugpep76w50j    worker3   Ready   Active 
+bxn1iivy8w7faeugpep76w50j    worker3   Ready   Active
 ```
 You see that `manager1` is Down and Unreachable and `manager2` has been elected leader. It's also easy to remove a service:
 ```
@@ -337,11 +359,11 @@ $ docker-machine ssh manager2 "docker service rm web"
 web
 ```
 
-## Cleanup 
+## Cleanup
 There's also a [bash script](https://github.com/ManoMarks/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-vbox-teardown.sh) that will clean up your machine by removing all the Docker Machines.
 
 ```
-$ ./swarm-node-vbox-teardown.sh 
+$ ./swarm-node-vbox-teardown.sh
 Stopping "manager3"...
 Stopping "manager2"...
 Stopping "worker1"...
@@ -365,4 +387,5 @@ Successfully removed manager3
 ```  
 
 ## Next steps
-Next, check out the documentation on [Docker Swarm Mode](https://docs.docker.com/engine/swarm/) for more information.
+We have a similar tutorial using Docker Machine to do [Service deployment on a swarm in the Cloud](../cloud-quick-start/README.md).
+Also check out the documentation on [Docker Swarm Mode](https://docs.docker.com/engine/swarm/) for more information.

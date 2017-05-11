@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:iis="http://schemas.microsoft.com/wix/IIsExtension"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Product Id="{A9479B57-BAE3-4028-B2F8-4DD6660FEA3E}"
+    Name="Upgrade Sample"
+    Language="1033"
+    Version="1.1.0.0"
+    Manufacturer="Docker Samples"
+    UpgradeCode="{0712A918-F025-4088-9F53-997212F679A1}">
+
+    <Package InstallerVersion="200" Compressed="yes" />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION"/>
+    <Property Id="ALLUSERS" Value="1"/>
+    <Property Id="RELEASENAME" Value="2017.02"/>
+
+    <Media Id="1" Cabinet="UpgradeSample.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="DockerSamplesFolder" Name="DockerSamples">
+          <Directory Id="INSTALLLOCATION" Name="UpgradeSample">
+            <Directory Id="WebDir" Name="Web">
+              <Component Id="Web.Dir" Guid="{EBB836AB-A0C3-4D5D-B2CB-867E12FFCFA1}">
+                <File Id="DefaultAspx"
+                Name="Default.aspx"
+                Source="C:\temp\upgradesample\Default.aspx"/>
+                <File Id="GlobalAsax"
+               Name="Global.asax"
+               Source="C:\temp\upgradesample\Global.asax"/>
+                <File Id="WebConfig"
+               Name="Web.config"
+               Source="C:\temp\upgradesample\Web.config"/>
+              </Component>
+              <Directory Id="WebBinDir" Name="bin">
+                <Component Id="Web.BinDir" Guid="{42EB7B74-3653-4399-8092-77637067E9DB}">
+                  <File Id="UpgradeSampleWebDll"
+                                 Name="UpgradeSample.Web.dll"
+                                 Source="C:\temp\upgradesample\bin\UpgradeSample.Web.dll"/>
+                </Component>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+
+      <!-- Website -->
+      <Component Id="Web.Site" Guid="{CCB38070-C8BC-4C79-A2F1-257718150C79}">
+        <iis:WebVirtualDir Id="WebVirtualDir"
+                   Alias="UpgradeSample"
+                   Directory="WebDir" WebSite="DefaultWebSite">
+          <iis:WebApplication Id="WebApplication" Name="UpgradeSample" />
+        </iis:WebVirtualDir>
+      </Component>
+
+      <!-- Config update -->
+      <Component Id='Web.ConfigUpdate' Guid='{508AB901-28F8-44FB-80D0-8C189D2B194F}'>
+        <util:XmlFile Id='SetReleaseName'
+                      Action='setValue'
+                      ElementPath="/configuration/appSettings/add[\[]@key='ReleaseName'[\]]/@value"
+                      File='[WebDir]Web.Config'
+                      Value='[RELEASENAME]' />
+      </Component>
+
+    </Directory>
+    
+    <iis:WebSite Id="DefaultWebSite" Description="Default Web Site">
+      <iis:WebAddress Id="AllUnassigned" Port="80" />
+    </iis:WebSite>
+
+    <Feature Id="ProductFeature" Title="UpgradeSample" Level="1">
+      <ComponentRef Id="Web.Dir"/>
+      <ComponentRef Id="Web.BinDir"/>
+      <ComponentRef Id="Web.Site"/>
+      <ComponentRef Id="Web.ConfigUpdate"/>
+    </Feature>
+
+    <UIRef Id="WixUI_UpgradeSample" />
+
+  </Product>
+
+  <Fragment>
+    <UI Id="WixUI_UpgradeSample">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Property Id="WixUI_Mode" Value="Mondo" />
+
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+
+      <DialogRef Id="BrowseDlg" />
+
+      <Publish Dialog="BrowseDlg" Control="OK" Event="DoAction" Value="WixUIValidatePath" Order="3">1</Publish>
+      <Publish Dialog="BrowseDlg" Control="OK" Event="SpawnDialog" Value="InvalidDirDlg" Order="4"><![CDATA[WIXUI_INSTALLDIR_VALID<>"1"]]></Publish>
+
+
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg">1</Publish>
+
+      <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="SetTargetPath" Value="[WIXUI_INSTALLDIR]" Order="1">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="DoAction" Value="WixUIValidatePath" Order="2">NOT WIXUI_DONTVALIDATEPATH</Publish>
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="SpawnDialog" Value="InvalidDirDlg" Order="3"><![CDATA[NOT WIXUI_DONTVALIDATEPATH AND WIXUI_INSTALLDIR_VALID<>"1"]]></Publish>
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="ReleaseDlg" Order="4">WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID="1"</Publish>
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Property="_BrowseProperty" Value="[WIXUI_INSTALLDIR]" Order="1">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Event="SpawnDialog" Value="BrowseDlg" Order="2">1</Publish>
+
+      <Publish Dialog="ReleaseDlg" Control="Back" Event="NewDialog" Value="InstallDirDlg">1</Publish>
+      <Publish Dialog="ReleaseDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="1">1</Publish>
+
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="InstallDirDlg">1</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="2">WixUI_InstallMode = "Repair" OR WixUI_InstallMode = "Remove"</Publish>
+
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>
+    </UI>
+
+    <UIRef Id="WixUI_Common" />
+
+    <UI>
+      <Dialog Id="ReleaseDlg" Width="370" Height="270" Title="!(loc.InstallDirDlg_Title)">
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="Set release details" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Release Details" />
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.InstallDirDlgBannerBitmap)" />
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+
+        <Control Id="ReleaseLabel" Type="Text" X="20" Y="70" Width="60" Height="13" Text="Release Name:" />
+        <Control Id="Release" Type="Edit" X="100" Y="68" Width="150" Height="15" Property="RELEASENAME" />
+      </Dialog>
+    </UI>
+  </Fragment>
+
+</Wix>
+
+
+
