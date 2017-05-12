@@ -22,7 +22,7 @@ When you encounter a phrase in between `<` and `>`  you are meant to substitute 
 
 For instance if you see `ssh <username>@<hostname>` you would actually type something like `ssh ubuntu@node0-a.ivaf2i2atqouppoxund0tvddsa.jx.internal.cloudapp.net`
 
-You will be asked to SSH into various nodes. These nodes are referred to as **node0-a**, **node1-b**, **node2-c**, etc. These tags correspond to the very beginning of the hostnames found on the hands on labs welcome card you were given. 
+You will be asked to SSH into various nodes. These nodes are referred to as **node0-a**, **node1-b**, **node2-c**, etc.
 
 ## <a name="prerequisites"></a>Prerequisites
 
@@ -830,4 +830,4 @@ Lets also run `docker swarm leave --force` on **node1-b**.
 $ docker swarm leave --force
 ```
 
-Congratulations! You've completed this lab. Feel free to try any of the other labs.
+Congratulations! You've completed this lab!

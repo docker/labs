@@ -23,7 +23,7 @@ When you encounter a phrase in between `<` and `>`  you are meant to substitute 
 
 For instance if you see `ssh <username>@<hostname>` you would actually type something like `ssh ubuntu@node0-a.ivaf2i2atqouppoxund0tvddsa.jx.internal.cloudapp.net`
 
-You will be asked to SSH into various nodes. These nodes are referred to as **node0-a**, **node1-b**, **node2-c**, etc. These tags correspond to the very beginning of the hostnames found on the hands on labs welcome card you were given. 
+You will be asked to SSH into various nodes. These nodes are referred to as **node0-a**, **node1-b**, **node2-c**, etc. 
 
 ## <a name="prerequisites"></a>Prerequisites
 
@@ -230,7 +230,7 @@ You will perform the following procedure from **node0-a**.
 
 Our `sleep` application is becoming very popular on the internet (due to hitting Reddit and HN). People just love it. So, you are going to have to scale your application to meet peak demand. You will have to do this across multiple hosts for high availability too. We will use the concept of *Services* to scale our application easily and manage many containers as a single entity.
 
-> *Services* are a new concept in Docker 1.12. They work with swarms and are intended for long-running containers.
+> *Services* were a new concept in Docker 1.12. They work with swarms and are intended for long-running containers.
 
 You will perform this procedure from **node0-a**.
 
@@ -430,4 +430,4 @@ Finally, run `docker swarm leave --force` on **node2-c**.
 $ docker swarm leave --force
 ```
 
-Congratulations! You've completed this lab. You now know how to build a swarm, deploy applications as collections of services, and scale individual services up and down. Feel free to try any of the other labs.
+Congratulations! You've completed this lab. You now know how to build a swarm, deploy applications as collections of services, and scale individual services up and down.

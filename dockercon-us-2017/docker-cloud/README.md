@@ -7,7 +7,7 @@
 
 In this lab, you will learn how to configure a continuous integration (CI) pipeline for a web application using Docker Cloud's automated build features. You will complete the following tasks as part of the lab:
 
-> - [Task 0: Configure the prerequisites](#prerequisits)
+> - [Task 0: Configure the prerequisites](#prerequisites)
 > - [Task 1: Configure Docker Cloud to Automatically Build Docker Images](#deploy_app)
 >  - [Task 1.1: Configure Docker Cloud Autobuilds](#autobuild)
 >  - [Task 1.2: Trigger an Autobuild](#test_autobuild)
@@ -30,9 +30,9 @@ You may be asked to SSH into various nodes. These nodes are referred to as **nod
 In order to complete this lab, you will need the following:
 
 - A Docker ID
-- A management host (for this lab you'll use Linux **node0**)
+- A management host (for this lab you'll need a Linux named **node0**)
 - A GitHub account
-- Git installed (It hould already be installed in your Azure VM)
+- Git installed
 
 ### Obtain a Docker ID
 
@@ -88,7 +88,7 @@ Now that you've got Docker Cloud linked to your GitHub account, we'll start by f
 
 Next, we'll clone the repository into our local Docker environment. The following commands will be executed in the terminal or command window from Linux **node0**
 
-1. If you have not already log into your Azure VM. For example (be sure to use the actual node name supplied in your email):
+1. If you have not already, log into your Azure VM. For example:
 
 	```ssh ubuntu@node0-gvs0mgc0216.southcentralus.cloudapp.azure.com```
 

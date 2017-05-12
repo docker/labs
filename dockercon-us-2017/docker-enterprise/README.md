@@ -57,7 +57,7 @@ The following task will guide you through how to create a UCP cluster on your ho
 
 ### <a name="task1.1"></a>Task 1.1: Installing the UCP Manager
 
-1. Log in to `node0` of the three nodes you have been given for this lab.  The username for all of the Linux nodes is `ubuntu` and the node will have a unique password that should be in your email. You may be prompted whether you want to continue. Answer `yes` and then enter the password.
+1. Log in to `node0` of the three nodes you have been given for this lab. You may be prompted whether you want to continue. Answer `yes` and then enter the password.
 
 ```
 $ ssh ubuntu@node0-smwqii1akqh.southcentralus.cloudapp.azure.com

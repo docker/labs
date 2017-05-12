@@ -28,11 +28,11 @@ When you encounter a phrase in between `<` and `>`  you are meant to substitute 
 
 For instance if you see `$ip = <ip-address>` you would actually type something like `$ip = '10.0.0.4'`
 
-You will be asked to RDP into various servers. You will find the actual server names to use in your welcome email. 
+You will be asked to RDP into various servers. 
 
 ## <a name="prerequisites"></a>Prerequisites
 
-You will be provided a set of Windows Server 2016 virtual machines running in Azure, which are already configured with Docker and the Windows base images. You do not need Docker running on your laptop, but you will need a Remote Desktop client to connect to the VMs. 
+You will need a set of Windows Server 2016 virtual machines running in Azure, which are already configured with Docker and the Windows base images. You do not need Docker running on your laptop, but you will need a Remote Desktop client to connect to the VMs. 
 
 - Windows - use the built-in Remote Desktop Connection app.
 - Mac - install [Microsoft Remote Desktop](https://itunes.apple.com/us/app/microsoft-remote-desktop/id715768417?mt=12) from the app store.
