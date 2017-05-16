@@ -255,7 +255,7 @@ At this point it may not seem that we have done anything very differently than j
 
 Well done. You have deployed the sleep-app to your new Swarm using Docker services. 
 
-## Step 3.2 - Scale the app
+# <a name="scale-application"></a>Section 4: Scale the application
 
 Demand is crazy! Everybody loves your `sleep` app! It's time to scale out.
 
@@ -306,7 +306,7 @@ wol6bzq7xf0v  sleep-app.2  ubuntu:latest  node2-c  Running        Running 5 minu
 
 You have successfully scaled a swarm service up and down.
 
-## Step 3.3 - Bring a node down for maintenance.
+# <a name="recover-application"></a>Section 5: Drain a node and reschedule the containers
 
 Your sleep-app has been doing amazing after hitting Reddit and HN. It's now number 1 on the Apple Store! You have scaled up during the holidays and down during the slow season. Now you are doing maintenance on one of your servers so you will need to gracefully take a server out of the swarm without interrupting service to your customers.
 
