@@ -137,3 +137,7 @@ This lab is aimed at ops and system admins. It steps through packaging an ASP.NE
 > - Package an existing ASP.NET MSI so the app runs in Docker, without any application changes.
 > - Create an upgraded package with application updates and Windows patches.
 > - Update and rollback the running application in a production environment with zero downtime.
+
+## [DockerCon 2017 Austin Workshops](workshop-slides/README.md)
+
+At DockerCon 2017 in Austin, we had [10 workshops](https://2017.dockercon.com/workshops/), each lasting about 3 hours.
