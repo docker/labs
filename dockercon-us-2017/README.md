@@ -4,7 +4,9 @@
 
 This repo contains the series of hands-on labs presented at DockerCon 2017 in Austin. They are designed to help you gain experience in various Docker features, products, and solutions. Depending on your experience, each lab requires between 30-45 minutes to complete. They range in difficulty from easy to advanced.
 
-At the Hands-on Labs at DockerCon 2017 in Austin, we issued [Microsoft Azure](https://azure.microsoft.com/) credentials and hostnames. Many of these labs assumes you have Azure VMs and Docker Datacenter licenses. You can sign up for Azure resources through the Azure site. You can get a trial license for Docker Datacenter through [Docker Store](https://store.docker.com/search?offering=enterprise&type=edition).
+At the Hands-on Labs at DockerCon 2017 in Austin, we issued [Microsoft Azure](https://azure.microsoft.com/) credentials and hostnames. Many of these labs assumes you have Azure VMs and Docker Datacenter licenses. You can sign up for Azure resources through the Azure site. Each lab will identify prerequists at the begining of the lab. For Linux base nodes you 
+
+You can get a trial license for Docker Datacenter through [Docker Store](https://store.docker.com/search?offering=enterprise&type=edition).
 
 ---
 
@@ -135,3 +137,7 @@ This lab is aimed at ops and system admins. It steps through packaging an ASP.NE
 > - Package an existing ASP.NET MSI so the app runs in Docker, without any application changes.
 > - Create an upgraded package with application updates and Windows patches.
 > - Update and rollback the running application in a production environment with zero downtime.
+
+## [DockerCon 2017 Austin Workshops](workshop-slides/README.md)
+
+At DockerCon 2017 in Austin, we had [10 workshops](https://2017.dockercon.com/workshops/), each lasting about 3 hours.
