@@ -87,12 +87,12 @@ $ mkdir registry-data
 $  sudo docker run -d -p 5000:5000 \ 
 --name registry \
 -v `pwd`/registry-data:/var/lib/registry \ 
-registry
+registry:2
 ```
 Tag and push the container with the new IP address of the registry.
 ```
 docker tag hello-world localhost:5000/hello-world
-docker push localhost:5000/hellow-world
+docker push localhost:5000/hello-world
 ```
 Repeating the previous `docker push` command uploads an image to the registry container, and the layers will be stored in the container's `/var/lib/registry` directory, which is actually mapped to the `$(pwd)/registry-data` directory on you local machine. The `tree` command will show the directory structure the registry server uses:
 
