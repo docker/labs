@@ -8,9 +8,9 @@ In the following example, we will use a fictional app called **[Pets](https://gi
 
 It consists of `web`, a Python flask container, and `db`, a  redis container. Its architecture and required network policy is described below.
 
-<span class="float-right">
+
 ![Pets App Architecture and Network](./img/apptopology.png)
-</span>
+
 
 We will run this application on different network deployment models to show how we can instantiate connectivity and network policy. Each deployment model exhibits different characteristics that may be advantageous to your application and environment.
 
@@ -36,9 +36,9 @@ $ docker run -d --net catnet -p 8000:5000 -e 'DB=cat-db' -e 'ROLE=cat' chrch/web
 
 > When an IP address is not specified, port mapping will be exposed on all interfaces of a host. In this case the container's application is exposed on `0.0.0.0:8000`. We can specify a specific IP address to advertise on only a single IP interface with the flag `-p IP:host_port:container_port`. More options to expose ports can be found in the [Docker docs](https://docs.docker.com/engine/reference/run/#/expose-incoming-ports).
 
-<span class="float-right">
+
 ![Pet App using Bridge Driver](./img/singlehost-bridge.png)
-</span>
+
 
 The `web` container takes some environment variables to determine which backend it needs to connect to. Above we supply it with `cat-db` which is the name of our `redis` service. The Docker Engine's built-in DNS will resolve a container's name to its location in any user-defined network. Thus, on a network, a container or service can always be referenced by its name. 
 
