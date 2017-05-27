@@ -23,6 +23,9 @@ This repo contains [Docker](https://docker.com) labs and tutorials authored both
 * [Docker Tutorials from the Community](https://github.com/docker/community/tree/master/Docker-Meetup-Content) - links to a different repository
 * [Advanced Docker orchestration workshop](https://github.com/docker/labs/tree/master/Docker-Orchestration) - links to a different repository
 
+#### Awesome Docker
+* [awesome-docker](https://veggiemonk.github.io/awesome-docker/) - A curated list of Docker resources and projects
+
 #### RPi: Community Labs
 
 The following labs are primarily hosted on Github and [alexellis.io](http://alexellis.io) (via one of the Docker Captains)
@@ -59,4 +62,3 @@ For more information on Docker, see the Official [Docker documentation](https://
 We want to see this repo grow, so if you have a tutorial to submit, or contributions to existing tutorials, please see this guide:
 
 [Guide to submitting your own tutorial](contribute.md)
-
