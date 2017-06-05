@@ -20,7 +20,7 @@ You will need all of the following to complete this lab:
 - A Linux-based Docker Host running Docker 1.10 or higher
 - Root access on the Docker Host
 
-> **Note:** The instructions in this lab are tailored to a Docker Host running Ubuntu 15.10. An [open documented issue](https://github.com/docker/docker/issues/22633) exists with Ubuntu 16.04 Xenial .
+> **Note:** The instructions in this lab are tailored to a Docker Host running Ubuntu 15.10. An [open documented issue](https://github.com/moby/moby/issues/22633) exists with Ubuntu 16.04 Xenial .
 
 # <a name="defaults"></a>Step 1: Daemon and container defaults
 

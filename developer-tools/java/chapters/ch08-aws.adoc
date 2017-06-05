@@ -26,7 +26,7 @@ image::docker-aws-2.png[]
 
 Select the number of Swarm manager (1) and worker (3) nodes. This wll create a 4 node cluster. Select the SSH key that will be used to access the cluster.
 
-By default, the template is configured to redirect all log statements to CloudWatch. Until https://github.com/docker/docker/issues/30691[#30691] is fixed, the logs will only be available using CloudWatch. Alternatively, you may select to not redirect logs to CloudWatch. In this case, the usual command to get the logs will work.
+By default, the template is configured to redirect all log statements to CloudWatch. Until https://github.com/moby/moby/issues/30691[#30691] is fixed, the logs will only be available using CloudWatch. Alternatively, you may select to not redirect logs to CloudWatch. In this case, the usual command to get the logs will work.
 
 Scroll down to select manager and worker properties.
 
@@ -290,7 +290,7 @@ More details about the service can be obtained using `docker -H localhost:2374 s
 ]
 ```
 
-Logs for the service cannot be seen using `docker service logs`. This will be fixed with https://github.com/docker/docker/issues/30691[#30691]. Instead they are visible using https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logs:prefix=Docker[CloudWatch Logs].
+Logs for the service cannot be seen using `docker service logs`. This will be fixed with https://github.com/moby/moby/issues/30691[#30691]. Instead they are visible using https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logs:prefix=Docker[CloudWatch Logs].
 
 .CloudWatch log group
 image::docker-aws-10.png[]
