@@ -113,7 +113,7 @@ In this step you removed *capabilities* and *apparmor* from interfering, and sta
 
 # <a name="no-default"></a>Step 3: Run a container with no seccomp profile
 
-Unless you specify a different profile, Docker will apply the [default seccomp profile](https://github.com/docker/docker/blob/master/profiles/seccomp/default.json) to all new containers. In this step you will see how to force a new container to run without a seccomp profile.
+Unless you specify a different profile, Docker will apply the [default seccomp profile](https://github.com/moby/moby/blob/master/profiles/seccomp/default.json) to all new containers. In this step you will see how to force a new container to run without a seccomp profile.
 
 1. Start a new container with the `--security-opt seccomp=unconfined` flag so that no seccomp profile is applied to it.
 
@@ -328,7 +328,7 @@ The remainder of this lab will walk you through a few things that are easy to mi
 
 In versions of Docker prior to 1.12, seccomp polices tended to be applied very early in the container creation process. This resulted in you needing to add syscalls to your profile that were required for the container creation process but not required by your container. This was not ideal. See:
 
-- https://github.com/docker/docker/issues/22252
+- https://github.com/moby/moby/issues/22252
 - https://github.com/opencontainers/runc/pull/789
 
 A good way to avoid this issue in Docker 1.12+ can be to use the `--security-opt no-new-privileges` flag when starting your container. However, this will also prevent you from gaining privileges through `setuid` binaries.
@@ -362,7 +362,7 @@ Syscall numbers are architecture dependent. This limits the portability of BPF f
 
 * Using the `--privileged` flag when creating a container with `docker run` disables seccomp in all versions of docker - even if you explicitly specify a seccomp profile. In general you should avoid using the `--privileged` flag as it does too many things. You can achieve the same goal with `--cap-add ALL --security-opt apparmor=unconfined --security-opt seccomp=unconfined`. If you need access to devices use `--device`.
 
-* In docker 1.10-1.12 `docker exec --privileged` does not bypass seccomp. This may change in future versions https://github.com/docker/docker/issues/21984.
+* In docker 1.10-1.12 `docker exec --privileged` does not bypass seccomp. This may change in future versions https://github.com/moby/moby/issues/21984.
 
 * In docker 1.12 and later, adding a capability may enable some appropriate system calls in the default seccomp profile. However, it does not disable apparmor.
 
