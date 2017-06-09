@@ -257,6 +257,8 @@ b3b0e4> Hello World!
 
 This is similar output when running the Java application using `java` CLI or the Docker container using `docker run` command.
 
+The container is running in the foreground. Use `Ctrl` + `C` to interrupt the container and return back to terminal.
+
 Only one change was required in the project to enable Docker packaging and running. A Maven profile is added in `pom.xml`:
 
 [source, text]
