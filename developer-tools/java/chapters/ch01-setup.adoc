@@ -53,7 +53,7 @@ This allows to access Docker containers using `dockerhost`.
 
 This tutorial uses a few Docker images and software. Let's download them before we start the tutorial.
 
-Download the file from https://github.com/docker/labs/blob/master/developer-tools/java/scripts/docker-compose-pull-images.yml and give the command to pull all the images:
+Download the file from https://raw.githubusercontent.com/docker/labs/master/developer-tools/java/scripts/docker-compose-pull-images.yml and give the command to pull all the images:
 
 ```console
 docker-compose -f docker-compose-pull-images.yml pull --parallel
