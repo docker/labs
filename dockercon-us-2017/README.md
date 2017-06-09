@@ -105,7 +105,7 @@ Docker runs natively on Windows 10 and Windows Server 2016. In this lab you'll l
 
 ## [Modernize .NET Apps - for Devs](./windows-modernize-aspnet-dev)
 
-You can run full .NET Framework apps in Docker using the [Windows Server Core](https://hub.docker.com/r/microsoft/windowsservercore/) base image from Microsoft. That image is a headless version of Windows Server 2016, so it has no UI but it has all the other roles and features available. Building on top of that there are also Microsoft images for [IIS](https://hub.docker.com/r/microsoft/iis/) and [ASP.NET](https://hub.docker.com/r/microsoft/aspnet/), which are already configured to run ASP.NET and ASP.NET 3.5 apps in IIS.
+You can run full .NET Framework apps in Docker using the [Windows Server Core](https://store.docker.com/images/windowsservercore) base image from Microsoft. That image is a headless version of Windows Server 2016, so it has no UI but it has all the other roles and features available. Building on top of that there are also Microsoft images for [IIS](https://store.docker.com/images/iis) and [ASP.NET](https://store.docker.com/images/aspnet), which are already configured to run ASP.NET and ASP.NET 3.5 apps in IIS.
 
 This lab steps through porting an ASP.NET WebForms app to run in a Docker container on Windows Server 2016. With the app running in Docker, you can easily modernize it - and in the lab you'll add new features quickly and safely by making use of the Docker platform.
 

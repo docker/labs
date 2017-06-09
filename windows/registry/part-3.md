@@ -14,7 +14,7 @@ openssl req \
 
 [OpenSSL](https://www.openssl.org/) is a very popular TLS/SSL toolkit in Linux, but it's less common in Windows. There is a Windows build hosted at [indy.fulgan.com](https://indy.fulgan.com/SSL/), but rather than install it onto our Windows host to run a one-off command, we can use a Docker image with OpenSSL installed.
 
-The [sixeyed/openssl](https://hub.docker.com/r/sixeyed/openssl/) image on Docker Hub is built from this [Dockerfile](https://github.com/sixeyed/dockers-windows/blob/master/openssl/Dockerfile), which just installs and configures OpenSSL on top of the Windows Nano Server base image.
+The [sixeyed/openssl](https://store.docker.com/community/images/sixeyed/openssl) image on Docker Store is built from this [Dockerfile](https://github.com/sixeyed/dockers-windows/blob/master/openssl/Dockerfile), which just installs and configures OpenSSL on top of the Windows Nano Server base image.
 
 We can use it to generate the SSL certificate for the registry with Docker:
 
@@ -145,7 +145,7 @@ Digest: sha256:961497c5ca49dc217a6275d4d64b5e4681dd3b2712d94974b8ce4762675720b4
 Status: Downloaded newer image for registry.local:5000/labs/hello-world:latest
 ```
 
-In this case, the client machine already had one of the Windows Nano Server base layers (`5496a`), but it pulled an update layer from Docker Hub (`94b4c`), and it pulled the custom layer for my image from my own registry (`06162`).
+In this case, the client machine already had one of the Windows Nano Server base layers (`5496a`), but it pulled an update layer from Docker Store (`94b4c`), and it pulled the custom layer for my image from my own registry (`06162`).
 
 We can go one step further with the open-source registry server, and add basic authentication - so we can require users to securely log in to push and pull images.
 

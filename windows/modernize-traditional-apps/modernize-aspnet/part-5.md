@@ -51,7 +51,7 @@ FROM microsoft/iis:windowsservercore-10.0.14393.693
 COPY index.html c:/inetpub/wwwroot/index.html
 ```
 
-The image uses the [microsoft/iis](https://hub.docker.com/r/microsoft/iis/) base image, which is itself based on Windows Server Core, with IIS installed and using the same ServiceMonitor tool. The only other instruction is to copy in the `index.html` file to a known location on the image, which is the content root for the default website in IIS.
+The image uses the [microsoft/iis](https://store.docker.com/images/iis) base image, which is itself based on Windows Server Core, with IIS installed and using the same ServiceMonitor tool. The only other instruction is to copy in the `index.html` file to a known location on the image, which is the content root for the default website in IIS.
 
 > The integration between the web app and the new homepage component is simplified in this example. Dependencies for the new content (stylesheets, scripts and images) would need to be publicly accessible. A better approach would be to use a reverse proxy as the entrypoint to the app, and define the routings in the proxy.
 
@@ -128,7 +128,7 @@ In this lab you started with a monolothic ASP.NET WebForms app, and modernized i
 - packaging a build agent as a Docker image, to build the app consistently on a laptop or a CI server without needing Visual Studio;
 - packaging the WebForms app as a Docker image, so it runs in the same way on any Windows machine running Docker;
 - extracting key features from the monolith into small services, encapsulated in separate Docker images;
-- integrating enterprise-grade third party software from Docker Hub into the solution;
+- integrating enterprise-grade third party software from Docker Store into the solution;
 - capturing the full solution configuration in a runnable format using Docker Compose.
 
 Taking a feature-driven approach to modernization gives you fast and quantifiable return on investment when you move your application to Docker. In the lab you took steps towards an event-driven architecture, and made use of a microservice approach to the UI, without an extensive re-write of the application. You've seen that the Docker platform enables app modernization, with a focus on business value and without a full re-architecture of the application.
@@ -138,4 +138,4 @@ Taking a feature-driven approach to modernization gives you fast and quantifiabl
 
 Moving your own .NET application to Docker is easy. You don't need to follow the full approach of this lab - if you already have a CI build for your app, you can package the current output into a Docker image, without needing to write a build agent. If you don't have a CI process, but you have the app running in a VM, you can use the [Image2Docker](https://blog.docker.com/2016/12/convert-asp-net-web-servers-docker-image2docker/) tool to extract a Dockerfile from the VM's disk for an ASP.NET app.
 
-The Windows Server Core image is based on the full Windows Server 2016, and it should suitable for running any Windows app in Docker - provided the app and its dependencies can be installed and run without a Windows UI. ASP.NET 2.0 WebForms apps run fine in Docker, and you can use the [microsoft/aspnet:3.5](https://hub.docker.com/r/microsoft/aspnet/) image as the base if you need the 3.5 framework. Java, Go, NodeJS and PHP apps all run in Docker, so the platform has the power to host your whole application stack, and underpin your modernization roadmap.
+The Windows Server Core image is based on the full Windows Server 2016, and it should suitable for running any Windows app in Docker - provided the app and its dependencies can be installed and run without a Windows UI. ASP.NET 2.0 WebForms apps run fine in Docker, and you can use the [microsoft/aspnet:3.5](https://store.docker.com/images/aspnet) image as the base if you need the 3.5 framework. Java, Go, NodeJS and PHP apps all run in Docker, so the platform has the power to host your whole application stack, and underpin your modernization roadmap.

@@ -38,7 +38,7 @@ var eventMessage = new ProspectSignedUpEvent
 MessageQueue.Publish(eventMessage);
 ```
 
-The `ProspectSignedUpEvent` object contains the original `Prospect` object, populated from the webform input. The `MessageQueue` class is just a wrapper to abstract the type of message queue. In this lab you'll be using [NATS](https://nats.io), a high-performance, low-latency, cross-platform and open-source message server. NATS is available as an [official image](https://hub.docker.com/_/nats/) on Docker Hub, which means it's a curated image that you can rely on for quality. Publishing a Message to NATS means multiple subscribers can listen for the event, and you start to bring [event-driven architecture](https://msdn.microsoft.com/en-us/library/dd129913.aspx) into the application - just for the one feature that needs it, without a full rewrite.
+The `ProspectSignedUpEvent` object contains the original `Prospect` object, populated from the webform input. The `MessageQueue` class is just a wrapper to abstract the type of message queue. In this lab you'll be using [NATS](https://nats.io), a high-performance, low-latency, cross-platform and open-source message server. NATS is available as an [official image](https://store.docker.com/images/nats) on Docker Store, which means it's a curated image that you can rely on for quality. Publishing a Message to NATS means multiple subscribers can listen for the event, and you start to bring [event-driven architecture](https://msdn.microsoft.com/en-us/library/dd129913.aspx) into the application - just for the one feature that needs it, without a full rewrite.
 
 ## Changing App Configuration to use Environment Variables
 
@@ -176,7 +176,7 @@ Country_CountryCode : USA
 
 ## Part 4 - Recap
 
-Moving the web app to Docker gives you a modern, scalable and easily pluggable platform to modernize it. Containers running in the same Docker network can communicate with very little overhead, and with [Docker Hub](https://hub.docker.com) and [Docker Store](https://store.docker.com) there are thousands of ready-built, enterprise-grade, open-source applications which you can drop straight into your solution.
+Moving the web app to Docker gives you a modern, scalable and easily pluggable platform to modernize it. Containers running in the same Docker network can communicate with very little overhead, and with [Docker Store](https://store.docker.com) there are thousands of ready-built, enterprise-grade, open-source applications which you can drop straight into your solution.
 
 You made one of the app features asynchronous by pulling the functionality out of the website, and into a message handler, using the NATS message queue to plumb them together. [NATS](http://nats.io) is a very performant, high-quality messaging system which is perfect for microservice or event-driven architectures, and it can be added to a Dockerized solution with very little effort. Without Docker you would need to commission servers for the message queue and ensure it ran with the same level of high-availability as the web application. With Docker you run the queue and the app on the same cluster, and the whole solution has the same level of HA.
 

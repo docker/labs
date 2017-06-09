@@ -1,6 +1,6 @@
 # Modernize .NET Apps - for Devs
 
-You can run full .NET Framework apps in Docker using the [Windows Server Core](https://hub.docker.com/r/microsoft/windowsservercore/) base image from Microsoft. That image is a headless version of Windows Server 2016, so it has no UI but it has all the other roles and features available. Building on top of that there are also Microsoft images for [IIS](https://hub.docker.com/r/microsoft/iis/) and [ASP.NET](https://hub.docker.com/r/microsoft/aspnet/), which are already configured to run ASP.NET and ASP.NET 3.5 apps in IIS.
+You can run full .NET Framework apps in Docker using the [Windows Server Core](https://store.docker.com/images/windowsservercore) base image from Microsoft. That image is a headless version of Windows Server 2016, so it has no UI but it has all the other roles and features available. Building on top of that there are also Microsoft images for [IIS](https://store.docker.com/images/iis) and [ASP.NET](https://store.docker.com/images/aspnet), which are already configured to run ASP.NET and ASP.NET 3.5 apps in IIS.
 
 This lab steps through porting an ASP.NET WebForms app to run in a Docker container on Windows Server 2016. With the app running in Docker, you can easily modernize it - and in the lab you'll add new features quickly and safely by making use of the Docker platform.
 
@@ -55,9 +55,9 @@ You need a set of Windows Server 2016 virtual machines running in Azure, which a
 
 > When you connect to the VM, if you are prompted to run Windows Update, you should cancel out. The labs have been tested with the existing VM state and any changes may cause problems.
 
-You will build images and push them to Docker Hub, so you can pull them on different Docker hosts. You will need a Docker ID.
+You will build images and push them to Docker Cloud, so you can pull them on different Docker hosts. You will need a Docker ID.
 
-- Sign up for a free Docker ID on [Docker Hub](https://hub.docker.com)
+- Sign up for a free Docker ID on [Docker Cloud](https://cloud.docker.com)
 
 ## Prerequisite Task: Prepare your lab environment
 
@@ -185,7 +185,7 @@ cd C:\scm\github\docker\dcus-hol-2017\windows-modernize-aspnet-dev\v1-src\docker
 docker build -t <DockerID>/modernize-aspnet-web:v1 .
 ```
 
-> Be sure to tag the image with your own Docker ID so you can push it to Docker Hub.
+> Be sure to tag the image with your own Docker ID so you can push it to Docker Cloud.
 
 ## <a name="task2.2"></a>Task 2.2: Connecting to SQL Server in a Docker container
 
@@ -207,7 +207,7 @@ When you run the web application, the DNS server in the Docker platform will res
 
 ## <a name="task2.3"></a>Task 2.3: Running the database and web app in containers
 
-Microsoft provide a SQL Server Express image on Docker Hub, which is already pulled on your lab VM. Run it in a container with this command to set up the expected credentials and DNS name:
+Microsoft provide a SQL Server Express image on Docker Store, which is already pulled on your lab VM. Run it in a container with this command to set up the expected credentials and DNS name:
 
 ```
 docker run --detach `
@@ -270,7 +270,7 @@ MessageQueue.Publish(eventMessage);
 
 The `ProspectSignedUpEvent` contains a `Prospect` object, populated from the webform input. The `MessageQueue` class is just a wrapper to abstract the type of message queue. In this lab you'll be using [NATS](https://nats.io), a high-performance, low-latency, cross-platform and open-source message server. 
 
-NATS is available as an [official image](https://hub.docker.com/_/nats/) on Docker Hub, which means it's a curated image that you can rely on for quality. Publishing a Message to NATS means multiple subscribers can listen for the event, and you start to bring [event-driven architecture](https://msdn.microsoft.com/en-us/library/dd129913.aspx) into the application - just for the one feature that needs it, without a full rewrite of the app.
+NATS is available as an [official image](https://store.docker.com/images/nats) on Docker Store, which means it's a curated image that you can rely on for quality. Publishing a Message to NATS means multiple subscribers can listen for the event, and you start to bring [event-driven architecture](https://msdn.microsoft.com/en-us/library/dd129913.aspx) into the application - just for the one feature that needs it, without a full rewrite of the app.
 
 There's another change to the web app to use environment variables for configuration settings, using the [Config](v2-src/ProductLaunch/ProductLaunch.Model/Config.cs) class rather than `web.config`. That means we can set the database connection string through the Docker platform and use the same image in every environment.
 

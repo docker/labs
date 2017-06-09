@@ -70,7 +70,7 @@ Using default tag: latest
 Error response from daemon: Get https://localhost:5000/v2/hello-world/manifests/latest: no basic auth credentials
 ```
 
-The result is the same for valid and invalid image names, so you can't even check a repository exists without authenticating. Logging in to the registry is the same `docker login` command you use for Docker Hub, specifying the registry hostname:
+The result is the same for valid and invalid image names, so you can't even check a repository exists without authenticating. Logging in to the registry is the same `docker login` command you use for Docker Store, specifying the registry hostname:
 
 ```
 $ sudo docker login registry.local:5000
@@ -95,7 +95,7 @@ Digest: sha256:961497c5ca49dc217a6275d4d64b5e4681dd3b2712d94974b8ce4762675720b4
 Status: Image is up to date for registry.local:5000/hello-world:latest
 ```
 
-> Note. The open-source registry does not support the same authorization model as Docker Hub or Docker Trusted Registry. Once you are logged in to the registry, you can push and pull from any repository, there is no restriction to limit specific users to specific repositories.
+> Note. The open-source registry does not support the same authorization model as Docker Store or Docker Trusted Registry. Once you are logged in to the registry, you can push and pull from any repository, there is no restriction to limit specific users to specific repositories.
 
 ## Using Docker Compose to Start the Registry
 Typing in all the options to start the registry can become tedious. An easier and simpler way is to use [Docker Compose](https://docs.docker.com/compose/). Here's an example of a `docker-compose.yml` file that will start the registry.
@@ -125,8 +125,8 @@ $ sudo docker-compose up
 
 ## Conclusion
 
-[Docker Registry](https://docs.docker.com/registry/) is a free, open-source application for storing and accessing Docker images. You can run the registry in a container on your own network, or in a virtual network in the cloud, to host private images with secure access. For Linux hosts, there is an [official registry image](https://hub.docker.com/_/registry/) on Docker Hub.
+[Docker Registry](https://docs.docker.com/registry/) is a free, open-source application for storing and accessing Docker images. You can run the registry in a container on your own network, or in a virtual network in the cloud, to host private images with secure access. For Linux hosts, there is an [official registry image](https://store.docker.com/images/registry) on Docker Store.
 
 We've covered all the options, from running an insecure registry, through adding SSL to encrypt traffic, and finally adding basic authentication to restrict access. By now you know how to set up a usable registry in your own environment, and you've also used some key Docker patterns - using containers as build agents and to run basic commands, without having to install software on your host machines. 
 
-There is still more you can do with Docker Registry - using a different [storage driver](https://docs.docker.com/registry/storage-drivers/) so the image data is saved to reliable share storage, and setting up your registry as a [caching proxy for Docker Hub](https://docs.docker.com/registry/recipes/mirror/) are good next steps.
+There is still more you can do with Docker Registry - using a different [storage driver](https://docs.docker.com/registry/storage-drivers/) so the image data is saved to reliable share storage, and setting up your registry as a [caching proxy for Docker Store](https://docs.docker.com/registry/recipes/mirror/) are good next steps.

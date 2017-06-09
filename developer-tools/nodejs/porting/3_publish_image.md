@@ -24,10 +24,10 @@ The following procedure describes how to create a repository on Docker Hub and p
 
 ## Create image
 
-* Image needs to be created using username of the Docker hub account 
+* Image needs to be created using username of the Docker Cloud account 
 ```docker build -t lucj/message-app .```
 
-## Push image to Docker Hub
+## Push image to Docker Cloud
 
 Before publishing an image, authentication must be performed with the following command:
 ```docker login```

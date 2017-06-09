@@ -23,7 +23,7 @@ FROM microsoft/windowsservercore:10.0.14393.693
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 ```
 
-In the `FROM` instruction you use the same version of the Windows Server Core base image that you used for the build agent. You could use [microsoft/iis](https://hub.docker.com/r/microsoft/iis/) instead, which builds on Server Core and adds IIS, or [microsoft/aspnet](https://hub.docker.com/r/microsoft/aspnet/) which builds on the IIS image and adds ASP.NET. Those images are also owned by Microsoft and follow the same release cadence as Windows Server Core, so when there's an OS update all those images have a new release. But it's easy to configure IIS and ASP.NET in the Dockerfile, so you can do it yourself and control what gets installed:
+In the `FROM` instruction you use the same version of the Windows Server Core base image that you used for the build agent. You could use [microsoft/iis](https://store.docker.com/images/iis) instead, which builds on Server Core and adds IIS, or [microsoft/aspnet](https://store.docker.com/images/aspnet) which builds on the IIS image and adds ASP.NET. Those images are also owned by Microsoft and follow the same release cadence as Windows Server Core, so when there's an OS update all those images have a new release. But it's easy to configure IIS and ASP.NET in the Dockerfile, so you can do it yourself and control what gets installed:
 
 ```
 RUN Add-WindowsFeature Web-server, NET-Framework-45-ASPNET, Web-Asp-Net45; `

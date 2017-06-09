@@ -104,7 +104,7 @@ http {
 }
 ```
 
-Let's build and publish the image of this load-balancer to Docker Hub:
+Let's build and publish the image of this load-balancer to Docker Cloud:
 
 ```
 # Create image

@@ -8,7 +8,7 @@ For this lab, the sample application uses [Entity Framework Code-First](https://
 
 ## Running App Dependencies
 
-Microsoft provide a SQL Server Express image for Windows on Docker Hub - [microsoft/mssql-server-windows-express](https://hub.docker.com/r/microsoft/mssql-server-windows-express/). [Express Edition](https://www.microsoft.com/en-us/sql-server/sql-server-editions-express) is suitable for non-production and small-scale production environments (the current limitation is 10GB of storage), and with Docker it's easy to run separate databases in SQL Server instances, as separate containers.
+Microsoft provide a SQL Server Express image for Windows on Docker Store - [microsoft/mssql-server-windows-express](https://store.docker.com/images/mssql-server-windows-express). [Express Edition](https://www.microsoft.com/en-us/sql-server/sql-server-editions-express) is suitable for non-production and small-scale production environments (the current limitation is 10GB of storage), and with Docker it's easy to run separate databases in SQL Server instances, as separate containers.
 
 To run SQL Server Express in Docker, you can start a container from Microsoft's image:
 
@@ -81,7 +81,7 @@ That means the app is working correctly and storing the data in SQL Server.
 
 ## Part 3 - Recap
 
-Now you've taken the .NET WebForms app and it's running in Docker. You have a version tag in the image name, and you could share the image on a public registry like [Docker Hub](https://hub.docker.com), or run your own [private registry in Docker](https://github.com/docker/labs/blob/master/windows/registry/README.md), or an enterprise-grade solution like [Docker Trusted Registry](https://docs.docker.com/datacenter/dtr/2.1/guides/). Anyone with access to the registry can pull the image and run the application, and it will behave in the exact same way.
+Now you've taken the .NET WebForms app and it's running in Docker. You have a version tag in the image name, and you could share the image on a public registry like [Docker Store](https://store.docker.com), or run your own [private registry in Docker](https://github.com/docker/labs/blob/master/windows/registry/README.md), or an enterprise-grade solution like [Docker Trusted Registry](https://docs.docker.com/datacenter/dtr/2.1/guides/). Anyone with access to the registry can pull the image and run the application, and it will behave in the exact same way.
 
 At this stage you need to communicate a dependency on SQL Server for the application, and it's still a manual step to start both the database and application containers. Later in the lab you'll see how to capture all the dependencies for a distributed solution, and automate the startup using [Docker Compose](https://docs.docker.com/compose/overview/).
 
