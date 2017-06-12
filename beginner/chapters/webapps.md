@@ -4,9 +4,9 @@ Great! So you have now looked at `docker run`, played with a Docker container an
 ### 2.1 Run a static website in a container
 >**Note:** Code for this section is in this repo in the [static-site directory](https://github.com/docker/labs/tree/master/beginner/static-site).
 
-Let's start by taking baby-steps. First, we'll use Docker to run a static website in a container. The website is based on an existing image. We'll pull a Docker image from Docker Hub, run the container, and see how easy it is to set up a web server.
+Let's start by taking baby-steps. First, we'll use Docker to run a static website in a container. The website is based on an existing image. We'll pull a Docker image from Docker Store, run the container, and see how easy it is to set up a web server.
 
-The image that you are going to use is a single-page website that was already created for this demo and is available on the Docker Hub as [`dockersamples/static-site`](https://hub.docker.com/r/dockersamples/static-site/). You can download and run the image directly in one go using `docker run` as follows.
+The image that you are going to use is a single-page website that was already created for this demo and is available on the Docker Store as [`dockersamples/static-site`](https://store.docker.com/community/images/dockersamples/static-site). You can download and run the image directly in one go using `docker run` as follows.
 
 ```
 $ docker run -d dockersamples/static-site
@@ -107,7 +107,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 ### 2.2 Docker Images
 
-In this section, let's dive deeper into what Docker images are. You will build your own image, use that image to run an application locally, and finally, push some of your own images to Docker Hub.
+In this section, let's dive deeper into what Docker images are. You will build your own image, use that image to run an application locally, and finally, push some of your own images to Docker Cloud.
 
 Docker images are the basis of containers. In the previous example, you **pulled** the *dockersamples/static-site* image from the registry and asked the Docker client to run a container **based** on that image. To see the list of images that are available locally on your system, run the `docker images` command.
 
@@ -144,7 +144,7 @@ So for example, the `docker pull` command given below will pull an image named `
 $ docker pull ubuntu
 ```
 
-To get a new Docker image you can either get it from a registry (such as the Docker Hub) or create your own. There are hundreds of thousands of images available on [Docker hub](https://hub.docker.com). You can also search for images directly from the command line using `docker search`.
+To get a new Docker image you can either get it from a registry (such as the Docker Store) or create your own. There are hundreds of thousands of images available on [Docker Store](https://store.docker.com). You can also search for images directly from the command line using `docker search`.
 
 An important distinction with regard to images is between _base images_ and _child images_.
 
@@ -156,7 +156,7 @@ Another key concept is the idea of _official images_ and _user images_. (Both of
 
 - **Official images** are Docker sanctioned images. Docker, Inc. sponsors a dedicated team that is responsible for reviewing and publishing all Official Repositories content. This team works in collaboration with upstream software maintainers, security experts, and the broader Docker community. These are not prefixed by an organization or user name. In the list of images above, the `python`, `node`, `alpine` and `nginx` images are official (base) images. To find out more about them, check out the [Official Images Documentation](https://docs.docker.com/docker-hub/official_repos/).
 
-- **User images** are images created and shared by users like you. They build on base images and add additional functionality. Typically these are formatted as `user/image-name`. The `user` value in the image name is your Docker Hub user or organization name.
+- **User images** are images created and shared by users like you. They build on base images and add additional functionality. Typically these are formatted as `user/image-name`. The `user` value in the image name is your Docker Store user or organization name.
 
 ### 2.3 Create your first image
 >**Note:** The code for this section is in this repository in the [flask-app](https://github.com/docker/labs/tree/master/beginner/flask-app) directory.
@@ -258,7 +258,7 @@ Create a directory called `templates` and create an **index.html** file in that 
 </html>
 ```
 ### 2.3.2 Write a Dockerfile
-We want to create a Docker image with this web app. As mentioned above, all user images are based on a _base image_. Since our application is written in Python, we will build our own Python image based on [Alpine](https://hub.docker.com/_/alpine/). We'll do that using a **Dockerfile**.
+We want to create a Docker image with this web app. As mentioned above, all user images are based on a _base image_. Since our application is written in Python, we will build our own Python image based on [Alpine](https://store.docker.com/images/alpine. We'll do that using a **Dockerfile**.
 
 A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file that contains a list of commands that the Docker daemon calls while creating an image. The Dockerfile contains all the information that Docker needs to know to run the app &#8212; a base Docker image to run from, location of your project code, any dependencies it has, and what commands to run at start-up. It is a simple way to automate the image creation process. The best part is that the [commands](https://docs.docker.com/engine/reference/builder/) you write in a Dockerfile are *almost* identical to their equivalent Linux commands. This means you don't really have to learn new syntax to create your own Dockerfiles.
 
@@ -335,7 +335,7 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
 
 Now that you have your `Dockerfile`, you can build your image. The `docker build` command does the heavy-lifting of creating a docker image from a `Dockerfile`.
 
-When you run the `docker build` command given below, make sure to replace `<YOUR_USERNAME>` with your username. This username should be the same one you created when registering on [Docker hub](https://hub.docker.com). If you haven't done that yet, please go ahead and create an account.
+When you run the `docker build` command given below, make sure to replace `<YOUR_USERNAME>` with your username. This username should be the same one you created when registering on [Docker Cloud](https://cloud.docker.com). If you haven't done that yet, please go ahead and create an account.
 
 The `docker build` command is quite simple - it takes an optional tag name with the `-t` flag, and the location of the directory containing the `Dockerfile` - the `.` indicates the current directory:
 
@@ -422,9 +422,9 @@ Head over to `http://localhost:8888` and your app should be live. **Note** If yo
 Hit the Refresh button in the web browser to see a few more cat images.
 
 ### 2.3.4 Push your image
-Now that you've created and tested your image, you can push it to [Docker Hub](https://hub.docker.com).
+Now that you've created and tested your image, you can push it to [Docker Cloud](https://cloud.docker.com).
 
-First you have to login to your Docker hub account, to do that:
+First you have to login to your Docker Cloud account, to do that:
 
 ```
 docker login
@@ -456,7 +456,7 @@ $ docker rm -f myfirstapp
 
 Here's a quick summary of the few basic commands we used in our Dockerfile.
 
-* `FROM` starts the Dockerfile. It is a requirement that the Dockerfile must start with the `FROM` command. Images are created in layers, which means you can use another image as the base image for your own. The `FROM` command defines your base layer. As arguments, it takes the name of the image. Optionally, you can add the Docker Hub username of the maintainer and image version, in the format `username/imagename:version`.
+* `FROM` starts the Dockerfile. It is a requirement that the Dockerfile must start with the `FROM` command. Images are created in layers, which means you can use another image as the base image for your own. The `FROM` command defines your base layer. As arguments, it takes the name of the image. Optionally, you can add the Docker Cloud username of the maintainer and image version, in the format `username/imagename:version`.
 
 * `RUN` is used to build up the Image you're creating. For each `RUN` command, Docker will run the command then create a new layer of the image. This way you can roll back your image to previous states easily. The syntax for a `RUN` instruction is to place the full text of the shell command after the `RUN` (e.g., `RUN mkdir /user/local/foo`). This will automatically run in a `/bin/sh` shell. You can define a different shell like this: `RUN /bin/bash -c 'mkdir /user/local/foo'`
 
@@ -475,7 +475,7 @@ Here's a quick summary of the few basic commands we used in our Dockerfile.
 >**Note:** The `EXPOSE` command does not actually make any ports accessible to the host! Instead, this requires 
 publishing ports by means of the `-p` flag when using `$ docker run`.  
 
-* `PUSH` pushes your image to Docker Hub, or alternately to a [private registry](https://docs.docker.com/registry/)
+* `PUSH` pushes your image to Docker Cloud, or alternately to a [private registry](https://docs.docker.com/registry/)
 
 >**Note:** If you want to learn more about Dockerfiles, check out [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/).
 

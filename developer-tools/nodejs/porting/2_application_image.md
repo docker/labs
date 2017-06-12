@@ -8,13 +8,13 @@
 
 * There are several possibilities to create the image
   * extend an official Linux distribution image (Ubuntu, CentOS, ...) and install Node.js runtime
-  * use the official Node.js image (https://hub.docker.com/_/node/)
+  * use the official Node.js image (https://store.docker.com/images/node)
 
 We'll go for the second option as it offers an optimized image.
 
 ## Database
 
-* Usage of the official [MongoDB image](https://hub.docker.com/_/mongo/)
+* Usage of the official [MongoDB image](https://store.docker.com/images/mongo)
 
 ## Dockerfile
 

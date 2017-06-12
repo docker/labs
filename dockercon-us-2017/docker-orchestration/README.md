@@ -249,7 +249,7 @@ ID            NAME       MODE        REPLICAS  IMAGE
 of5rxsxsmm3a  sleep-app  replicated  1/1       ubuntu:latest
 ```
 
-The state of the service may change a couple times until it is running. The image is being downloaded from Docker Hub to the other engines in the Swarm. Once the image is downloaded the container goes into a running state on one of the three nodes.
+The state of the service may change a couple times until it is running. The image is being downloaded from Docker Store to the other engines in the Swarm. Once the image is downloaded the container goes into a running state on one of the three nodes.
 
 At this point it may not seem that we have done anything very differently than just running a `docker run ...`. We have again deployed a single container on a single host. The difference here is that the container has been scheduled on a swarm cluster.
 

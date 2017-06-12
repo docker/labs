@@ -192,7 +192,7 @@ Several containers of the app service (our Node.js API) are running and are acce
 
 ## Usage of dockercloud/haproxy image
 
-[dockercloud/haproxy](https://hub.docker.com/r/dockercloud/haproxy/) is a good candidate to be used in front of our **app** service.
+[dockercloud/haproxy](https://store.docker.com/images/haproxy) is a good candidate to be used in front of our **app** service.
 It will update it's configuration each time a container is started / stopped.
 
 ![load balancer](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/single_host_net_2.png)

@@ -57,7 +57,7 @@ Community and vendor created IPAM drivers can also be used to provide integratio
 
 | Driver | Description   |
 |------|------|
-| [**infoblox**](https://hub.docker.com/r/infoblox/ipam-driver/) | An open source IPAM plugin that provides integration with existing Infoblox tools. |
+| [**infoblox**](https://store.docker.com/community/images/infoblox/ipam-driver) | An open source IPAM plugin that provides integration with existing Infoblox tools. |
 
 > There are many Docker plugins that exist and more are being created all the time. Docker maintains a list of the [most common plugins.](https://docs.docker.com/engine/extend/legacy_plugins/)
 

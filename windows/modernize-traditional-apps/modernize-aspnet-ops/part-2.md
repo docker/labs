@@ -2,7 +2,7 @@
 
 The Docker image from [Part 1](part-1.md) is a snapshot of the application, built with a specific version of the app and a specific version of Windows. When you have an upgrade to the app or an operating system update you don't make changes to the running container - you build a new Docker image which packages the updated components and replace the container with a new one. 
 
-Microsoft are releasing [monthly updates to the Windows base images](https://hub.docker.com/r/microsoft/windowsservercore/tags/) on Docker Hub. When your applications are running in Docker containers, there is no 'Patch Tuesday' with manual or semi-automated update processes. The Docker build process is fully automated, so when a new version of the base image is released with security patches, you just need to rebuild your own images and replace the running containers.
+Microsoft are releasing [monthly updates to the Windows base images](https://store.docker.com/images/windowsservercore/plans/1e9acba1-c879-49b0-9109-7cfcf820a47a?tab=tags) on Docker Store. When your applications are running in Docker containers, there is no 'Patch Tuesday' with manual or semi-automated update processes. The Docker build process is fully automated, so when a new version of the base image is released with security patches, you just need to rebuild your own images and replace the running containers.
 
 ## Dockerfile for the v1.1 Application Image
 

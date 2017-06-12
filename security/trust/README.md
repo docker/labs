@@ -30,7 +30,7 @@ The most common and basic way to pull Docker iamges is by `tag`. The is where yo
    $ sudo docker pull alpine:edge
    ```
 
-This command will pull the Alpine image tagged as `edge`. The corresponding image can be found [here on Docker Hub](https://hub.docker.com/r/_/alpine/).
+This command will pull the Alpine image tagged as `edge`. The corresponding image can be found [here on Docker Store](https://store.docker.com/images/alpine).
 
 If no tag is specified, Docker will pull the image with the `latest` tag.
 

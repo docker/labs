@@ -1,7 +1,7 @@
 
 # Packaging ASP.NET Apps as Docker Images
 
-A Docker image packages your application and all the dependencies it needs to run into one unit. Microsoft maintain the [microsoft/aspnet](https://hub.docker.com/r/microsoft/aspnet/) image on Docker Hub, which you can use as the basis for your own application images. It is based on [microsoft/windowsservercore](https://hub.docker.com/r/microsoft/windowsservercore/) and has IIS and ASP.NET already installed. 
+A Docker image packages your application and all the dependencies it needs to run into one unit. Microsoft maintain the [microsoft/aspnet](https://store.docker.com/images/aspnet) image on Docker Store, which you can use as the basis for your own application images. It is based on [microsoft/windowsservercore](https://store.docker.com/images/windowsservercore/) and has IIS and ASP.NET already installed. 
 
 In this lab I start with an MSI that deploys a web app onto a server and expects IIS and ASP.NET to be configured. If you already have a scripted build process then you may have MSIs or Web Deploy packages already being generated, and it's easy to package them into a Docker image.
 
@@ -34,7 +34,7 @@ cd .\v1.0
 docker build -t dockersamples/modernize-aspnet-ops:1.0 .
 ```
 
-The output from `docker build` shows you the Docker engine executing all the steps in the Dockerfile. If you don't have a copy of Microsoft's ASP.NET image locally, then Docker starts by downloading it from Docker Hub.
+The output from `docker build` shows you the Docker engine executing all the steps in the Dockerfile. If you don't have a copy of Microsoft's ASP.NET image locally, then Docker starts by downloading it from Docker Store.
 
 When the build completes you'll have a new image stored locally, with the name `dockersamples/modernize-aspnet-ops` and the tag `1.0` indicating that this is version 1.0 of the app.
 

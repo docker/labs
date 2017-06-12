@@ -5,7 +5,7 @@
 
 === Network Timed Out
 
-Depending upon the network speed and restrictions, you may not be able to download Docker images from Docker Hub. The error message may look like:
+Depending upon the network speed and restrictions, you may not be able to download Docker images from Docker Store. The error message may look like:
 
 ```console
 $ docker pull arungupta/wildfly-mysql-javaee7

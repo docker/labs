@@ -15,7 +15,7 @@ Docker runs natively on Windows 10 and Windows Server 2016. In this lab you'll l
 >   * [Task 1.3: Run a background IIS web server container](#task1.3)
 > * [Task 2: Package and run a custom app using Docker](#task2)
 >   * [Task 2.1: Build a custom website image](#task2.1)
->   * [Task 2.2: Push your image to Docker Hub](#task2.2)
+>   * [Task 2.2: Push your image to Docker Cloud](#task2.2)
 >   * [Task 2.3: Run your website in a container](#task2.3)
 > * [Task 3: Run your app in a highly-available cluster](#task3)
 >   * [Task 3.1: Create a Docker swarm with Windows Server nodes](#task3.1)
@@ -40,9 +40,9 @@ You will need a set of Windows Server 2016 virtual machines running in Azure, wh
 
 > When you connect to the VM, if you are prompted to run Windows Update, you should cancel out. The labs have been tested with the existing VM state and any changes may cause problems.
 
-You will build images and push them to Docker Hub, so you can pull them on different Docker hosts. You will need a Docker ID.
+You will build images and push them to Docker Cloud, so you can pull them on different Docker hosts. You will need a Docker ID.
 
-- Sign up for a free Docker ID on [Docker Hub](https://hub.docker.com)
+- Sign up for a free Docker ID on [Docker Cloud](https://cloud.docker.com)
 
 ## Prerequisite Task: Prepare your lab environment
 
@@ -89,7 +89,7 @@ docker run microsoft/nanoserver powershell Write-Output Hello DockerCon 2017!
 
 You'll see the output written from the PowerShell command. Here's what Docker did:
 
-- created a new container from the [microsoft/nanoserver](https://hub.docker.com/r/microsoft/nanoserver/) image, which has a basic Nano Server deployment, maintained by Microsoft
+- created a new container from the [microsoft/nanoserver](https://store.docker.com/images/nanoserver) image, which has a basic Nano Server deployment, maintained by Microsoft
 - started the container, running the `powershell` command and passing the `Write-Output...` arguments
 - relayed the console output from the container to the PowerShell window
 
@@ -106,7 +106,7 @@ Containers which do one task and then exit can be very useful. You could build a
 
 ## <a name="task1.2"></a>Task 1.2: Run an interactive Windows Server Core container
 
-Nano Server is a new operating system from Microsoft which supports a subset of the full Windows APIs. You can use it to package cross-platform applications like Java, Go, Node.js and .NET Core, but not full .NET Framework apps. For that there's the [microsoft/windowsservercore](https://hub.docker.com/r/microsoft/windowsservercore) image which is a full Windows Server 2016 OS, without the UI.
+Nano Server is a new operating system from Microsoft which supports a subset of the full Windows APIs. You can use it to package cross-platform applications like Java, Go, Node.js and .NET Core, but not full .NET Framework apps. For that there's the [microsoft/windowsservercore](https://store.docker.com/images/windowsservercore) image which is a full Windows Server 2016 OS, without the UI.
 
 You can explore an image by running an interactive container. Run this to start a Windows Server Core container and connect to it:
 
@@ -125,7 +125,7 @@ Run some commands to see how the Windows Server Core image is built:
 - `Get-Process` - shows all running processes in the container. There are a number of Windows Services, and the PowerShell exe
 - `Get-WindowsFeature` - shows the Windows feature which are available or already installed
 
-You'll see that the base image has .NET 4.6 installed, which is backwards-compatible so you can run .NET 2.0 apps. Almost all Windows Server features are available (.NET 3.5 is an exception, but the [microsoft/aspnet:3.5](https://hub.docker.com/r/microsoft/aspnet/) image comes with that installed). You can install them with the `Add-WindowsFeature` cmdlet, which is how you would start to build up a custom application image from the base image, adding in the features you need.
+You'll see that the base image has .NET 4.6 installed, which is backwards-compatible so you can run .NET 2.0 apps. Almost all Windows Server features are available (.NET 3.5 is an exception, but the [microsoft/aspnet:3.5](https://store.docker.com/images/aspnet/) image comes with that installed). You can install them with the `Add-WindowsFeature` cmdlet, which is how you would start to build up a custom application image from the base image, adding in the features you need.
 
 Interactive containers are useful when you are putting together your own image. You can run a container and verify all the steps you need to deploy your app. Once you have it working, you can [commit](https://docs.docker.com/engine/reference/commandline/commit/) a running container to an image - but it's much better to capture those steps in a repeatable [Dockerfile](https://docs.docker.com/engine/reference/builder/). You'll do that in a later task.
 
@@ -134,7 +134,7 @@ Now run `exit` to leave the PowerShell session. That stops the container process
 
 ## <a name="task1.3"></a>Run a background IIS web server container
 
-Background containers are how you'll run your application. Here's a simple exmaple using another image from Microsoft - [microsoft/iis](https://hub.docker.com/r/microsoft/iis/) which builds on top of the Windows Server Core image and installs the IIS Web Server feature:
+Background containers are how you'll run your application. Here's a simple exmaple using another image from Microsoft - [microsoft/iis](https://store.docker.com/images/iis) which builds on top of the Windows Server Core image and installs the IIS Web Server feature:
 
 ```
 docker run -d -p 80:80 --name iis microsoft/iis
@@ -164,7 +164,7 @@ It's important to realize that the container process - `w3wp.exe` in this case -
 
 Next you'll learn how to package your own Windows app as a Docker image, using a [Dockerfile](https://docs.docker.com/engine/reference/builder/). 
 
-The Dockerfile is a simple script which contains all the steps to deploy your application. You need to use an existing image as the starting point for your app, but you decide which one. You can use the base Windows Server or Nano Server image, or an [official image](https://docs.docker.com/docker-hub/official_repos/) with the app platform you need already installed - like [openjdk:windowsservercore](https://hub.docker.com/_/openjdk/) which is good for running Java apss in Windows Docker containers.
+The Dockerfile is a simple script which contains all the steps to deploy your application. You need to use an existing image as the starting point for your app, but you decide which one. You can use the base Windows Server or Nano Server image, or an [official image](https://docs.docker.com/docker-hub/official_repos/) with the app platform you need already installed - like [openjdk:windowsservercore](https://store.docker.com/images/openjdk) which is good for running Java apss in Windows Docker containers.
 
 The Dockerfile syntax is simple. In this task you'll walk through a Dockerfile for a custom website, and see how to package and run it with Docker.
 
@@ -192,7 +192,7 @@ docker build -t <DockerID>/dockercon-tweet-app .
 
 -`-t` tags the image, giving it a name you use to push the image or run containers
 
-> Be sure to use your Docker ID in the image tag. You will share it on Docker Hub in the next step, and you can only do that if you use your ID. My Docker ID is `sixeyed`, so I run `docker build -t sixeyed/dockercon-tweet-app` 
+> Be sure to use your Docker ID in the image tag. You will share it on Docker Cloud in the next step, and you can only do that if you use your ID. My Docker ID is `sixeyed`, so I run `docker build -t sixeyed/dockercon-tweet-app` 
 
 You'll see output on the screen as Docker runs each instruction in the Dockerfile, starting like this:
 
@@ -217,15 +217,15 @@ sixeyed/dockercon-tweet-app   latest              a14860778046        11 minutes
 
 Docker has built the image but it's only stored on the local machine. Next we'll push it to a public repository.
 
-## <a name="task2.2"></a>Task 2.2: Push your image to Docker Hub
+## <a name="task2.2"></a>Task 2.2: Push your image to Docker Cloud
 
 Distribution is built into the Docker platform. You can build images locally and push them to a [registry](https://docs.docker.com/registry/), making them available to other users. Anyone with access can pull that image and run a container from it. The behavior of the app in the container will be the same for everyone, because the image contains the fully-configured app - the only requirements to run it are Windows and Docker.
 
-[Docker Hub](https://hub.docker.com) is the public registry for Docker images. You can push your website image to the Hub, and later in the lab we'll pull it on other servers and run it on a cluster. To push images, you need to log in using the command line and providing your Docker ID credentials:
+You can push your website image to [Docker Cloud](https://cloud.docker.com), and later in the lab we'll pull it on other servers and run it on a cluster. When you push to Cloud, if you make it a public repository, it is also available to others on [Docker Store](https://store.docker.com), the public registry for Docker images. To push images, you need to log in using the command line and providing your Docker ID credentials:
 
 ```
 > docker login
-Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Login with your Docker ID to push and pull images from Docker Cloud. If you don't have a Docker ID, head over to https://cloud.docker.com to create one.
 Username: <DockerID>
 Password:
 Login Succeeded
@@ -237,9 +237,9 @@ Now upload your image to the Hub:
 docker push <DockerID>/dockercon-tweet-app
 ```
 
-You'll see the upload progress for each layer in the Docker image. The IIS layer is almost 300MB so that will take a few seconds. The whole image is over 10GB, but the bulk of that is in the Windows Server Core base image. Those layers are already stored in Docker Hub, so they don't get uploaded - only the new parts of the image get pushed.
+You'll see the upload progress for each layer in the Docker image. The IIS layer is almost 300MB so that will take a few seconds. The whole image is over 10GB, but the bulk of that is in the Windows Server Core base image. Those layers are already stored in Docker Cloud, so they don't get uploaded - only the new parts of the image get pushed.
 
-You can browse to [https://hub.docker.com/r/&lt;DockerID&gt;/dockercon-tweet-app/](https://hub.docker.com/r/<DockerID>/dockercon-tweet-app/) and see your newly-pushed app image. This is a public repository, so anyone can pull the image - you don't even need a Docker ID to pull public images.
+You can browse to [https://store.docker.com/community/images/&lt;DockerID&gt;/dockercon-tweet-app](https://store.docker.com/community/images/DockerID/dockercon-tweet-app) and see your newly-pushed app image. This is a public repository, so anyone can pull the image - you don't even need a Docker ID to pull public images.
 
 ## <a name="task2.3"></a>Task 2.3: Run your website in a container
 
@@ -266,7 +266,7 @@ Go ahead and hit the button to Tweet about your lab progress! No data gets store
 
 ## <a name="task3"></a>Task 3: Run your app in a highly-available cluster
 
-Your app is packaged in a portable Docker image, and you can rebuild it any time with a simple script. You've shared it on Docker Hub and deployed it on a cloud server, but at the moment you just have a single VM serving your app. That doesn't give you high availability, and for a tier 1 app like this you'll want to avoid downtime if there are any issues with the VM.
+Your app is packaged in a portable Docker image, and you can rebuild it any time with a simple script. You've shared it on Docker Cloud and deployed it on a cloud server, but at the moment you just have a single VM serving your app. That doesn't give you high availability, and for a tier 1 app like this you'll want to avoid downtime if there are any issues with the VM.
 
 Docker supports failover and scaling with a clustering technology built right into the engine - [Docker swarm mode](https://docs.docker.com/engine/swarm/). You don't need anything extra to turn a set of machines into a highly-available cluster, just Windows and Docker. In the rest of this lab you'll set up a swarm of three VMs and deploy the web app on the swarm.
 

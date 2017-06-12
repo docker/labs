@@ -22,7 +22,7 @@ In my case, the container IP address is `172.24.194.96`, yours will be different
 
 ## Understanding Image Names
 
-Typically we work with images from the Docker Hub, which is the default registry for the Docker Engine. Commands using just the image repository name work fine, like this:
+Typically we work with images from the Docker Store, which is the default registry for the Docker Engine. Commands using just the image repository name work fine, like this:
 
 ```PowerShell
 docker pull microsoft/nanoserver
@@ -34,7 +34,7 @@ docker pull microsoft/nanoserver
 - `microsoft/nanoserver` - the repository name, in this case in `{userName}/{imageName}` format;
 - `latest` - the image tag.
 
-If a tag isn't specified, then the default `latest` is used. If a registry hostname isn't specified then the default `docker.io` for Docker Hub is used. If you want to use images with any other registry, you need to explicitly specify the hostname - the default is always Docker Hub, you can't change to a different default registry.
+If a tag isn't specified, then the default `latest` is used. If a registry hostname isn't specified then the default `docker.io` for Docker Store is used. If you want to use images with any other registry, you need to explicitly specify the hostname - the default is always Docker Store, you can't change to a different default registry.
 
 With our local registry, the hostname is the IP address, and we also need to specify the custom port we're using. The full registry address is `172.24.194.96:5000`.
 
@@ -68,13 +68,13 @@ Docker is running again now, so we can restart the registry container. When we s
 docker start registry
 ``` 
 
-The registry is running at the expected address, and we've configured Docker to allow access, so we can push and pull images to our local registry, just like we can with Docker Hub and Docker Store.
+The registry is running at the expected address, and we've configured Docker to allow access, so we can push and pull images to our local registry, just like we can with Docker Cloud and Docker Store.
 
 ## Pushing and Pulling from the Local Registry
 
 Docker uses the hostname from the full image name to determine which registry to use. We can buid images and include the local registry hostname in the image tag, or use the `docker tag` command to add a new tag to an existing image.
 
-These commands pull a public image from Docker Hub, tag it for use in the private registry with the full name `172.24.194.96:5000/labs/hello-world:nanoserver`, and then push it to the registry:
+These commands pull a public image from Docker Store, tag it for use in the private registry with the full name `172.24.194.96:5000/labs/hello-world:nanoserver`, and then push it to the registry:
 
 ```PowerShell
 docker pull sixeyed/hello-world:nanoserver

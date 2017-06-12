@@ -36,7 +36,7 @@ In order to complete this lab, you will need the following:
 
 ### Obtain a Docker ID
 
-If you do not already have a Docker ID, you will need to create one now. Creating a Docker ID is free, and allows you to use both [Docker Cloud](https://cloud.docker.com) and [Docker Hub](https://hub.docker.com).
+If you do not already have a Docker ID, you will need to create one now. Creating a Docker ID is free, and allows you to use [Docker Cloud](https://cloud.docker.com).
 
 If you already have a Docker ID, skip to the next prerequisite.
 

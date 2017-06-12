@@ -65,13 +65,13 @@ In this step you have seen how easy it is to enable Docker Content Trust (export
 
 # <a name="push"></a>Step 2: Push and sign an image
 
-In this step you will tag an image and push it to a new repository within your own namespace on Docker Hub. You will perform this step from the host that you enabled Docker Content Trust on in the previous step. This will ensure that the image gets signed when you push it.
+In this step you will tag an image and push it to a new repository within your own namespace on Docker Cloud. You will perform this step from the host that you enabled Docker Content Trust on in the previous step. This will ensure that the image gets signed when you push it.
 
 To complete this step you will need a Docker ID.
 
 Execute all of the following commands from **node1** (or whichever node you used for the previous step).
 
-1. Tag the `alpine:latest` image so that it can be pushed to a new repository in your namespace on Docker Hub.
+1. Tag the `alpine:latest` image so that it can be pushed to a new repository in your namespace on Docker Cloud.
 
    This command will add the following additional tag to the `alpine:latest` image: `nigelpoulton/sec-test:latest`. The format of the tag is **docker-id/repo-name/image-tag**. Be sure to replace the **docker-id** in the following command with your own Docker ID.
 
@@ -88,17 +88,17 @@ Execute all of the following commands from **node1** (or whichever node you used
    ```
    Look closely and see that the image with **IMAGE ID** `4a415e366388` has two **REPOSITORY** tags.
 
-3. Login to Docker Hub with your own Docker ID
+3. Login to Docker Cloud with your own Docker ID
 
    ```
    $ docker login
-   Login with your Docker ID to push and pull images from Docker Hub...
+   Login with your Docker ID to push and pull images from Docker Store...
    Username: <your-docker-id>
    Password:
    Login Succeeded
    ```
 
-4. Push the image to a new repository in your Docker Hub namespace. Remember to use the image tag you created earlier that includes your own Docker ID.
+4. Push the image to a new repository in your Docker Cloud namespace. Remember to use the image tag you created earlier that includes your own Docker ID.
 
    > NOTE: As part of this `push` operation you will be asked to enter two new keys:
    - A new root key (this only happens the first time you push an image after enabling DCT)
@@ -155,4 +155,4 @@ The following commands will clean-up the artifacts from this lab.
    $ export DOCKER_CONTENT_TRUST=
    ```
 
-4. Login to Docker Hub > Locate the repository you created with the `docker image push` command > Click Settings > Delete the repository.
+4. Login to Docker Cloud > Locate the repository you created with the `docker image push` command > Click Settings > Delete the repository.

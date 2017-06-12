@@ -2,7 +2,7 @@
 
 = Run a Docker Container
 
-The first step in running any application using Docker is to run a container. There are plenty of images available at https://hub.docker.com[Docker Hub]. Docker client can simply run the container by giving the image. The client will check if the image already exists on Docker Host. If it exists then it'll run the containers, otherwise the host will first download the image.
+The first step in running any application using Docker is to run a container. There are plenty of images available at https://store.docker.com[Docker Store]. Docker client can simply run the container by giving the image. The client will check if the image already exists on Docker Host. If it exists then it'll run the containers, otherwise the host will first download the image.
 
 == Pull Image
 

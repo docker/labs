@@ -54,9 +54,9 @@ You will need a set of Windows Server 2016 virtual machines running in Azure, wh
 
 > When you connect to the VM, if you are prompted to run Windows Update, you should cancel out. The labs have been tested with the existing VM state and any changes may cause problems.
 
-You will build images and push them to Docker Hub, so you can pull them on different Docker hosts. You will need a Docker ID.
+You will build images and push them to Docker Cloud, so you can pull them on different Docker hosts. You will need a Docker ID.
 
-- Sign up for a free Docker ID on [Docker Hub](https://hub.docker.com)
+- Sign up for a free Docker ID on [Docker Cloud](https://cloud.docker.com)
 
 ## Prerequisite Task: Prepare your lab environment
 
@@ -79,7 +79,7 @@ docker swarm leave -f
 
 ## <a name="task1"></a>Task 1: Packaging ASP.NET apps as Docker images
 
-A Docker image packages your application and all the dependencies it needs to run into one unit. Microsoft maintain the [microsoft/aspnet](https://hub.docker.com/r/microsoft/aspnet/) image on Docker Hub, which you can use as the basis for your own application images. It is based on [microsoft/windowsservercore](https://hub.docker.com/r/microsoft/windowsservercore/) and has IIS and ASP.NET already installed. 
+A Docker image packages your application and all the dependencies it needs to run into one unit. Microsoft maintain the [microsoft/aspnet](https://store.docker.com/images/aspnet) image on Docker Store, which you can use as the basis for your own application images. It is based on [microsoft/windowsservercore](https://store.docker.com/images/windowsservercore) and has IIS and ASP.NET already installed. 
 
 In this lab you'll start with an MSI that deploys a web app onto a server and expects IIS and ASP.NET to be configured. If you already have a scripted build process then you may have MSIs or Web Deploy packages already being generated, and it's easy to package them into a Docker image.
 
@@ -87,7 +87,7 @@ In this lab you'll start with an MSI that deploys a web app onto a server and ex
 
 Building a Docker image from an MSI is simple, you just need to copy in the `msi` file and run `msiexec` to install it. Have a look at the [Dockerfile](v1.0/Dockerfile) for the app you're going to deploy and later upgrade.
 
-> If you noticed the version of [microsoft/windowsservercore](https://hub.docker.com/r/microsoft/windowsservercore/) is an old one - that's deliberate. You'll be updating the Windows version as well as the app version in this lab.
+> If you noticed the version of [microsoft/windowsservercore](https://store.docker.com/images/windowsservercore) is an old one - that's deliberate. You'll be updating the Windows version as well as the app version in this lab.
 
 There are just three lines of [Dockerfile instructions](https://docs.docker.com/engine/reference/builder/):
 
@@ -104,13 +104,13 @@ cd C:\scm\github\docker\dcus-hol-2017\windows-modernize-aspnet-ops\v1.0
 docker build -t <DockerID>/modernize-aspnet-ops:1.0 .
 ```
 
-> Be sure to tag the image with your own Docker ID - you'll be pushing it to Docker Hub next.
+> Be sure to tag the image with your own Docker ID - you'll be pushing it to Docker Cloud next.
 
 The output from `docker build` shows you the Docker engine executing all the steps in the Dockerfile. On your lab VM the base images have already been pulled, so the image should build quickly.
 
 When the build completes you'll have a new image stored locally, with the name `<DockerId>/modernize-aspnet-ops` and the tag `1.0` indicating that this is version 1.0 of the app.
 
-Login to Docker Hub with your Docker ID and push that image, so it's available for the other VMs you'll use later on:
+Login to Docker Cloud with your Docker ID and push that image, so it's available for the other VMs you'll use later on:
 
 ```
 docker login
@@ -148,7 +148,7 @@ Open a browser on your laptop and browse to the app on your VM: **http://&lt;azu
 
 The Docker image tagged `1.0` is a snapshot of the application, built with a specific version of the app and a specific version of Windows. When you have an upgrade to the app or an operating system update you don't make changes to the running container - you build a new Docker image which packages the updated components and replace the container with a new one. 
 
-Microsoft are releasing [regular updates to the Windows base images](https://hub.docker.com/r/microsoft/windowsservercore/tags/) on Docker Hub. When your applications are running in Docker containers, there is no 'Patch Tuesday' with manual or semi-automated update processes. The Docker build process is fully automated, so when a new version of the base image is released with security patches, you just need to rebuild your own images and replace the running containers.
+Microsoft are releasing [regular updates to the Windows base images](https://store.docker.com/images/windowsservercore) on Docker Store. When your applications are running in Docker containers, there is no 'Patch Tuesday' with manual or semi-automated update processes. The Docker build process is fully automated, so when a new version of the base image is released with security patches, you just need to rebuild your own images and replace the running containers.
 
 ## <a name="task2"></a>Task 2.1: Updating Windows and app versions
 
@@ -208,7 +208,7 @@ The new website content shows the updated application version number, which is r
 
 In non-production environments you can upgrade just by killing the old container and starting a new one, using the new image and mapping to the original port. That's a manual approach which will incur a few seconds downtime. Docker provides an automated, zero-downtime alternative which you'll use instead.
 
-For that you'll create a swarm, clustering all three of your lab VMs. The other nodes will need the upgraded image, so push version 1.1 to Docker Hub too:
+For that you'll create a swarm, clustering all three of your lab VMs. The other nodes will need the upgraded image, so push version 1.1 to Docker Cloud too:
 
 ```
 docker push <DockerID>/modernize-aspnet-ops:1.1

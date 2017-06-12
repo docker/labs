@@ -14,7 +14,7 @@ Several steps are needed to run the key value store
 
 * Create dedicated Docker host with Machine ```docker-machine create -d virtualbox consul```
 * Switch to the context of the newly created host ```eval "$(docker-machine env consul)"```
-* Run container based on [progirum/consul image](https://hub.docker.com/r/progrium/consul/) ```docker run -d -p "8500:8500" -h "consul" progrium/consul -server -bootstrap```
+* Run container based on [progirum/consul image](https://store.docker.com/images/consul) ```docker run -d -p "8500:8500" -h "consul" progrium/consul -server -bootstrap```
   
 ## Creation of Docker hosts that will run application containers
 
