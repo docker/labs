@@ -16,7 +16,7 @@ You will complete the following steps as part of this lab.
 - [Step 3 - Add a new Worker](#add_wrkr)
 - [Step 4 - Rotate Join Keys](#rotate_join)
 - [Step 5 - View certificates](#certs)
-- [Step 6 - Rotate certificates](#rotate_cert)
+- [Step 6 - Rotate certificates](#rotate_certs)
 
 # Prerequisites
 
