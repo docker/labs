@@ -13,7 +13,7 @@ En IntelliJ, clonar el repositorio. Clic en `Check out from Version Control` > `
 
 ![](images/intelliJ_git_open_project.png)
 
-Si esta es tu primera vez usando Intellij con Github, ingresa tu cuenta de Github.
+Si esta es la primera vez usando Intellij con Github, ingresar a la cuenta de Github.
 ![](images/intelliJ_git_login.png)
 
 Clonar el repositorio [registration-docker](https://github.com/spara/registration-docker.git).
@@ -45,7 +45,7 @@ Clic en `Project View` para abrir el proyecto.
 
 ### Construyendo la aplicación
 
-La aplicación es una aplicación Spring MVC básica que recibe datos del usuario de un formulario, escribe los datos en la base de datos, y consulta la base de datos.
+La aplicación es una aplicación Spring MVC básica que recibe datos del usuario de un formulario, almacena los datos en la base de datos, y realiza consultas.
 
 La aplicación se construye usando Maven. Para construir la aplicación clic en el icono de la parte inferior izquierda de IntelliJ y seleccionar `Maven Projects`.
 
@@ -94,11 +94,11 @@ Abrir una ventana en el explorador e ir a:
 
 ![](images/tomcat_home3.png)
 
-Cuando la imagen de Tomcat fue construida, los roles de los usuarios fueron configurados. Clic en el botón `Manager App` para visualizar las aplicaciones desplegadas. Cuando se solicite por usuario y contraseña, ingresa `system` y `manager` respectivamente para entrar a la página de Tomcat Web Application Manager.
+Cuando la imagen de Tomcat fue construida, los roles de los usuarios fueron configurados. Clic en el botón `Manager App` para visualizar las aplicaciones desplegadas. Cuando se solicite el usuario y la contraseña, ingresar `system` y `manager` respectivamente para entrar a la página de Tomcat Web Application Manager.
 
 ![](images/tomcat_web_application_manager3.png)
 
-Puedes usar la página Manager para `Start`, `Stop`, `Reload` o `Undeploy` aplicaciones web.
+El posible usar la página Manager para `Start`, `Stop`, `Reload` o `Undeploy` aplicaciones web.
 
 Para ir a la aplicación, clic en el link `/UserSignup`.
 
@@ -140,7 +140,7 @@ En la ventana `Run\Debug Configurations`, establecer el `Name` de la configuraci
 
 #### Buscando el Error
 
-Dado que el problema es la contraseña, veamos como la contraseña se establece en la clase User. En la clase User, el setter para la contraseña es mezclado usando [rot13](https://en.wikipedia.org/wiki/ROT13) antes de ser salvado en la base de datos.
+Dado que el problema es la contraseña, veamos como la contraseña se establece en la clase User. En la clase User, el setter para la contraseña es mezclado usando [rot13](https://en.wikipedia.org/wiki/ROT13) antes de ser almacenado en la base de datos.
 
 ![](images/intellij_debug_User_password.png)
 
@@ -168,7 +168,7 @@ Clic en `Resume Program` para permitir ejecutar el código o presionar `F8` para
 
 ![](images/intellij_debug_resume.png)
 
-A continuación, establecer el punto de interrupción en getPassword en la clase User para ver los valores retornados para la contraseña. También puede cambiar el punto de interrupción para setPassword.
+A continuación, establecer el punto de interrupción en getPassword en la clase User para ver los valores retornados para la contraseña. También es posible cambiar el punto de interrupción a setPassword.
 
 ![](images/intellij_debug_User_getPassword.png)
 
@@ -176,7 +176,7 @@ Tratar de acceder a la aplicación. Ver el valor de la contraseña en la ventana
 
 ![](images/intellij_debug_User_show_user.png)
 
-En esta aplicación MVC el UserController usa el método findByLogin en la clase UserServiceImpl la cual usa el método findByUsername para recuperar la información de la base de datos. A continuación, verifica que la contrasenña del formulario conincide con la contraseña del usuario. Dado que la contraseña del formulario de inicio de sesión no es mezclado usando ROT13, este no coincide con la contraseña del usuario y no puedes acceder a la aplicación.
+En esta aplicación MVC el UserController usa el método findByLogin en la clase UserServiceImpl la cual usa el método findByUsername para recuperar la información de la base de datos. A continuación, verificar que la contraseña del formulario conincide con la contraseña del usuario. Dado que la contraseña del formulario de inicio de sesión no es mezclada usando ROT13, este no coincide con la contraseña del usuario y no es posible acceder a la aplicación.
 
 Para solucionar esto, aplicar ROT13 a la contraseña agregando
 
@@ -187,10 +187,10 @@ String passwd = Rot13.rot13(password);
 ```
 ![](images/intellij_debug_UserServiceImpl_code.png)
 
-Establecer un punto de interrupción en UserServiceImpl en el método findByLogin. Iniciar sesión otra vez y mirar los valores para el punto de interrupción. La variable 'passwd' es 'z0ol' la cual coincide con la contraseña para el usuario moby.
+Establecer un punto de interrupción en UserServiceImpl en el método findByLogin. Iniciar sesión otra vez y verificar los valores para el punto de interrupción. La variable 'passwd' es 'z0ol' la cual coincide con la contraseña para el usuario moby.
 
 ![](images/intellij_debug_UserServiceImpl_values.png)
 
-Continuar (`F8`) y debes acceder exitosamente.
+Continuar (`F8`) y debe acceder exitosamente.
 
 ![](images/app_debug_success.png)
