@@ -42,9 +42,9 @@ Seleccionar `registration-docker`> `Finish`
 
 ### Construyendo la aplicación
 
-La aplicación es una aplicación Spring MVC básica que recibe datos del usuario de un formulario, escribe los datos en la base de datos, y consulta la base de datos.
+La aplicación es una aplicación Spring MVC básica que recibe datos del usuario de un formulario, almacena los datos en la base de datos, y realiza consultas.
 
-La aplicación se construye usando Maven. Para construir la aplicación clic en `Run` > `Run configurations`
+La aplicación se construye usando Maven. Para construir la aplicación hacer clic en `Run` > `Run configurations`
 
 ![](images/eclipse_maven_run_config3.png)
 
@@ -77,15 +77,15 @@ Abrir un terminal e ir al directorio de la aplicación. Iniciar la aplicación c
 Docker construirá las imágenes para Apache Tomcat y MySQL e iniciará los contenedores. También, montará el directorio de la aplicación (`./app/target/UserSignup`) como volumen de datos en el host del sistema al directorio webapps Tomcat en el contenedor del servidor web.
 
 Abrir una ventana en el explorador e ir a:
-'localhost:8080'; debes ver la página de inicio de Tomcat
+'localhost:8080'; debe ver la página de inicio de Tomcat
 
 ![](images/tomcat_home3.png)
 
-Cuando la imagen de Tomcat fue construida, los roles de los usuarios fueron configurados. Clic en el botón `Manager App` para visualizar las aplicaciones desplegadas. Cuando se solicite por usuario y contraseña, ingresa `system` y `manager` respectivamente para entrar a la página de Tomcat Web Application Manager.
+Cuando la imagen de Tomcat fue construida, los roles de los usuarios fueron configurados. Clic en el botón `Manager App` para visualizar las aplicaciones desplegadas. Cuando se solicite por usuario y contraseña, ingresar `system` y `manager` respectivamente para entrar a la página de Tomcat Web Application Manager.
 
 ![](images/tomcat_web_application_manager3.png)
 
-Puedes usar la página Manager para `Start`, `Stop`, `Reload` o `Undeploy` aplicaciones web.
+Es posible usar la página Manager para `Start`, `Stop`, `Reload` o `Undeploy` aplicaciones web.
 
 Para ir a la aplicación, clic en el link `/UserSignup`.
 
@@ -93,7 +93,7 @@ Para ir a la aplicación, clic en el link `/UserSignup`.
 
 ### Depurando la Aplicación
 
-En la aplicación, clic en `Signup` para crear un nuevo usuario. Completar el formulario de registro y clic en `Submit`
+En la aplicación, clic en `Signup` para crear un nuevo usuario. Completar el formulario de registro y hacer clic en `Submit`
 
 ![](images/app_debug_signup2.png)
 
@@ -121,13 +121,13 @@ Seleccionar `Remote Java Application` y clic en el icono `Launch New Configurati
 
 ![](images/eclipse_debug_configure_new.png)
 
-Ingresa `Name` para la configuración. Selecciona el proyecto usando el botón `browse`. Clic en `Apply` para guardar la configuración y clic en `Debug` para iniciar la conexión de debug entre Tomcat y Eclipse.
+Ingresar `Name` para la configuración. Seleccionar el proyecto usando el botón `browse`. Clic en `Apply` para guardar la configuración y clic en `Debug` para iniciar la conexión de debug entre Tomcat y Eclipse.
 
 ![](images/eclipse_debug_configure_docker.png)
 
 #### Buscando el Error
 
-Dado que el problema es la contraseña, veamos como la contraseña se establece en la clase User. En la clase User, el setter para la contraseña es mezclado usando [rot13](https://en.wikipedia.org/wiki/ROT13) antes de ser salvado en la base de datos.
+Dado que el problema es la contraseña, hay que ver como la contraseña se establece en la clase User. En la clase User, el setter para la contraseña es mezclado usando [rot13](https://en.wikipedia.org/wiki/ROT13) antes de ser almacenado en la base de datos.
 
 ![](images/eclipse_debug_User_password.png)
 
@@ -147,7 +147,7 @@ Eclipse mostrará el código en el punto de interrupción y el valor de la contr
 
 ![](images/eclipse_debug_User_moby.png)
 
-Clic en `resume` o presiona `F8` para permitir ejecutar el código.
+Clic en `resume` o presionar `F8` para permitir ejecutar el código.
 
 ![](images/eclipse_debug_resume.png)
 
@@ -159,7 +159,7 @@ Tratar de acceder a la aplicación. Ver el valor de la contraseña en la ventana
 
 ![](images/eclipse_debug_User_show_user.png)
 
-En esta aplicación MVC el UserController usa el método findByLogin en la clase UserServiceImpl la cual usa el método findByUsername para recuperar la información de la base de datos. A continuación, verifica que la contrasenña del formulario conincide con la contraseña del usuario. Dado que la contraseña del formulario de inicio de sesión no es mezclado usando ROT13, este no coincide con la contraseña del usuario y no puedes acceder a la aplicación.
+En esta aplicación MVC el UserController usa el método findByLogin en la clase UserServiceImpl la cual usa el método findByUsername para recuperar la información de la base de datos. A continuación, verificar que la contraseña del formulario coincide con la contraseña del usuario. Dado que la contraseña del formulario de inicio de sesión no es mezclada usando ROT13, este no coincide con la contraseña del usuario y no es posible acceder a la aplicación.
 
 Para solucionar esto, aplicar ROT13 a la contraseña agregando
 
@@ -170,10 +170,10 @@ String passwd = Rot13.rot13(password);
 ```
 ![](images/eclipse_debug_UserServiceImpl_code.png)
 
-Establecer un punto de interrupción en UserServiceImpl en el método findByLogin. Iniciar sesión otra vez y mirar los valores para el punto de interrupción. La variable 'passwd' es 'z0ol' la cual coincide con la contraseña para el usuario moby.
+Establecer un punto de interrupción en UserServiceImpl en el método findByLogin. Iniciar sesión otra vez y verificar los valores para el punto de interrupción. La variable 'passwd' es 'z0ol' la cual coincide con la contraseña para el usuario moby.
 
 ![](images/eclipse_debug_UserServiceImpl_values.png)
 
-Continuar (`F8`) y debes acceder exitosamente.
+Continuar (`F8`) y debe acceder exitosamente.
 
 ![](images/app_debug_success.png)
