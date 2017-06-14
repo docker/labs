@@ -30,10 +30,10 @@ drwxr-xr-x    5 root     root          4096 Mar  2 16:20 lib
 ......
 ......
 ```
-What happened? Behind the scenes, a lot of stuff happened. When you call `run`, 
+What happened? Behind the scenes, a lot of stuff happened. When you call `run`,
 1. The Docker client contacts the Docker daemon
-2. The Docker daemon dowloads the image (alpine in this case) from Docker Store
-3. The Docker daemon creates the container and then runs a command in that container. 
+2. The Docker daemon checks local store if the image (alpine in this case) is available locally, and if not, dowloads it from Docker Store. (Since we have issued `docker pull alpine` before, the download step is not necessary)
+3. The Docker daemon creates the container and then runs a command in that container.
 4. The Docker daemon streams the output of the command to the Docker client
 
 When you run `docker run alpine`, you provided a command (`ls -l`), so Docker started the command specified and you saw the listing.
