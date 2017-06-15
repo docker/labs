@@ -27,7 +27,7 @@ cd sample
 mvn clean install -Papp-docker-image
 ----
 
-In the command above, `-Papp-docker-image` will fire up the `app-docker-image` profile, defined in the application `pom.xml`. This profile will create a dockerized version of the application, creating two images: 
+In the command above, `-Papp-docker-image` will fire up the `app-docker-image` profile, defined in the application `pom.xml`. This profile will create a dockerized version of the application, creating two images:
 
 . `docker-hadoop-example`: docker image used to run the application
 . `docker-hadoop-example-tests`: docker image used to run integration tests
@@ -243,7 +243,7 @@ Run our integration tests:
 ----
 docker-compose --file src/test/resources/docker-compose.yml \
                run docker-hadoop-example-tests mvn -f /maven/code/pom.xml \
-               -Dmaven.repo.local=/m2/repository -Pintegration-test verify 
+               -Dmaven.repo.local=/m2/repository -Pintegration-test verify
 ----
 
 Stop all the services:
@@ -267,9 +267,9 @@ docker run -v ~/.m2:/m2 -p 5005:5005 \
            -Dmaven.failsafe.debug
 ----
 
-Running with this configuration, the application will wait until an IDE connects for remote debugging on port 5005. 
+Running with this configuration, the application will wait until an IDE connects for remote debugging on port 5005.
 
-See more about integration tests in the link:chapters/ch09-cicd.adoc[CI/CD using Docker] chapter
+See more about integration tests in the link:../chapters/ch09-cicd.adoc[CI/CD using Docker] chapter
 
 
 
