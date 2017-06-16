@@ -110,26 +110,26 @@ Now that you have a Swarm initialized it's time to create an **overlay** network
 
     ```
     node1$ docker network inspect overnet
-[
-    {
-        "Name": "overnet",
-        "Id": "0cihm9yiolp0s9kcczchqorhb",
-        "Scope": "swarm",
-        "Driver": "overlay",
-        "EnableIPv6": false,
-        "IPAM": {
-            "Driver": "default",
-            "Options": null,
-            "Config": []
-        },
-        "Internal": false,
-        "Containers": null,
-        "Options": {
-            "com.docker.network.driver.overlay.vxlanid_list": "257"
-        },
-        "Labels": null
-    }
-]
+    [
+        {
+            "Name": "overnet",
+            "Id": "0cihm9yiolp0s9kcczchqorhb",
+            "Scope": "swarm",
+            "Driver": "overlay",
+            "EnableIPv6": false,
+            "IPAM": {
+                "Driver": "default",
+                "Options": null,
+                "Config": []
+            },
+            "Internal": false,
+            "Containers": null,
+            "Options": {
+                "com.docker.network.driver.overlay.vxlanid_list": "257"
+            },
+            "Labels": null
+        }
+    ]
     ```
 
 # <a name="create_service"></a>Step 3: Create a service
