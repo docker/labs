@@ -269,7 +269,7 @@ docker run -v ~/.m2:/m2 -p 5005:5005 \
 
 Running with this configuration, the application will wait until an IDE connects for remote debugging on port 5005.
 
-See more about integration tests in the link:../chapters/ch09-cicd.adoc[CI/CD using Docker] chapter
+See more about integration tests in the link:./ch09-cicd.adoc[CI/CD using Docker] chapter
 
 
 
