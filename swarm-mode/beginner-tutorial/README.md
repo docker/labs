@@ -132,10 +132,10 @@ $ docker-machine ssh manager1 "docker service ls"
 ID            NAME  REPLICAS  IMAGE         COMMAND
 2x4jsk6313az  web   1/1       nginx:latest  
 ```
-Now open the machine address in your browser. You can see above manager1 had a URL of 192.168.99.100
+Now open the machine's IP address in your browser. You can see above manager1 had an IP address of 192.168.99.100
 ![nginx in Chrome at 192.168.99.100](images/manager1-nginx.png)
 
-You can actually load any of the node ip addresses and get the same result because of Swarm Mode's Routing Mesh.
+You can actually load any of the node ip addresses and get the same result because of [Swarm Mode's Routing Mesh](https://docs.docker.com/engine/swarm/ingress/).
 ![nginx in Chrome at 192.168.99.100](images/manager2-nginx.png)
 
 Next let's inspect the service
