@@ -60,12 +60,28 @@ You will build images and push them to Docker Cloud, so you can pull them on dif
 
 ## Prerequisite Task: Prepare your lab environment
 
-Start by ensuring you have the latest lab source code. RDP into one of your Azure VMs, open a PowerShell prompt from the taskbar shortcut, and clone the lab repo from GitHub:
+Start by ensuring you have the latest lab source code. RDP into one of your Azure VMs, and open a PowerShell prompt with the "Run as Administator" option.
+
+If you're using a VM provided for a Docker lab, you will find the source code is already cloned, just run these commands to update it:
+
+```
+cd C:\scm\github\docker\labs
+git pull
+```
+
+If you're using your own VM, clone the lab repo from GitHub:
 
 ```
 mkdir -p C:\scm\github\docker
 cd C:\scm\github\docker
-git clone https://github.com/docker/dcus-hol-2017.git
+git clone https://github.com/docker/labs.git
+```
+
+Now set set some variables for your source path and Docker ID, so you can copy and paste commands from the lab:
+
+```
+$labRoot='C:\scm\github\docker\labs\dockercon-us-2017\windows-modernize-aspnet-ops'
+$dockerId='<Your Docker ID>'
 ```
 
 Now clear up anything left from a previous lab. You only need to do this if you have used this VM for one of the other Windows labs, but you can run it sefaly to restore Docker to a clean state. 
@@ -100,8 +116,8 @@ There are just three lines of [Dockerfile instructions](https://docs.docker.com/
 Every Docker image has a unique name, and you can also tag images with additional information like application version numbers. On your VM, change to the v1.0 directory and build the Dockerfile:
 
 ```
-cd C:\scm\github\docker\dcus-hol-2017\windows-modernize-aspnet-ops\v1.0
-docker build -t <DockerID>/modernize-aspnet-ops:1.0 .
+cd $labRoot\v1.0
+docker image build -t $dockerId/modernize-aspnet-ops:1.0 .
 ```
 
 > Be sure to tag the image with your own Docker ID - you'll be pushing it to Docker Cloud next.
@@ -115,7 +131,7 @@ Login to Docker Cloud with your Docker ID and push that image, so it's available
 ```
 docker login
 ...
-docker push <DockerID>/modernize-aspnet-ops:1.0
+docker image push $dockerId/modernize-aspnet-ops:1.0
 ```
 
 ## <a name="task1.3"></a> Task 1.3: Running the Application v1.0 in Docker
@@ -123,7 +139,7 @@ docker push <DockerID>/modernize-aspnet-ops:1.0
 The sample application for the lab is a simple ASP.NET WebForms app, which the MSI installs to the default IIS website running on port 80. To start the application, use `docker run` and publish the port from the container onto the host, so the website is available externally:
 
 ```
-docker run -d -p 80:80 --name v1.0 <DockerID>/modernize-aspnet-ops:1.0
+docker container run -d -p 80:80 --name v1.0 $dockerId/modernize-aspnet-ops:1.0
 ```
 
 - `-d` starts the container in detached mode, so Docker keeps it running in the background
@@ -138,7 +154,7 @@ CONTAINER ID        IMAGE                              COMMAND                  
 27b54d30301f        sixeyed/modernize-aspnet-ops:1.0   "C:\\ServiceMonitor..."   41 seconds ago      Up 38 seconds       0.0.0.0:80->80/tcp   v1.0
 ```
 
-You can get basic management information about the container with `docker top v1.0` to list the running processes, and `docker logs v1.0` to view application log entries. In this case, IIS doesn't write any logs to the console so there won't be any log entries surfaced to Docker.
+You can get basic management information about the container with `docker container top v1.0` to list the running processes, and `docker container logs v1.0` to view application log entries. In this case, IIS doesn't write any logs to the console so there won't be any log entries surfaced to Docker.
 
 Open a browser on your laptop and browse to the app on your VM: **http://&lt;azure-vm-address&gt;/UpgradeSample**. You'll see the sample app, which just shows some basic diagnostics details:
 
@@ -167,8 +183,8 @@ Version 1.1 represents a change to the app which coincides with an updated Windo
 The process to build the new version is identical. In PowerShell, switch to the 1.1 directory and run `docker build`, using a new tag to identify the version:
 
 ```
-cd C:\scm\github\docker\dcus-hol-2017\windows-modernize-aspnet-ops\v1.1
-docker build -t <DockerId>/modernize-aspnet-ops:1.1 .
+cd $labRoot\v1.1
+docker image build -t <DockerId>/modernize-aspnet-ops:1.1 .
 ```
 
 Now you have two application images, tagged `1.0` and `1.1`, each containing different versions of the application built on different versions of Windows. You can see the basic image details with the `docker image ls` command:
@@ -191,13 +207,13 @@ Version 1.0 of the application is still running, and the container port is mappe
 You can test out the new version locally on the VM by running a new container without publishing any ports:
 
 ```
-docker run -d --name v1.1 <DockerId>/modernize-aspnet-ops:1.1
+docker container run -d --name v1.1 <DockerId>/modernize-aspnet-ops:1.1
 ```
 
 With no published ports, the container is not accessible outside of the VM. To browse the new site on the VM, you need to find the container's IP address by running:
 
 ```
-docker inspect --format '{{ .NetworkSettings.Networks.nat.IPAddress }}' v1.1
+docker container inspect --format '{{ .NetworkSettings.Networks.nat.IPAddress }}' v1.1
 ```
 
 You can open Firefox on the VM and browse to **http://&lt;container-ip-address&gt;/UpgradeSample** to see the updated version of the app:
@@ -211,7 +227,7 @@ In non-production environments you can upgrade just by killing the old container
 For that you'll create a swarm, clustering all three of your lab VMs. The other nodes will need the upgraded image, so push version 1.1 to Docker Cloud too:
 
 ```
-docker push <DockerID>/modernize-aspnet-ops:1.1
+docker image push $dockerId/modernize-aspnet-ops:1.1
 ```
 
 ## <a name="task3"></a>Task 3: Zero-Downtime updates
@@ -222,59 +238,45 @@ In an update, Docker incrementally stops the running containers and starts new o
 
 ## <a name="task3.1"></a>Task 3.1: Create a Windows Docker swarm
 
-[Swarm mode](https://docs.docker.com/engine/swarm/) is a clustering technology built into the Docker engine. You have three VMs which you can join into a swarm. You start by initializing the swarm on one node, which becomes the swarm manager. Then join other nodes, which become workers.
+[Swarm mode](https://docs.docker.com/engine/swarm/) is a clustering technology built into the Docker engine. You need multiple VMs to create a high-availability swarm, but you can create a single-node swarm to learn the management processes.
 
-Before switching to swarm mode, clean up all the running containers:
-
-```
-docker container kill $(docker container ls -a -q);
-docker container rm $(docker container ls -a -q)
-```
-
-Now get the internal IP address of the VM you're currently connected to (using `ipconfig`, find the address in the `10.0.0.0` range). Then run `swarm init` to initialize the swarm:
+There are two server roles in a Docker swarm - managers and workers. You'll make the VM into a single-node swarm, so it will be a manager. Managers can run application workloads as well as workers. Start by clearing down running containers again:
 
 ```
-docker swarm init --listen-addr <vm1-ip-address> --advertise-addr <vm1-ip-address>
+docker container rm -f $(docker container ls -a -q)
+```
+
+Switch to swarm mode. Run the `swarm init` command to initialize the swarm:
+
+```
+docker swarm init
 ```
 
 > Your RDP session may be interrupted because of a network change when the node switches to swarm mode. It will reconnect in a few seconds.
 
-The output tells you this node is now a manager, and gives you a secret token for joining other nodes to the swarm. RDP into the second and third VMs and run the `swarm join` command, providing the token and the manager's IP address:
-
-```
-docker swarm join --token <swarm-token> <vm1-ip-address>:2377
-``` 
-
-Each VM will join as a worker - which takes about a second. While you're connected, on the second and third VMs pull the images you pushed to the Hub so the new nodes will be ready to run the service:
-
-```
-docker pull --all-tags <DockerID>/modernize-aspnet-ops
-```
-
-_This step is not strictly required, but will make subsequent steps complete faster._
-
-You can close the RDP sessions for VM 2 and 3 now - you will be managing the swarm from the original VM.
+The output tells you this node is now a manager, and gives you a secret token for joining other nodes to the swarm.
 
 ## <a name="task3.2"></a>Task 3.2: Run application version 1.0 as a service
 
 In swarm mode, you don't run individual containers. Instead you create services and the swarm decides which node to run the containers on. For services which run across many containers, Docker will spread them across as many hosts as possible, to maximise redundancy. 
 
-To run the web app with high-availability on your three-node swarm, create it with a replica level of 3 and Docker will run a container on each node:
+To run the web app on your swarm, create it with a replica level of 3 and Docker will run a container on each node:
 
 ```
 docker service create `
   --name sample `
   --publish mode=host,target=80,published=80 `
-  --replicas=3 `
+  --detach=true `
+  --replicas=1 `
   --with-registry-auth `
-  <DockerID>/modernize-aspnet-ops:1.0
+  $dockerId/modernize-aspnet-ops:1.0
 ```
 
 - `--name` - is the name of the service, this is how you refer to the service for management, and in other services that consume this one
 - `--publish` - maps the container port to the host port. Note that the syntax is different in swarm mode, but the functionality is the same
 - `--replicas` - the number of containers that run the service. Docker will maintain the service level by starting new containers when needed
 
-You can check on the service with `docker service ls`, which should show you have three out of three replicas running - pulling the images on the worker nodes in advance means they can quickly start containers.
+You can check on the service with `docker service ls`, which should show you have ome out of one replicas running.
 
 Run `service ps` to list the containers in the service and see which nodes they're running on:
 
@@ -282,11 +284,9 @@ Run `service ps` to list the containers in the service and see which nodes they'
 > docker service ps sample
 ID                  NAME                IMAGE                              NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
 pedhy0x72gih        sample.1            sixeyed/modernize-aspnet-ops:1.0   dcus-win00          Running             Running 41 seconds ago                       *:80->80/tcp
-s0q779kn22a2        sample.2            sixeyed/modernize-aspnet-ops:1.0   dcus-win01          Running             Running 23 seconds ago                       *:80->80/tcp
-v5lr5xx9zgir        sample.3            sixeyed/modernize-aspnet-ops:1.0   dcus-win02          Running             Running 23 seconds ago                       *:80->80/tcp
 ```
 
-You'll see a container on each node. On your laptop you can browse to any one of the Azure VM addresses and see version 1.0 of the app running - try it with VM 2 and 3.
+With a single-node swarm and a sinfle replica, you'll see one container on the manager node. On your laptop you can browse to the Azure VM address and see version 1.0 of the app running.
 
 Services in swarm mode are first-class citizens, and they can be updated using built-in platform functionality.
 
@@ -300,12 +300,10 @@ In a highly-available swarm where you have a service running in many containers 
 To update your service to version 1.1, run:
 
 ```
-docker service update --with-registry-auth --image <DockerId>/modernize-aspnet-ops:1.1 sample
+docker service update --with-registry-auth --image $dockerId/modernize-aspnet-ops:1.1 sample
 ```
 
-That tells Docker to update the `sample` service to version `1.1` of the image. There's no load balancer in front of your lab VMs so you won't see the full zero-downtime deployment. 
-
-Browse to VM 2 on your laptop and refresh the site while the update happens. You may see an error page if you refresh while the v1.0 container is being replaced, but that's the period when the load balancer wouldn't send traffic to the node, it would send it to node 1 or 3 which are still running.
+That tells Docker to update the `sample` service to version `1.1` of the image. With a multi-node swarm you would configure a load balancer in front the nodes and you would get zero-downtime deployment. 
 
 Automated updates are a huge benefit of the Docker platform. Updating a distributed application in a safe, automated way takes all the risk out of deployments, and makes frequent releases possible. If you don't like the new color scheme in v1.1 you can easily roll back to v1.0:
 

@@ -61,12 +61,28 @@ You will build images and push them to Docker Cloud, so you can pull them on dif
 
 ## Prerequisite Task: Prepare your lab environment
 
-Start by ensuring you have the latest lab source code. RDP into one of your Azure VMs, open a PowerShell prompt from the taskbar shortcut, and clone the lab repo from GitHub:
+Start by ensuring you have the latest lab source code. RDP into one of your Azure VMs, and open a PowerShell prompt with the "Run as Administator" option.
+
+If you're using a VM provided for a Docker lab, you will find the source code is already cloned, just run these commands to update it:
+
+```
+cd C:\scm\github\docker\labs
+git pull
+```
+
+If you're using your own VM, clone the lab repo from GitHub:
 
 ```
 mkdir -p C:\scm\github\docker
 cd C:\scm\github\docker
-git clone https://github.com/docker/dcus-hol-2017.git
+git clone https://github.com/docker/labs.git
+```
+
+Now set set some variables for your source path and Docker ID, so you can copy and paste commands from the lab:
+
+```
+$labRoot='C:\scm\github\docker\labs\dockercon-us-2017\windows-modernize-aspnet-dev'
+$dockerId='<Your Docker ID>'
 ```
 
 Now clear up anything left from a previous lab. You only need to do this if you have used this VM for one of the other Windows labs, but you can run it safely to restore Docker to a clean state. 
@@ -108,11 +124,11 @@ The build agent is generic, it can be used to compile any .NET 4.5 web projects.
 To build the image, change to the builder directory and build the Dockerfile:
 
 ```
-cd C:\scm\github\docker\dcus-hol-2017\windows-modernize-aspnet-dev\v1-src\docker\builder
-docker build -t <DockerID>/modernize-aspnet-builder .
+cd $labRoot\v1-src\docker\builder
+docker image build -t $dockerId/modernize-aspnet-builder .
 ```
 
-The output from `docker build` shows you the Docker engine executing all the steps in the Dockerfile. On your lab VM the base images have already been pulled, but the installations from Chocolatey will take a couple of minutes.
+The output from `docker image build` shows you the Docker engine executing all the steps in the Dockerfile. On your lab VM the base images have already been pulled, but the installations from Chocolatey will take a couple of minutes.
 
 Now you have a Docker image for building the app, which you can share on a public or private registry. Anyone who joins the team can use that image to build the app - and the same image can be used in the CI build, so you don't need to install Visual Studio on the build server.
 
@@ -123,9 +139,9 @@ With the builder image you can build any ASP.NET application, you just need to p
 The [build.ps1](v1-src/ProductLaunch/build.ps1) script for version 1 of the app is very simple, it just builds the web project from the expected source location, and publishes to the expected output location. On your lab VM, change to the `v1-src` directory and run a container to build the web app:
 
 ```
-cd C:\scm\github\docker\dcus-hol-2017\windows-modernize-aspnet-dev\v1-src
+cd $labRoot\v1-src
 
-docker run --rm `
+docker container run --rm `
  -v $pwd\ProductLaunch:c:\src `
  -v $pwd\docker:c:\out `
  <DockerID>/modernize-aspnet-builder `
@@ -181,8 +197,8 @@ Docker has its own DNS server which is how containers can find each other by nam
 Lastly the Dockerfile copies in the published website from the builder. Build the image to package up the app:
 
 ```
-cd C:\scm\github\docker\dcus-hol-2017\windows-modernize-aspnet-dev\v1-src\docker\web
-docker build -t <DockerID>/modernize-aspnet-web:v1 .
+cd $labRoot\v1-src\docker\web
+docker image build -t $dockerId/modernize-aspnet-web:v1 .
 ```
 
 > Be sure to tag the image with your own Docker ID so you can push it to Docker Cloud.
@@ -210,7 +226,7 @@ When you run the web application, the DNS server in the Docker platform will res
 Microsoft provide a SQL Server Express image on Docker Store, which is already pulled on your lab VM. Run it in a container with this command to set up the expected credentials and DNS name:
 
 ```
-docker run --detach `
+docker container run --detach `
  --env sa_password=DockerCon2017 `
  --env ACCEPT_EULA=Y `
  --name sql-server `
@@ -220,9 +236,9 @@ docker run --detach `
 Starting the website is as simple running a container from the application image you've built:
 
 ```
-docker run -d -p 80:80 `
+docker container run -d -p 80:80 `
  --name web `
- <DockerID>/modernize-aspnet-web:v1
+ $dockerId/modernize-aspnet-web:v1
 ```
 
 If you run `docker container ls` now, you'll see two containers - one running SQL Server and one running the WebForms app. The SQL Server container doesn't expose any ports, because the web container can connect to it through the Docker network, SQL doesn't need to be publicly available.
@@ -236,7 +252,7 @@ Go ahead and click the "Sign Up" button. The form you see is reading the drop-do
 Back on your lab VM, you can run a SQL query inside the container using `docker exec`, to check your data is there:
 
 ```
-docker exec sql-server powershell -Command `
+docker container exec sql-server powershell -Command `
   "Invoke-SqlCmd -Query 'SELECT * FROM Prospects' -Database ProductLaunch"
 ```
 
@@ -301,11 +317,11 @@ The message handler will run in a Docker container too. The [Dockerfile](v2-src/
 You need to run the builder image to compile the solution, and then build new Docker images for the web application and the message handler. The [build.ps1](v2-src/build.ps1) script does that for you:
 
 ```
-cd C:\scm\github\docker\dcus-hol-2017\windows-modernize-aspnet-dev\v2-src
-.\build.ps1 <DockerID>
+cd $labRoot\v2-src
+.\build.ps1 $dockerId
 ```
 
-When that finishes, run `docker image ls -f reference=<DockerID>/*`. You'll see you have lab images for the builder, message handler and a new version of the web app. The app is a distributed solution now, which will run across multiple containers.
+When that finishes, run `docker image ls -f "reference=$dockerId/*"`. You'll see you have lab images for the builder, message handler and a new version of the web app. The app is a distributed solution now, which will run across multiple containers.
 
 For the app to work properly, the containers need to be started in the right order, with the right parameters and names. You could do that with a PowerShell script, but Docker Compose is a better option. The v2 source has a compose file which defines all the services the solution needs, together with their configuration and the dependencies between them.
 
@@ -320,10 +336,9 @@ Invoke-WebRequest -UseBasicParsing -OutFile 'C:\Program Files\Docker\docker-comp
 Now you can stop the containers from the v1 app, and start the new app using Docker Compose:
 
 ```
-docker container kill $(docker container ls -a -q)
-docker container rm $(docker container ls -a -q)
+docker container rm -f $(docker container ls -a -q)
 
-cd C:\scm\github\docker\dcus-hol-2017\windows-modernize-aspnet-dev\v2-src
+cd $labRoot\v2-src
 docker-compose up -d
 ```
 
@@ -334,14 +349,14 @@ On your laptop, browse to the VM again and you will see the same product launch 
 You can check the data is in SQL Server by running:
 
 ```
-docker exec v2src_product-launch-db_1 powershell -Command `
+docker container exec v2src_product-launch-db_1 powershell -Command `
   "Invoke-SqlCmd -Query 'SELECT * FROM Prospects' -Database ProductLaunch"
 ```
 
 And also look at the logs of the message handler to verify that it was the handler container which wrote the data:
 
 ```
-docker logs v2src_save-prospect-handler_1
+docker container logs v2src_save-prospect-handler_1
 ```
 
 You've made one of the app features asynchronous by pulling the functionality out of the website, and into a message handler, using the NATS message queue to plumb them together. Performance problems are a great candidate for taking into a modernization program. With asynchronous messaging you can add scalability and performance by targeting a specific feature.
