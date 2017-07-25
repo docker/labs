@@ -1,0 +1,55 @@
+# File containing Falco rules, loaded at startup.
+rules_file: /etc/falco_rules.yaml
+
+# Whether to output events in json or text
+json_output: false
+
+# Send information logs to stderr and/or syslog Note these are *not* security
+# notification logs! These are just Falco lifecycle (and possibly error) logs.
+log_stderr: true
+log_syslog: true
+
+# Minimum log level to include in logs. Note: these levels are
+# separate from the priority field of rules. This refers only to the
+# log level of falco's internal logging. Can be one of "emergency",
+# "alert", "critical", "error", "warning", "notice", "info", "debug".
+log_level: info
+
+# A throttling mechanism implemented as a token bucket limits the
+# rate of falco notifications. This throttling is controlled by the following configuration
+# options:
+#  - rate: the number of tokens (i.e. right to send a notification)
+#    gained per second. Defaults to 1.
+#  - max_burst: the maximum number of tokens outstanding. Defaults to 1000.
+#
+# With these defaults, falco could send up to 1000 notifications after
+# an initial quiet period, and then up to 1 notification per second
+# afterward. It would gain the full burst back after 1000 seconds of
+# no activity.
+
+outputs:
+  rate: 1
+  max_burst: 1000
+
+# Where security notifications should go.
+# Multiple outputs can be enabled.
+
+syslog_output:
+  enabled: false
+
+file_output:
+  enabled: true
+  filename: /var/log/falco_events.log
+
+stdout_output:
+  enabled: true
+
+# Possible additional things you might want to do with program output:
+#   - send to a slack webhook:
+#         program: "jq '{text: .output}' | curl -d @- -X POST https://hooks.slack.com/services/XXX"
+#   - logging (alternate method than syslog):
+#         program: logger -t falco-test
+
+program_output:
+  enabled: false
+  program: mail -s "Falco Notification" someone@example.com
