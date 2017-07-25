@@ -1,0 +1,934 @@
+#############
+# Definitions
+#############
+
+# File actions
+
+
+# Currently disabled as read/write are ignored syscalls. The nearly
+# similar open_write/open_read check for files being opened for
+# reading/writing.
+# - macro: write
+#   condition: (syscall.type=write and fd.type in (file, directory))
+# - macro: read
+#   condition: (syscall.type=read and evt.dir=> and fd.type in (file, directory))
+
+- macro: open_write
+  condition: (evt.type=open or evt.type=openat) and evt.is_open_write=true and fd.typechar='f' and fd.num>=0
+
+- macro: open_read
+  condition: (evt.type=open or evt.type=openat) and evt.is_open_read=true and fd.typechar='f' and fd.num>=0
+
+- macro: rename
+  condition: evt.type = rename
+- macro: mkdir
+  condition: evt.type = mkdir
+- macro: remove
+  condition: evt.type in (rmdir, unlink, unlinkat)
+
+- macro: modify
+  condition: rename or remove
+
+- macro: spawned_process
+  condition: evt.type = execve and evt.dir=<
+
+# File categories
+- macro: terminal_file_fd
+  condition: fd.name=/dev/ptmx or fd.name startswith /dev/pts
+
+- macro: bin_dir
+  condition: fd.directory in (/bin, /sbin, /usr/bin, /usr/sbin)
+
+- macro: bin_dir_mkdir
+  condition: >
+    evt.arg[0] startswith /bin/ or
+    evt.arg[0] startswith /sbin/ or
+    evt.arg[0] startswith /usr/bin/ or
+    evt.arg[0] startswith /usr/sbin/
+
+- macro: bin_dir_rename
+  condition: >
+    evt.arg[1] startswith /bin/ or
+    evt.arg[1] startswith /sbin/ or
+    evt.arg[1] startswith /usr/bin/ or
+    evt.arg[1] startswith /usr/sbin/
+
+- macro: etc_dir
+  condition: fd.name startswith /etc
+
+- macro: ubuntu_so_dirs
+  condition: >
+    fd.name startswith /lib/x86_64-linux-gnu or
+    fd.name startswith /usr/lib/x86_64-linux-gnu or
+    fd.name startswith /usr/lib/sudo
+
+- macro: centos_so_dirs
+  condition: >
+    fd.name startswith /lib64 or
+    fd.name startswith /usr/lib64 or
+    fd.name startswith /usr/libexec
+
+- macro: linux_so_dirs
+  condition: ubuntu_so_dirs or centos_so_dirs or fd.name=/etc/ld.so.cache
+
+- list: shell_binaries
+  items: [bash, csh, ksh, sh, tcsh, zsh, dash]
+
+- macro: shell_procs
+  condition: proc.name in (shell_binaries)
+
+- list: coreutils_binaries
+  items: [
+    truncate, sha1sum, numfmt, fmt, fold, uniq, cut, who,
+    groups, csplit, sort, expand, printf, printenv, unlink, tee, chcon, stat,
+    basename, split, nice, "yes", whoami, sha224sum, hostid, users, stdbuf,
+    base64, unexpand, cksum, od, paste, nproc, pathchk, sha256sum, wc, test,
+    comm, arch, du, factor, sha512sum, md5sum, tr, runcon, env, dirname,
+    tsort, join, shuf, install, logname, pinky, nohup, expr, pr, tty, timeout,
+    tail, "[", seq, sha384sum, nl, head, id, mkfifo, sum, dircolors, ptx, shred,
+    tac, link, chroot, vdir, chown, touch, ls, dd, uname, "true", pwd, date,
+    chgrp, chmod, mktemp, cat, mknod, sync, ln, "false", rm, mv, cp, echo,
+    readlink, sleep, stty, mkdir, df, dir, rmdir, touch
+    ]
+
+# dpkg -L login | grep bin | xargs ls -ld | grep -v '^d' | awk '{print $9}' | xargs -L 1 basename | tr "\\n" ","
+- list: login_binaries
+  items: [
+    login, systemd, '"(systemd)"', systemd-logind, su,
+    nologin, faillog, lastlog, newgrp, sg
+    ]
+
+# dpkg -L passwd | grep bin | xargs ls -ld | grep -v '^d' | awk '{print $9}' | xargs -L 1 basename | tr "\\n" ","
+- list: passwd_binaries
+  items: [
+    shadowconfig, grpck, pwunconv, grpconv, pwck,
+    groupmod, vipw, pwconv, useradd, newusers, cppw, chpasswd, usermod,
+    groupadd, groupdel, grpunconv, chgpasswd, userdel, chage, chsh,
+    gpasswd, chfn, expiry, passwd, vigr, cpgr
+    ]
+
+# repoquery -l shadow-utils | grep bin | xargs ls -ld | grep -v '^d' |
+#     awk '{print $9}' | xargs -L 1 basename | tr "\\n" ","
+- list: shadowutils_binaries
+  items: [
+    chage, gpasswd, lastlog, newgrp, sg, adduser, deluser, chpasswd,
+    groupadd, groupdel, addgroup, delgroup, groupmems, groupmod, grpck, grpconv, grpunconv,
+    newusers, pwck, pwconv, pwunconv, useradd, userdel, usermod, vigr, vipw, unix_chkpwd
+    ]
+
+- list: sysdigcloud_binaries
+  items: [setup-backend, dragent, sdchecks]
+
+- list: docker_binaries
+  items: [docker, dockerd, exe, docker-compose, docker-entrypoi]
+
+- list: k8s_binaries
+  items: [hyperkube, skydns, kube2sky, exechealthz]
+
+- list: lxd_binaries
+  items: [lxd, lxcfs]
+
+# Utility/etc programs known to run on mesos slaves. Truncation
+# intentional.
+- list: mesos_slave_binaries
+  items: [mesos-health-ch, mesos-docker-ex, mesos-agent, mesos-logrotate, mesos-fetcher]
+
+- list: http_server_binaries
+  items: [nginx, httpd, httpd-foregroun, lighttpd]
+
+- list: db_server_binaries
+  items: [mysqld]
+
+- list: gitlab_binaries
+  items: [gitlab-shell, gitlab-mon, gitlab-runner-b, git]
+
+- macro: server_procs
+  condition: proc.name in (http_server_binaries, db_server_binaries, docker_binaries, sshd)
+
+# The explicit quotes are needed to avoid the - characters being
+# interpreted by the filter expression.
+- list: rpm_binaries
+  items: [dnf, rpm, rpmkey, yum, '"75-system-updat"']
+
+- macro: rpm_procs
+  condition: proc.name in (rpm_binaries)
+
+- list: deb_binaries
+  items: [dpkg, dpkg-preconfigu, apt, apt-get, aptitude,
+    frontend, preinst, add-apt-reposit, apt-auto-remova, apt-key,
+    apt-listchanges, unattended-upgr
+    ]
+
+# The truncated dpkg-preconfigu is intentional, process names are
+# truncated at the sysdig level.
+- list: package_mgmt_binaries
+  items: [rpm_binaries, deb_binaries, update-alternat]
+
+- macro: package_mgmt_procs
+  condition: proc.name in (package_mgmt_binaries)
+
+- list: ssl_mgmt_binaries
+  items: [ca-certificates]
+
+- list: dhcp_binaries
+  items: [dhclient, dhclient-script]
+
+# A canonical set of processes that run other programs with different
+# privileges or as a different user.
+- list: userexec_binaries
+  items: [sudo, su]
+
+- list: user_mgmt_binaries
+  items: [login_binaries, passwd_binaries, shadowutils_binaries]
+
+- list: dev_creation_binaries
+  items: [blkid, rename_device]
+
+- list: aide_wrapper_binaries
+  items: [aide.wrapper, update-aide.con]
+
+- list: hids_binaries
+  items: [aide]
+
+- list: nids_binaries
+  items: [bro, broctl]
+
+- list: monitoring_binaries
+  items: [icinga2, nrpe, npcd, check_sar_perf.]
+
+- macro: system_procs
+  condition: proc.name in (coreutils_binaries, user_mgmt_binaries)
+
+- list: mail_binaries
+  items: [sendmail, sendmail-msp, postfix, procmail, exim4, pickup, showq]
+
+- list: make_binaries
+  items: [make, gmake, cmake]
+
+- macro: sensitive_files
+  condition: >
+    fd.name startswith /etc and
+    (fd.name in (/etc/shadow, /etc/sudoers, /etc/pam.conf)
+     or fd.directory in (/etc/sudoers.d, /etc/pam.d)) or fd.name startswith /dev
+
+# Indicates that the process is new. Currently detected using time
+# since process was started, using a threshold of 5 seconds.
+- macro: proc_is_new
+  condition: proc.duration <= 5000000000
+
+# Network
+- macro: inbound
+  condition: ((evt.type=listen and evt.dir=>) or (evt.type=accept and evt.dir=<))
+
+# Currently sendto is an ignored syscall, otherwise this could also
+# check for (evt.type=sendto and evt.dir=>)
+- macro: outbound
+  condition: evt.type=connect and evt.dir=< and (fd.typechar=4 or fd.typechar=6)
+
+- macro: ssh_port
+  condition: fd.lport=22
+
+# Ssh
+- macro: ssh_error_message
+  condition: >
+    (evt.arg.data contains "Invalid user" or
+    evt.arg.data contains "preauth" or
+    evt.arg.data contains "Failed password")
+
+# System
+- macro: modules
+  condition: evt.type in (delete_module, init_module)
+
+# Use this to test whether the event occurred within a container.
+
+# When displaying container information in the output field, use
+# %container.info, without any leading term (file=%fd.name
+# %container.info user=%user.name, and not file=%fd.name
+# container=%container.info user=%user.name). The output will change
+# based on the context and whether or not -pk/-pm/-pc was specified on
+# the command line.
+- macro: container
+  condition: container.id != host
+
+- macro: interactive
+  condition: >
+    ((proc.aname=sshd and proc.name != sshd) or
+    proc.name=systemd-logind or proc.name=login)
+
+- macro: syslog
+  condition: fd.name in (/dev/log, /run/systemd/journal/syslog)
+
+- list: cron_binaries
+  items: [anacron, cron, crond]
+
+# System users that should never log into a system. Consider adding your own
+# service users (e.g. 'apache' or 'mysqld') here.
+- macro: system_users
+  condition: user.name in (bin, daemon, games, lp, mail, nobody, sshd, sync, uucp, www-data)
+
+# SPECIAL NOTE: This macro eliminates false positives that result from
+# running python scripts as a part of ansible. However, the condition
+# that the command line contains "ansible" is very
+# permissive. Ideally, you should change this macro to explicitly
+# scope the python scripts to a specific directory (namely, your
+# configured remote_tmp directory).
+- macro: parent_ansible_running_python
+  condition: (proc.pname in (python, pypy) and proc.pcmdline contains ansible)
+
+- macro: ansible_running_python
+  condition: (proc.name in (python, pypy) and proc.cmdline contains ansible)
+
+- macro: python_running_denyhosts
+  condition: >
+    (proc.name=python and
+    (proc.cmdline contains /usr/sbin/denyhosts or
+     proc.cmdline contains /usr/local/bin/denyhosts.py))
+
+- macro: parent_python_running_denyhosts
+  condition: >
+    (proc.pname=python and
+    (proc.pcmdline contains /usr/sbin/denyhosts or
+     proc.pcmdline contains /usr/local/bin/denyhosts.py))
+
+- macro: parent_python_running_sdchecks
+  condition: >
+    (proc.name in (python, python2.7) and
+    (proc.cmdline contains /opt/draios/bin/sdchecks))
+
+- macro: parent_bro_running_python
+  condition: (proc.pname=python and proc.cmdline contains /usr/share/broctl)
+
+- macro: parent_java_running_jenkins
+  condition: >
+    (proc.pname=java and proc.pcmdline contains jenkins.war
+    or proc.pcmdline contains /tmp/slave.jar)
+
+# As a part of kernel upgrades, dpkg will spawn a perl script with the
+# name linux-image-N.N. This macro matches that.
+- macro: parent_linux_image_upgrade_script
+  condition: proc.pname startswith linux-image-
+
+- macro: java_running_sdjagent
+  condition: proc.name=java and proc.cmdline contains sdjagent.jar
+
+###############
+# General Rules
+###############
+
+- rule: Write below binary dir
+  desc: an attempt to write to any file below a set of binary directories
+  condition: bin_dir and evt.dir = < and open_write and not package_mgmt_procs
+  output: >
+    File below a known binary directory opened for writing (user=%user.name
+    command=%proc.cmdline file=%fd.name)
+  priority: ERROR
+  tags: [filesystem]
+
+- macro: write_etc_common
+  condition: >
+    etc_dir and evt.dir = < and open_write
+    and not proc.name in (passwd_binaries, shadowutils_binaries, sysdigcloud_binaries,
+                          package_mgmt_binaries, ssl_mgmt_binaries, dhcp_binaries,
+                          dev_creation_binaries,
+                          ldconfig.real, ldconfig, confd, gpg, insserv,
+                          apparmor_parser, update-mime, tzdata.config, tzdata.postinst,
+                          systemd-machine, debconf-show, rollerd, bind9.postinst, sv,
+                          gen_resolvconf.)
+    and not proc.pname in (sysdigcloud_binaries)
+    and not fd.directory in (/etc/cassandra, /etc/ssl/certs/java)
+    and not ansible_running_python
+    and not python_running_denyhosts
+
+- rule: Write below etc
+  desc: an attempt to write to any file below /etc, not in a pipe installer session
+  condition: write_etc_common and not proc.sname=fbash
+  output: "File below /etc opened for writing (user=%user.name command=%proc.cmdline file=%fd.name)"
+  priority: ERROR
+  tags: [filesystem]
+
+# Within a fbash session, the severity is lowered to INFO
+- rule: Write below etc in installer
+  desc: an attempt to write to any file below /etc, in a pipe installer session
+  condition: write_etc_common and proc.sname=fbash
+  output: >
+    File below /etc opened for writing (user=%user.name command=%proc.cmdline
+    file=%fd.name) within pipe installer session
+  priority: INFO
+  tags: [filesystem]
+
+- macro: cmp_cp_by_passwd
+  condition: proc.name in (cmp, cp) and proc.pname=passwd
+
+- rule: Read sensitive file trusted after startup
+  desc: >
+    an attempt to read any sensitive file (e.g. files containing user/password/authentication
+    information) by a trusted program after startup. Trusted programs might read these files
+    at startup to load initial state, but not afterwards.
+  condition: sensitive_files and open_read and server_procs and not proc_is_new and proc.name!="sshd"
+  output: >
+    Sensitive file opened for reading by trusted program after startup (user=%user.name
+    command=%proc.cmdline file=%fd.name)
+  priority: WARNING
+  tags: [filesystem]
+
+- list: read_sensitive_file_binaries
+  items: [iptables, ps, lsb_release, check-new-relea, dumpe2fs, accounts-daemon, sshd, vsftpd, systemd]
+
+- rule: Read sensitive file untrusted
+  desc: >
+    an attempt to read any sensitive file (e.g. files containing user/password/authentication
+    information). Exceptions are made for known trusted programs.
+  condition: >
+    sensitive_files and open_read
+    and not proc.name in (user_mgmt_binaries, userexec_binaries, package_mgmt_binaries,
+     cron_binaries, read_sensitive_file_binaries, shell_binaries, hids_binaries)
+    and not cmp_cp_by_passwd
+    and not ansible_running_python
+    and not proc.cmdline contains /usr/bin/mandb
+  output: >
+    Sensitive file opened for reading by non-trusted program (user=%user.name name=%proc.name
+    command=%proc.cmdline file=%fd.name)
+  priority: WARNING
+  tags: [filesystem]
+
+# Only let rpm-related programs write to the rpm database
+- rule: Write below rpm database
+  desc: an attempt to write to the rpm database by any non-rpm related program
+  condition: fd.name startswith /var/lib/rpm and open_write and not rpm_procs and not ansible_running_python
+  output: "Rpm database opened for writing by a non-rpm program (command=%proc.cmdline file=%fd.name)"
+  priority: ERROR
+  tags: [filesystem, software_mgmt]
+
+- rule: DB program spawned process
+  desc: >
+    a database-server related program spawned a new process other than itself.
+    This shouldn\'t occur and is a follow on from some SQL injection attacks.
+  condition: proc.pname in (db_server_binaries) and spawned_process and not proc.name in (db_server_binaries)
+  output: >
+    Database-related program spawned process other than itself (user=%user.name
+    program=%proc.cmdline parent=%proc.pname)
+  priority: NOTICE
+  tags: [process, database]
+
+- rule: Modify binary dirs
+  desc: an attempt to modify any file below a set of binary directories.
+  condition: bin_dir_rename and modify and not package_mgmt_procs
+  output: >
+    File below known binary directory renamed/removed (user=%user.name command=%proc.cmdline
+    operation=%evt.type file=%fd.name %evt.args)
+  priority: ERROR
+  tags: [filesystem]
+
+- rule: Mkdir binary dirs
+  desc: an attempt to create a directory below a set of binary directories.
+  condition: mkdir and bin_dir_mkdir and not package_mgmt_procs
+  output: >
+    Directory below known binary directory created (user=%user.name
+    command=%proc.cmdline directory=%evt.arg.path)
+  priority: ERROR
+  tags: [filesystem]
+
+# Don't load shared objects coming from unexpected places
+# Commenting this out for now--there are lots of shared library
+# locations below /usr/lib for things like python, perl, etc. We may
+# want to just add /usr/lib to the list, but that is really
+# permissive.
+# - condition: open_read and fd.name contains .so and not (linux_so_dirs)
+#   output: "Loaded .so from unexpected dir (%user.name %proc.name %evt.dir %evt.type %evt.args %fd.name)"
+#   priority: WARNING
+
+# Temporarily disabling this rule as it's tripping over https://github.com/draios/sysdig/issues/598
+# - rule: Syscall returns eaccess
+#   desc: >
+#     any system call that returns EACCESS. This is not always a strong
+#      indication of a problem, hence the INFO priority.
+#   condition: evt.res = EACCESS
+#   output: >
+#     System call returned EACCESS (user=%user.name command=%proc.cmdline
+#     syscall=%evt.type args=%evt.args)
+#   priority: INFO
+
+- rule: Change thread namespace
+  desc: >
+    an attempt to change a program/thread\'s namespace (commonly done
+    as a part of creating a container) by calling setns.
+  condition: >
+    evt.type = setns
+    and not proc.name in (docker_binaries, k8s_binaries, lxd_binaries, sysdigcloud_binaries, sysdig, nsenter)
+    and not proc.name startswith "runc:"
+    and not proc.pname in (sysdigcloud_binaries)
+    and not java_running_sdjagent
+  output: >
+    Namespace change (setns) by unexpected program (user=%user.name command=%proc.cmdline
+    parent=%proc.pname %container.info)
+  priority: NOTICE
+  tags: [process]
+
+- list: known_shell_spawn_binaries
+  items: [
+    sshd, sudo, su, tmux, screen, emacs, systemd, login, flock, fbash,
+    nginx, monit, supervisord, dragent, aws, initdb, docker-compose,
+    configure, awk, falco, fail2ban-server, fleetctl,
+    logrotate, ansible, less, adduser, pycompile, py3compile,
+    pyclean, py3clean, pip, pip2, ansible-playboo, man-db,
+    init, pluto, mkinitramfs, unattended-upgr, watch, sysdig,
+    landscape-sysin, nessusd, PM2, syslog-summary, erl_child_setup,
+    npm, cloud-init, toybox, ceph
+    ]
+
+- rule: Run shell untrusted
+  desc: an attempt to spawn a shell by a non-shell program. Exceptions are made for trusted binaries.
+  condition: >
+    spawned_process and not container
+    and shell_procs
+    and proc.pname exists
+    and not proc.pname in (cron_binaries, shell_binaries, make_binaries, known_shell_spawn_binaries, docker_binaries,
+                           k8s_binaries, package_mgmt_binaries, aide_wrapper_binaries, nids_binaries,
+                           monitoring_binaries, gitlab_binaries, mesos_slave_binaries)
+    and not parent_ansible_running_python
+    and not parent_bro_running_python
+    and not parent_python_running_denyhosts
+    and not parent_python_running_sdchecks
+    and not parent_linux_image_upgrade_script
+    and not parent_java_running_jenkins
+  output: >
+    Shell spawned by untrusted binary (user=%user.name shell=%proc.name parent=%proc.pname
+    cmdline=%proc.cmdline pcmdline=%proc.pcmdline)
+  priority: DEBUG
+  tags: [host, shell]
+
+- macro: trusted_containers
+  condition: (container.image startswith sysdig/agent or
+              (container.image startswith sysdig/falco and
+               not container.image startswith sysdig/falco-event-generator) or
+              container.image startswith quay.io/sysdig or
+              container.image startswith sysdig/sysdig or
+              container.image startswith gcr.io/google_containers/hyperkube or
+              container.image startswith quay.io/coreos/flannel or
+              container.image startswith gcr.io/google_containers/kube-proxy)
+
+# These containers are ones that are known to spawn lots of
+# shells. Generally, they are for systems where the container is used
+# as a packaging mechanism more than for a dedicated microservice.
+- macro: shell_spawning_containers
+  condition: (container.image startswith jenkins or
+              container.image startswith gitlab/gitlab-ce)
+
+- rule: Launch Privileged Container
+  desc: Detect the initial process started in a privileged container. Exceptions are made for known trusted images.
+  condition: evt.type=execve and proc.vpid=1 and container and container.privileged=true and not trusted_containers
+  output: Privileged container started (user=%user.name command=%proc.cmdline %container.info)
+  priority: INFO
+  tags: [container, cis]
+
+- macro: sensitive_mount
+  condition: (container.mount.dest[/proc*] != "N/A")
+
+- rule: Launch Sensitive Mount Container
+  desc: >
+    Detect the initial process started by a container that has a mount from a sensitive host directory
+    (i.e. /proc). Exceptions are made for known trusted images.
+  condition: evt.type=execve and proc.vpid=1 and container and sensitive_mount and not trusted_containers
+  output: Container with sensitive mount started (user=%user.name command=%proc.cmdline %container.info)
+  priority: INFO
+  tags: [container, cis]
+
+# Anything run interactively by root
+# - condition: evt.type != switch and user.name = root and proc.name != sshd and interactive
+#  output: "Interactive root (%user.name %proc.name %evt.dir %evt.type %evt.args %fd.name)"
+#  priority: WARNING
+
+- rule: System user interactive
+  desc: an attempt to run interactive commands by a system (i.e. non-login) user
+  condition: spawned_process and system_users and interactive
+  output: "System user ran an interactive command (user=%user.name command=%proc.cmdline)"
+  priority: INFO
+  tags: [users]
+
+- rule: Terminal shell in container
+  desc: A shell was spawned by a program in a container with an attached terminal.
+  condition: >
+    spawned_process and container
+    and shell_procs and proc.tty != 0
+  output: >
+    A shell was spawned in a container with an attached terminal (user=%user.name %container.info
+    shell=%proc.name parent=%proc.pname cmdline=%proc.cmdline terminal=%proc.tty)
+  priority: NOTICE
+  tags: [container, shell]
+
+# For some container types (mesos), there isn't a container image to
+# work with, and the container name is autogenerated, so there isn't
+# any stable aspect of the software to work with. In this case, we
+# fall back to allowing certain command lines.
+- list: known_container_shell_spawn_cmdlines
+  items: [
+    '"bash -c curl -f localhost:$API_PORT/admin/healthcheck"',
+    '"sh -c curl http://localhost:6060/debug/vars>/dev/null "',
+    '"sh -c curl http://localhost:6060/debug/vars>/dev/null"',
+    '"sh -c  curl http://localhost:6060/debug/vars>/dev/null"',
+    '"sh -c  curl http://localhost:6060/debug/vars>/dev/null "',
+    '"sh -c  pgrep java && exit 0 || exit 1 "',
+    '"sh -c uname -p 2> /dev/null"',
+    '"sh -c  echo healthy "',
+    '"sh -c  echo alive "'
+    ]
+
+- rule: Run shell in container
+  desc: a shell was spawned by a non-shell program in a container. Container entrypoints are excluded.
+  condition: >
+    spawned_process and container
+    and shell_procs
+    and proc.pname exists
+    and not proc.pname in (shell_binaries, make_binaries, docker_binaries, k8s_binaries,
+                           lxd_binaries, mesos_slave_binaries, aide_wrapper_binaries, nids_binaries,
+                           monitoring_binaries, gitlab_binaries, initdb, pg_ctl, awk, falco, cron,
+                           erl_child_setup, ceph, PM2)
+    and not trusted_containers
+    and not shell_spawning_containers
+    and not proc.cmdline in (known_container_shell_spawn_cmdlines)
+  output: >
+    Shell spawned in a container other than entrypoint (user=%user.name %container.info
+    shell=%proc.name parent=%proc.pname cmdline=%proc.cmdline)
+  priority: NOTICE
+  tags: [container, shell]
+
+# sockfamily ip is to exclude certain processes (like 'groups') that communicate on unix-domain sockets
+# systemd can listen on ports to launch things like sshd on demand
+- rule: System procs network activity
+  desc: any network activity performed by system binaries that are not expected to send or receive any network traffic
+  condition: (fd.sockfamily = ip and system_procs) and (inbound or outbound) and not proc.name=systemd
+  output: >
+    Known system binary sent/received network traffic
+    (user=%user.name command=%proc.cmdline connection=%fd.name)
+  priority: NOTICE
+  tags: [network]
+
+# With the current restriction on system calls handled by falco
+# (e.g. excluding read/write/sendto/recvfrom/etc, this rule won't
+# trigger).
+# - rule: Ssh error in syslog
+#   desc: any ssh errors (failed logins, disconnects, ...) sent to syslog
+#   condition: syslog and ssh_error_message and evt.dir = <
+#   output: "sshd sent error message to syslog (error=%evt.buffer)"
+#   priority: WARNING
+
+- macro: somebody_becoming_themself
+  condition: ((user.name=nobody and evt.arg.uid=nobody) or
+              (user.name=www-data and evt.arg.uid=www-data))
+
+# sshd, mail programs attempt to setuid to root even when running as non-root. Excluding here to avoid meaningless FPs
+- rule: Non sudo setuid
+  desc: >
+    an attempt to change users by calling setuid. sudo/su are excluded. users "root" and "nobody"
+    suing to itself are also excluded, as setuid calls typically involve dropping privileges.
+  condition: >
+    evt.type=setuid and evt.dir=> and
+    not user.name=root and not somebody_becoming_themself
+    and not proc.name in (userexec_binaries, mail_binaries, docker_binaries,
+    sshd, dbus-daemon-lau, ping, ping6, critical-stack-)
+  output: >
+    Unexpected setuid call by non-sudo, non-root program (user=%user.name parent=%proc.pname
+    command=%proc.cmdline uid=%evt.arg.uid)
+  priority: NOTICE
+  tags: [users]
+
+- rule: User mgmt binaries
+  desc: >
+    activity by any programs that can manage users, passwords, or permissions. sudo and su are excluded.
+    Activity in containers is also excluded--some containers create custom users on top
+    of a base linux distribution at startup.
+  condition: >
+    spawned_process and proc.name in (user_mgmt_binaries) and
+    not proc.name in (su, sudo) and not container and
+    not proc.pname in (cron_binaries, systemd, run-parts)
+  output: >
+    User management binary command run outside of container
+    (user=%user.name command=%proc.cmdline parent=%proc.pname)
+  priority: NOTICE
+  tags: [host, users]
+
+- list: allowed_dev_files
+  items: [
+    /dev/null, /dev/stdin, /dev/stdout, /dev/stderr,
+    /dev/random, /dev/urandom, /dev/console, /dev/kmsg
+    ]
+
+# (we may need to add additional checks against false positives, see:
+# https://bugs.launchpad.net/ubuntu/+source/rkhunter/+bug/86153)
+- rule: Create files below dev
+  desc: creating any files below /dev other than known programs that manage devices. Some rootkits hide files in /dev.
+  condition: >
+    fd.directory = /dev and
+    (evt.type = creat or (evt.type = open and evt.arg.flags contains O_CREAT))
+    and not proc.name in (dev_creation_binaries)
+    and not fd.name in (allowed_dev_files)
+    and not fd.name startswith /dev/tty
+  output: "File created below /dev by untrusted program (user=%user.name command=%proc.cmdline file=%fd.name)"
+  priority: ERROR
+  tags: [filesystem]
+
+# fbash is a small shell script that runs bash, and is suitable for use in curl <curl> | fbash installers.
+- rule: Installer bash starts network server
+  desc: an attempt by a program in a pipe installer session to start listening for network connections
+  condition: evt.type=listen and proc.sname=fbash
+  output: "Unexpected listen call by a process in a fbash session (command=%proc.cmdline)"
+  priority: NOTICE
+  tags: [network]
+
+- rule: Installer bash starts session
+  desc: an attempt by a program in a pipe installer session to start a new session
+  condition: evt.type=setsid and proc.sname=fbash
+  output: "Unexpected setsid call by a process in fbash session (command=%proc.cmdline)"
+  priority: NOTICE
+  tags: [process]
+
+- rule: Installer bash non https connection
+  desc: an attempt by a program in a pipe installer session to make an outgoing connection on a non-http(s) port
+  condition: proc.sname=fbash and outbound and not fd.sport in (80, 443, 53)
+  output: >
+    Outbound connection on non-http(s) port by a process in a fbash session
+    (command=%proc.cmdline connection=%fd.name)
+  priority: NOTICE
+  tags: [network]
+
+# It'd be nice if we could warn when processes in a fbash session try
+# to download from any nonstandard location? This is probably blocked
+# on https://github.com/draios/falco/issues/88 though.
+
+# Notice when processes try to run chkconfig/systemctl.... to install a service.
+# Note: this is not a WARNING, as you'd expect some service management
+# as a part of doing the installation.
+- rule: Installer bash manages service
+  desc: an attempt by a program in a pipe installer session to manage a system service (systemd/chkconfig)
+  condition: evt.type=execve and proc.name in (chkconfig, systemctl) and proc.sname=fbash
+  output: "Service management program run by process in a fbash session (command=%proc.cmdline)"
+  priority: INFO
+  tags: [software_mgmt]
+
+# Notice when processes try to run any package management binary within a fbash session.
+# Note: this is not a WARNING, as you'd expect some package management
+# as a part of doing the installation
+- rule: Installer bash runs pkgmgmt program
+  desc: an attempt by a program in a pipe installer session to run a package management binary
+  condition: evt.type=execve and package_mgmt_procs and proc.sname=fbash
+  output: "Package management program run by process in a fbash session (command=%proc.cmdline)"
+  priority: INFO
+  tags: [software_mgmt]
+
+###########################
+# Application-Related Rules
+###########################
+
+################################################################
+# By default all application-related rules are disabled for
+# performance reasons. Depending on the application(s) you use,
+# uncomment the corresponding rule definitions for
+# application-specific activity monitoring.
+################################################################
+
+# Elasticsearch ports
+- macro: elasticsearch_cluster_port
+  condition: fd.sport=9300
+- macro: elasticsearch_api_port
+  condition: fd.sport=9200
+- macro: elasticsearch_port
+  condition: elasticsearch_cluster_port or elasticsearch_api_port
+
+# - rule: Elasticsearch unexpected network inbound traffic
+#   desc: inbound network traffic to elasticsearch on a port other than the standard ports
+#   condition: user.name = elasticsearch and inbound and not elasticsearch_port
+#   output: "Inbound network traffic to Elasticsearch on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+# - rule: Elasticsearch unexpected network outbound traffic
+#   desc: outbound network traffic from elasticsearch on a port other than the standard ports
+#   condition: user.name = elasticsearch and outbound and not elasticsearch_cluster_port
+#   output: "Outbound network traffic from Elasticsearch on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+
+# ActiveMQ ports
+- macro: activemq_cluster_port
+  condition: fd.sport=61616
+- macro: activemq_web_port
+  condition: fd.sport=8161
+- macro: activemq_port
+  condition: activemq_web_port or activemq_cluster_port
+
+# - rule: Activemq unexpected network inbound traffic
+#   desc: inbound network traffic to activemq on a port other than the standard ports
+#   condition: user.name = activemq and inbound and not activemq_port
+#   output: "Inbound network traffic to ActiveMQ on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+# - rule: Activemq unexpected network outbound traffic
+#   desc: outbound network traffic from activemq on a port other than the standard ports
+#   condition: user.name = activemq and outbound and not activemq_cluster_port
+#   output: "Outbound network traffic from ActiveMQ on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+
+# Cassandra ports
+# https://docs.datastax.com/en/cassandra/2.0/cassandra/security/secureFireWall_r.html
+- macro: cassandra_thrift_client_port
+  condition: fd.sport=9160
+- macro: cassandra_cql_port
+  condition: fd.sport=9042
+- macro: cassandra_cluster_port
+  condition: fd.sport=7000
+- macro: cassandra_ssl_cluster_port
+  condition: fd.sport=7001
+- macro: cassandra_jmx_port
+  condition: fd.sport=7199
+- macro: cassandra_port
+  condition: >
+    cassandra_thrift_client_port or
+    cassandra_cql_port or cassandra_cluster_port or
+    cassandra_ssl_cluster_port or cassandra_jmx_port
+
+# - rule: Cassandra unexpected network inbound traffic
+#   desc: inbound network traffic to cassandra on a port other than the standard ports
+#   condition: user.name = cassandra and inbound and not cassandra_port
+#   output: "Inbound network traffic to Cassandra on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+# - rule: Cassandra unexpected network outbound traffic
+#   desc: outbound network traffic from cassandra on a port other than the standard ports
+#   condition: user.name = cassandra and outbound and not (cassandra_ssl_cluster_port or cassandra_cluster_port)
+#   output: "Outbound network traffic from Cassandra on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+# Couchdb ports
+# https://github.com/davisp/couchdb/blob/master/etc/couchdb/local.ini
+- macro: couchdb_httpd_port
+  condition: fd.sport=5984
+- macro: couchdb_httpd_ssl_port
+  condition: fd.sport=6984
+# xxx can't tell what clustering ports are used. not writing rules for this
+# yet.
+
+# Fluentd ports
+- macro: fluentd_http_port
+  condition: fd.sport=9880
+- macro: fluentd_forward_port
+  condition: fd.sport=24224
+
+# - rule: Fluentd unexpected network inbound traffic
+#   desc: inbound network traffic to fluentd on a port other than the standard ports
+#   condition: user.name = td-agent and inbound and not (fluentd_forward_port or fluentd_http_port)
+#   output: "Inbound network traffic to Fluentd on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+# - rule: Tdagent unexpected network outbound traffic
+#   desc: outbound network traffic from fluentd on a port other than the standard ports
+#   condition: user.name = td-agent and outbound and not fluentd_forward_port
+#   output: "Outbound network traffic from Fluentd on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+# Gearman ports
+# http://gearman.org/protocol/
+# - rule: Gearman unexpected network outbound traffic
+#   desc: outbound network traffic from gearman on a port other than the standard ports
+#   condition: user.name = gearman and outbound and outbound and not fd.sport = 4730
+#   output: "Outbound network traffic from Gearman on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+# Zookeeper
+- macro: zookeeper_port
+  condition: fd.sport = 2181
+
+# Kafka ports
+# - rule: Kafka unexpected network inbound traffic
+#   desc: inbound network traffic to kafka on a port other than the standard ports
+#   condition: user.name = kafka and inbound and fd.sport != 9092
+#   output: "Inbound network traffic to Kafka on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+# Memcached ports
+# - rule: Memcached unexpected network inbound traffic
+#   desc: inbound network traffic to memcached on a port other than the standard ports
+#   condition: user.name = memcached and inbound and fd.sport != 11211
+#   output: "Inbound network traffic to Memcached on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+# - rule: Memcached unexpected network outbound traffic
+#   desc: any outbound network traffic from memcached. memcached never initiates outbound connections.
+#   condition: user.name = memcached and outbound
+#   output: "Unexpected Memcached outbound connection (connection=%fd.name)"
+#   priority: WARNING
+
+
+# MongoDB ports
+- macro: mongodb_server_port
+  condition: fd.sport = 27017
+- macro: mongodb_shardserver_port
+  condition: fd.sport = 27018
+- macro: mongodb_configserver_port
+  condition: fd.sport = 27019
+- macro: mongodb_webserver_port
+  condition: fd.sport = 28017
+
+# - rule: Mongodb unexpected network inbound traffic
+#   desc: inbound network traffic to mongodb on a port other than the standard ports
+#   condition: >
+#     user.name = mongodb and inbound and not (mongodb_server_port or
+#     mongodb_shardserver_port or mongodb_configserver_port or mongodb_webserver_port)
+#   output: "Inbound network traffic to MongoDB on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+# MySQL ports
+# - rule: Mysql unexpected network inbound traffic
+#   desc: inbound network traffic to mysql on a port other than the standard ports
+#   condition: user.name = mysql and inbound and fd.sport != 3306
+#   output: "Inbound network traffic to MySQL on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+# - rule: HTTP server unexpected network inbound traffic
+#   desc: inbound network traffic to a http server program on a port other than the standard ports
+#   condition: proc.name in (http_server_binaries) and inbound and fd.sport != 80 and fd.sport != 443
+#   output: "Inbound network traffic to HTTP Server on unexpected port (connection=%fd.name)"
+#   priority: WARNING
+
+############################
+# Docker Labs Security Rules
+############################
+
+
+# Example 2
+
+# Our nginx containers for example1 should only be running the 'nginx' process
+   - rule: Unauthorized process on nginx containers
+     desc: There is a process running in the nginx container that is not described in the template
+     condition: spawned_process and container and container.image startswith nginx and not proc.name in (nginx)
+     output: Unauthorized process (%proc.cmdline) running in (%container.id)
+     priority: WARNING
+
+
+# Example 3
+
+# Enforcing a white list of trusted port numbers
+ - macro: nginx_ports
+     condition: fd.sport=80 or fd.sport=443 or fd.sport=8080
+
+ - rule: Unauthorized port
+     desc: Unauthorized port open on nginx container
+     condition: inbound and container and container.image startswith nginx and not nginx_ports
+     output: Unauthorized port (%fd.name) running in (%container.info)
+     priority: WARNING
+
+
+# Example 4
+
+# Enforcing a white list of allowed user-write directories
+
+ - macro: user_data_dir
+   condition: evt.arg[1] startswith /userdata or evt.arg[1] startswith /var/log/nginx
+
+
+ - rule: Write to non user_data dir
+   desc: attempt to write to directories that should be immutable
+   condition: open_write and container and not user_data_dir
+   output: "Writing to non user_data dir (user=%user.name command=%proc.cmdline file=%fd.name)"
+   priority: ERROR
+
+
