@@ -115,8 +115,8 @@ A JSON file will be created and displayed. Replace its contents with the followi
             "address": "localhost",
             "restart": true,
             "sourceMaps": false,
-            "outDir": null,
-            "localRoot": "${workspaceRoot}",
+            "outFiles": [],
+            "localRoot": "${workspaceRoot}/app",
             "remoteRoot": "/code"
         }
     ]
