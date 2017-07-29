@@ -1,5 +1,5 @@
 var express = require('express');
-var expressHandlebars  = require('express-handlebars');
+var expressHandlebars = require('express-handlebars');
 var http = require('http');
 
 var PORT = 8000;

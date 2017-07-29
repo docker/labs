@@ -3,7 +3,7 @@ version: "2"
 services:
   web:
     build: .
-    command: nodemon --debug=5858
+    command: nodemon --inspect=5858
     volumes:
       - .:/code
     ports:

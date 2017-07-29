@@ -23,7 +23,7 @@ We've created a simple application which includes an error. You can see the app 
 Let's take a look at the `Dockerfile`:
 
 ```
-FROM node:5.11.0-slim
+FROM node:8.2.1
 
 WORKDIR /code
 
@@ -48,7 +48,7 @@ version: "3"
 services:
   web:
     build: .
-    command: nodemon --debug=5858
+    command: nodemon --inspect=0.0.0.0:5858
     volumes:
       - .:/code
     ports:
@@ -80,7 +80,7 @@ Attaching to nodeexample_web_1
 web_1  | [nodemon] 1.9.2
 web_1  | [nodemon] to restart at any time, enter `rs`
 web_1  | [nodemon] watching: *.*
-web_1  | [nodemon] starting `node --debug=5858 app.js`
+web_1  | [nodemon] starting `node --inspect=0.0.0.0:5858 app.js`
 web_1  | Debugger listening on port 5858
 web_1  | HTTP server listening on port 80
 ```
@@ -115,8 +115,8 @@ A JSON file will be created and displayed. Replace its contents with the followi
             "address": "localhost",
             "restart": true,
             "sourceMaps": false,
-            "outDir": null,
-            "localRoot": "${workspaceRoot}",
+            "outFiles": [],
+            "localRoot": "${workspaceRoot}/app",
             "remoteRoot": "/code"
         }
     ]
