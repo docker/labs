@@ -480,4 +480,4 @@ publishing ports by means of the `-p` flag when using `$ docker run`.
 >**Note:** If you want to learn more about Dockerfiles, check out [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/).
 
 ## Next Steps
-For the next step in the tutorial head over to [3.0 Run a multi-container app with Docker Compose](./votingapp.md)
+For the next step in the tutorial head over to [3.0 Deploying an app to a Swarm](./votingapp.md)
