@@ -16,7 +16,7 @@ To try out Compose on Windows, clone a variant of the ASP.NET Core MVC MusicStor
 ```
 git clone https://github.com/dockersamples/dotnet-musicstore
 ...
-cd Musicstore
+cd dotnet-musicstore
 docker-compose -f .\docker-compose.windows.yml build
 ...
 docker-compose -f .\docker-compose.windows.yml up
