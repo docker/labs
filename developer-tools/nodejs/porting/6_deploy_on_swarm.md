@@ -1,6 +1,6 @@
 # Deployment on a Docker Swarm
 
-As for the multi Docker host environment, a Docker Swarm requires a key value store to gather the nodes / containers configurations and states. 
+As for the multi Docker host environment, a Docker Swarm requires a key value store to gather the nodes / containers configurations and states.
 
 ## Creation of a key-value store
 
@@ -35,7 +35,8 @@ demo0
 $ docker-machine create \
  -d virtualbox \
 --swarm \
---swarm-discovery="consul://$(docker-machine ip consul):8500" \ --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" \
+--swarm-discovery="consul://$(docker-machine ip consul):8500" \
+--engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" \
 --engine-opt="cluster-advertise=eth1:2376" \
 demo1
 ```
@@ -103,7 +104,7 @@ http {
 }
 ```
 
-Let's build and publish the image of this load-balancer to Docker Hub: 
+Let's build and publish the image of this load-balancer to Docker Cloud:
 
 ```
 # Create image
@@ -160,7 +161,7 @@ networks:
     driver: overlay
 ```
 
-There are several important updates here  
+There are several important updates here
 * usage of the lb-dns image for the load balancer service
 * constraints to choose the nodes on which each service will run (needed in our example to illustrate the DNS round robin)
 * creation of a new user-defined overlay network to enable each container to communicate with each other through their name

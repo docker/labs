@@ -333,7 +333,15 @@ This shows 10 airlines from the `travel-sample` bucket.
 
 Complete set of commands are shown at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch05-compose.adoc#access-application.
 
-== Shutdown Application
+== Stop Application
+
+If you only want to stop the application temporarily while keeping any networks that were created as part of this application, the recommended way is to set the amount of service replicas to 0.
+
+`docker service scale webapp_db=0 webapp_web=0`
+
+This is especially useful if the stack contains volumes and you want to keep the data. It allows you to simply start the stack again with setting the replicas to a number higher than 0.
+
+== Remove Application Completely
 
 Shutdown the application using `docker stack rm webapp`:
 

@@ -107,7 +107,7 @@ Run db and application containers in the new bridge network
 
 ```
 $ docker run --name mongo --net mongonet -d mongo:3.2
-$ docker run --name app --net mongonet -p “8000:80” -d -e “MONGO_URL=mongodb://mongo/messageApp” message-app:v1
+$ docker run --name app --net mongonet -p 8000:1337 -d -e “MONGO_URL=mongodb://mongo/messageApp” message-app:v1
 ```
 
 Note: MONGO_URL environment variable directly uses **mongo** container’s name
@@ -154,7 +154,7 @@ services:
   app:
     image: lucj/message-app
     ports:
-      - "80"
+      - "1337"
     links:
       - mongo
     depends_on:
@@ -192,7 +192,7 @@ Several containers of the app service (our Node.js API) are running and are acce
 
 ## Usage of dockercloud/haproxy image
 
-[dockercloud/haproxy](https://hub.docker.com/r/dockercloud/haproxy/) is a good candidate to be used in front of our **app** service.
+[dockercloud/haproxy](https://store.docker.com/images/haproxy) is a good candidate to be used in front of our **app** service.
 It will update it's configuration each time a container is started / stopped.
 
 ![load balancer](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/single_host_net_2.png)
@@ -221,7 +221,7 @@ services:
   app:
     image: message-app
     expose:
-      - "80"
+      - "1337"
     links:
       - mongo
     depends_on:

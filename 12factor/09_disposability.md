@@ -15,7 +15,7 @@ Our application exposes HTTP endPoints that are easy and quick to handle. If we 
 
 Kafka stores indexes of events processed by each worker. When a worker is restared, it can provide an index indicating at which point in time it needs to restart the event handling. Doing so no events are lost.
 
-[Docker Hub](https://hub.docker.com) offers several image of Kafka ([Spotify](https://hub.docker.com/r/spotify/kafka/), [Wurstmeister](https://hub.docker.com/r/wurstmeister/kafka/), ...) that can easily be integrated in the docker-compose file of the application.
+[Docker Store](https://store.docker.com) offers several image of Kafka ([Spotify](https://store.docker.com/community/images/spotify/kafka), [Wurstmeister](https://store.docker.com/community/images/wurstmeister/kafka), ...) that can easily be integrated in the docker-compose file of the application.
 
 Below is an example of how Kafka (and zookeeper) could be added to our docker-compose file. Of course, this means the application has been slightly changed to be able to write and read to/from Kafka.
 

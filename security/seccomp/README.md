@@ -21,17 +21,18 @@ You will need all of the following to complete this lab:
 
 - A Linux-based Docker Host with seccomp enabled
 - Docker 1.10 or higher (preferably 1.12 or higher)
+- This lab was created using Ubunti 16.04 and Docker 17.04.0-ce. If you are using older versions of Docker you may need to replace `docker container run` commands with `docker run` commands.
 
 The following commands show you how to check if seccomp is enabled in your system's kernel:
 
    Check from Docker 1.12 or higher
    ```
    $ docker info | grep seccomp
-   Security Options: apparmor seccomp   
+   Security Options: apparmor seccomp
    ```
    If the above output does not return a line with `seccomp` then your system does not have seccomp enabled in its kernel.
 
-   Check from the Linux command line   
+   Check from the Linux command line
    ```
    $ grep SECCOMP /boot/config-$(uname -r)
    CONFIG_HAVE_ARCH_SECCOMP_FILTER=y
@@ -48,7 +49,7 @@ Docker uses seccomp in *filter mode* and has its own JSON-based DSL that allows 
 The following example command starts an interactive container based off the Alpine image and starts a shell process. It also applies the seccomp profile described by `<profile>.json` to it.
 
    ```
-   $ sudo docker run -it --rm --security-opt seccomp=<profile>.json alpine sh ...
+   $ docker container run -it --rm --security-opt seccomp=<profile>.json alpine sh ...
    ```
 
 The above command sends the JSON file from the client to the daemon where it is compiled into a BPF program using a [thin Go wrapper around libseccomp](https://github.com/seccomp/libseccomp-golang).
@@ -72,21 +73,19 @@ In this step you will clone the lab's GitHub repo so that you have the seccomp p
 2. Change into the `labs/security/seccomp` directory.
 
    ```
-   $ cd labs/security/seccomp
+   $ cd labs/security/seccomp/seccomp-profiles
    ```
 
 The remaining steps in this lab will assume that you are running commands from this `labs/security/seccomp` directory. This will be important when referencing the seccomp profiles on the various `docker run` commands throughout the lab.
 
 # <a name="test"></a>Step 2: Test a seccomp profile
 
-> **NOTE TO LAB OWNER:  THIS STEP DOES NOT CURRENTLY WORK. I'M GUESSING THIS IS BECAUSE THE SECCOMP PROFILE IS APPLIED BEFORE THE CONTAINER IS STARTED AS PER GITHUB ISSUES CITED LATER IN THE LAB GUIDE. I'M LEAVING IT IN FOR THE TIME BEING (NIGELPOULTON@HOTMAIL.COM) BUT AM RAISING THE QUESTION OF WHETHER IT COULD BE REMOVED IN FAVOUR OF STEP 2 WHICH DEMOS SIMILAR CAPABILITIES**
-
 In this step you will use the `deny.json` seccomp profile included the lab guides repo. This profile has an empty syscall whitelist meaning all syscalls will be blocked. As part of the demo you will add all *capabilities* and effectively disable *apparmor* so that you know that only your seccomp profile is preventing the syscalls.
 
 1. Use the `docker run` command to try to start a new container with all capabilities added, apparmor unconfined, and the `seccomp-profiles/deny.json` seccomp profile applied.
 
    ```
-   $ sudo docker run --rm -it --cap-add ALL --security-opt apparmor=unconfined --security-opt seccomp=seccomp-profiles/deny.json alpine sh
+   $ docker container run --rm -it --cap-add ALL --security-opt apparmor=unconfined --security-opt seccomp=seccomp-profiles/deny.json alpine sh
    docker: Error response from daemon: exit status 1: "cannot start a container that has run and stopped\n".
    ```
 
@@ -114,12 +113,12 @@ In this step you removed *capabilities* and *apparmor* from interfering, and sta
 
 # <a name="no-default"></a>Step 3: Run a container with no seccomp profile
 
-Unless you specify a different profile, Docker will apply the [default seccomp profile](https://github.com/docker/docker/blob/master/profiles/seccomp/default.json) to all new containers. In this step you will see how to force a new container to run without a seccomp profile.
+Unless you specify a different profile, Docker will apply the [default seccomp profile](https://github.com/moby/moby/blob/master/profiles/seccomp/default.json) to all new containers. In this step you will see how to force a new container to run without a seccomp profile.
 
 1. Start a new container with the `--security-opt seccomp=unconfined` flag so that no seccomp profile is applied to it.
 
    ```
-   $ sudo docker run --rm -it --security-opt seccomp=unconfined debian:jessie sh
+   $ docker container run --rm -it --security-opt seccomp=unconfined debian:jessie sh
    ```
 
 2. From the terminal of the container run a `whoami` command to confirm that the container works and can make syscalls back to the Docker Host.
@@ -135,6 +134,7 @@ Unless you specify a different profile, Docker will apply the [default seccomp p
   / # whoami
   root
   ```
+   If you try running the above `unshare` command from a container with the default seccomp profile applied it will fail with an `Operation not permitted` error.
 
 4. Exit the container.
 
@@ -177,7 +177,7 @@ The `default-no-chmod.json` profile is a modification of the `default.json` prof
 1. Start a new container with the `default-no-chmod.json` profile and attempt to run the `chmod 777 / -v` command.
 
    ```
-   $ sudo docker run --rm -it --security-opt seccomp=default-no-chmod.json alpine sh
+   $ docker container run --rm -it --security-opt seccomp=default-no-chmod.json alpine sh
 
    / # chmod 777 / -v
    chmod: /: Operation not permitted
@@ -190,7 +190,7 @@ The `default-no-chmod.json` profile is a modification of the `default.json` prof
 3. Start another new container with the `default.json` profile and run the same `chmod 777 / -v`.
 
    ```
-   $ sudo docker run --rm -it --security-opt seccomp=default.json alpine sh
+   $ docker container run --rm -it --security-opt seccomp=default.json alpine sh
 
    / # chmod 777 / -v
    mode of '/' changed to 0777 (rwxrwxrwx)
@@ -198,7 +198,7 @@ The `default-no-chmod.json` profile is a modification of the `default.json` prof
 
   The command succeeds this time because the `default.json` profile has the `chmod()`, `fchmod()`, and `chmodat` syscalls included in its whitelist.
 
-4. Exit the container.  
+4. Exit the container.
 
 5. Check both profiles for the presence of the `chmod()`, `fchmod()`, and `chmodat()` syscalls.
 
@@ -298,7 +298,7 @@ Profiles can contain more granular filters based on the value of the arguments t
 * `value` is a parameter for the operation
 * `valueTwo` is used only for SCMP_CMP_MASKED_EQ
 
-The rule only matches if **all** args match. Add multiple rules to achieve the effect of an OR. 
+The rule only matches if **all** args match. Add multiple rules to achieve the effect of an OR.
 
 `strace` can be used to get a list of all system calls made by a program.
 It's a very good starting point for writing seccomp policies.
@@ -328,7 +328,7 @@ The remainder of this lab will walk you through a few things that are easy to mi
 
 In versions of Docker prior to 1.12, seccomp polices tended to be applied very early in the container creation process. This resulted in you needing to add syscalls to your profile that were required for the container creation process but not required by your container. This was not ideal. See:
 
-- https://github.com/docker/docker/issues/22252
+- https://github.com/moby/moby/issues/22252
 - https://github.com/opencontainers/runc/pull/789
 
 A good way to avoid this issue in Docker 1.12+ can be to use the `--security-opt no-new-privileges` flag when starting your container. However, this will also prevent you from gaining privileges through `setuid` binaries.
@@ -362,7 +362,7 @@ Syscall numbers are architecture dependent. This limits the portability of BPF f
 
 * Using the `--privileged` flag when creating a container with `docker run` disables seccomp in all versions of docker - even if you explicitly specify a seccomp profile. In general you should avoid using the `--privileged` flag as it does too many things. You can achieve the same goal with `--cap-add ALL --security-opt apparmor=unconfined --security-opt seccomp=unconfined`. If you need access to devices use `--device`.
 
-* In docker 1.10-1.12 `docker exec --privileged` does not bypass seccomp. This may change in future versions https://github.com/docker/docker/issues/21984.
+* In docker 1.10-1.12 `docker exec --privileged` does not bypass seccomp. This may change in future versions https://github.com/moby/moby/issues/21984.
 
 * In docker 1.12 and later, adding a capability may enable some appropriate system calls in the default seccomp profile. However, it does not disable apparmor.
 

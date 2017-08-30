@@ -28,7 +28,7 @@ First we'll test that the registry image is working correctly, by running it wit
 $ sudo docker run -d -p 5000:5000 --name registry registry:2
 ```
 ## Understanding Image Names
-Typically we work with images from the Docker Hub, which is the default registry for the Docker Engine. Commands using just the image repository name work fine, like this:
+Typically we work with images from the Docker Store, which is the default registry for the Docker Engine. Commands using just the image repository name work fine, like this:
 ```
 $ sudo docker pull hello-world
 ```
@@ -38,7 +38,7 @@ $ sudo docker pull hello-world
 - `hello-world` - the repository name, in this case in `{imageName}` format;
 - `latest` - the image tag.
 
-If a tag isn't specified, then the default `latest` is used. If a registry hostname isn't specified then the default `docker.io` for Docker Hub is used. If you want to use images with any other registry, you need to explicitly specify the hostname - the default is always Docker Hub, you can't change to a different default registry.
+If a tag isn't specified, then the default `latest` is used. If a registry hostname isn't specified then the default `docker.io` for Docker Store is used. If you want to use images with any other registry, you need to explicitly specify the hostname - the default is always Docker Store, you can't change to a different default registry.
 
 With a local registry, the hostname and the custom port used by the registry is the full registry address, e.g. `localhost:5000`. 
 ```
@@ -49,7 +49,7 @@ $ hostname
 
 Docker uses the hostname from the full image name to determine which registry to use. We can build images and include the local registry hostname in the image tag, or use the `docker tag` command to add a new tag to an existing image.
 
-These commands pull a public image from Docker Hub, tag it for use in the private registry with the full name `localhost:5000/hello-world`, and then push it to the registry:
+These commands pull a public image from Docker Store, tag it for use in the private registry with the full name `localhost:5000/hello-world`, and then push it to the registry:
 
 ```
 $ sudo docker tag hello-world localhost:5000/hello-world
@@ -87,12 +87,12 @@ $ mkdir registry-data
 $  sudo docker run -d -p 5000:5000 \ 
 --name registry \
 -v `pwd`/registry-data:/var/lib/registry \ 
-registry
+registry:2
 ```
 Tag and push the container with the new IP address of the registry.
 ```
 docker tag hello-world localhost:5000/hello-world
-docker push localhost:5000/hellow-world
+docker push localhost:5000/hello-world
 ```
 Repeating the previous `docker push` command uploads an image to the registry container, and the layers will be stored in the container's `/var/lib/registry` directory, which is actually mapped to the `$(pwd)/registry-data` directory on you local machine. The `tree` command will show the directory structure the registry server uses:
 

@@ -14,7 +14,11 @@ $ sudo docker run --entrypoint htpasswd registry:latest -Bbn moby gordon > auth/
 The options are:
 
 - --entrypoint Overwrite the default ENTRYPOINT of the image
+<<<<<<< HEAD
+- -B to force bcrypt vs default md5
+=======
 - -B Use bcrypt encryption (required)
+>>>>>>> master
 - -b run in batch mode 
 - -n display results
 
@@ -61,12 +65,12 @@ Now the registry is using secure transport and user authentication.
 With basic authentication, users cannot push or pull from the registry unless they are authenticated. If you try and pull an image without authenticating, you will get an error:
 
 ```
-$ sudo docker pull <hostname>:5000/hello-world
+$ sudo docker pull localhost:5000/hello-world
 Using default tag: latest
-Error response from daemon: Get https://<hostname>:5000/v2/hello-world/manifests/latest: no basic auth credentials
+Error response from daemon: Get https://localhost:5000/v2/hello-world/manifests/latest: no basic auth credentials
 ```
 
-The result is the same for valid and invalid image names, so you can't even check a repository exists without authenticating. Logging in to the registry is the same `docker login` command you use for Docker Hub, specifying the registry hostname:
+The result is the same for valid and invalid image names, so you can't even check a repository exists without authenticating. Logging in to the registry is the same `docker login` command you use for Docker Store, specifying the registry hostname:
 
 ```
 $ sudo docker login registry.local:5000
@@ -84,14 +88,14 @@ Error response from daemon: login attempt to https://registry.local:5000/v2/ fai
 Now you're authenticated, you can push and pull as before:
 
 ```
-$ sudo docker pull <hostname>:5000/hello-world
+$ sudo docker pull localhost:5000/hello-world
 Using default tag: latest
 latest: Pulling from hello-world
 Digest: sha256:961497c5ca49dc217a6275d4d64b5e4681dd3b2712d94974b8ce4762675720b4
 Status: Image is up to date for registry.local:5000/hello-world:latest
 ```
 
-> Note. The open-source registry does not support the same authorization model as Docker Hub or Docker Trusted Registry. Once you are logged in to the registry, you can push and pull from any repository, there is no restriction to limit specific users to specific repositories.
+> Note. The open-source registry does not support the same authorization model as Docker Store or Docker Trusted Registry. Once you are logged in to the registry, you can push and pull from any repository, there is no restriction to limit specific users to specific repositories.
 
 ## Using Docker Compose to Start the Registry
 Typing in all the options to start the registry can become tedious. An easier and simpler way is to use [Docker Compose](https://docs.docker.com/compose/). Here's an example of a `docker-compose.yml` file that will start the registry.
@@ -121,8 +125,8 @@ $ sudo docker-compose up
 
 ## Conclusion
 
-[Docker Registry](https://docs.docker.com/registry/) is a free, open-source application for storing and accessing Docker images. You can run the registry in a container on your own network, or in a virtual network in the cloud, to host private images with secure access. For Linux hosts, there is an [official registry image](https://hub.docker.com/_/registry/) on Docker Hub.
+[Docker Registry](https://docs.docker.com/registry/) is a free, open-source application for storing and accessing Docker images. You can run the registry in a container on your own network, or in a virtual network in the cloud, to host private images with secure access. For Linux hosts, there is an [official registry image](https://store.docker.com/images/registry) on Docker Store.
 
 We've covered all the options, from running an insecure registry, through adding SSL to encrypt traffic, and finally adding basic authentication to restrict access. By now you know how to set up a usable registry in your own environment, and you've also used some key Docker patterns - using containers as build agents and to run basic commands, without having to install software on your host machines. 
 
-There is still more you can do with Docker Registry - using a different [storage driver](https://docs.docker.com/registry/storage-drivers/) so the image data is saved to reliable share storage, and setting up your registry as a [caching proxy for Docker Hub](https://docs.docker.com/registry/recipes/mirror/) are good next steps.
+There is still more you can do with Docker Registry - using a different [storage driver](https://docs.docker.com/registry/storage-drivers/) so the image data is saved to reliable share storage, and setting up your registry as a [caching proxy for Docker Store](https://docs.docker.com/registry/recipes/mirror/) are good next steps.

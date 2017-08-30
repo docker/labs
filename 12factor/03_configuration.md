@@ -6,21 +6,21 @@ Configuration (credentials, database connection string, ...) should be stored in
 
 In _config/connections.js_, we define the _mongo_ connection and use MONGO_URL environment variable to pass the mongo connection string.
 
-```
+```node
 module.exports.connections = {
   mongo: {
-     adapter: 'sails-mongo',
-     url: 'process.env.MONGO_URL'
+    adapter: 'sails-mongo',
+    url: process.env.MONGO_URL
   }
 };
 ```
 
 In _config/model.js_, we make sure the _mongo_ connection defined above is the one used.
 
-```
+```node
 module.exports.models = {
-connection: mongo,
- migrate: 'safe'
+  connection: 'mongo',
+  migrate: 'safe'
 };
 ```
 

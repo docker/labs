@@ -1,5 +1,5 @@
 
-###<a name="pets"></a>Tutorial Application: The Pets App
+### <a name="pets"></a>Tutorial Application: The Pets App
 
 In the following example, we will use a fictional app called **[Pets](https://github.com/mark-church/pets)** to illustrate the __Network Deployment Models__.  It serves up images of pets on a web page while counting the number of hits to the page in a backend database. It is configurable via two environment variables, `DB` and `ROLE`.
 
@@ -8,9 +8,9 @@ In the following example, we will use a fictional app called **[Pets](https://gi
 
 It consists of `web`, a Python flask container, and `db`, a  redis container. Its architecture and required network policy is described below.
 
-<span class="float-right">
+
 ![Pets App Architecture and Network](./img/apptopology.png)
-</span>
+
 
 We will run this application on different network deployment models to show how we can instantiate connectivity and network policy. Each deployment model exhibits different characteristics that may be advantageous to your application and environment.
 
@@ -20,7 +20,7 @@ We will explore the following network deployment models in this section:
 - Overlay Driver 
 - MACVLAN Bridge Mode Driver
 
-###<a name="bridgemodel"></a>Tutorial App: Bridge Driver
+### <a name="bridgemodel"></a>Tutorial App: Bridge Driver
 This model is the default behavior of the built-in Docker `bridge` network driver. The `bridge` driver creates a private network internal to the host and provides an external port mapping on a host interface for external connectivity.
 
 ```bash
@@ -36,9 +36,9 @@ $ docker run -d --net catnet -p 8000:5000 -e 'DB=cat-db' -e 'ROLE=cat' chrch/web
 
 > When an IP address is not specified, port mapping will be exposed on all interfaces of a host. In this case the container's application is exposed on `0.0.0.0:8000`. We can specify a specific IP address to advertise on only a single IP interface with the flag `-p IP:host_port:container_port`. More options to expose ports can be found in the [Docker docs](https://docs.docker.com/engine/reference/run/#/expose-incoming-ports).
 
-<span class="float-right">
+
 ![Pet App using Bridge Driver](./img/singlehost-bridge.png)
-</span>
+
 
 The `web` container takes some environment variables to determine which backend it needs to connect to. Above we supply it with `cat-db` which is the name of our `redis` service. The Docker Engine's built-in DNS will resolve a container's name to its location in any user-defined network. Thus, on a network, a container or service can always be referenced by its name. 
 
@@ -88,7 +88,7 @@ $ docker network inspect catnet
 ```
 In this output, we can see that our two containers have automatically been given ip addresses from the `172.19.0.0/16` subnet. This is the subnet of the local `catnet` bridge, and it will provide all connected containers a subnet from this range unless they are statically configured.
 
-###Tutorial App: Multi-Host Bridge Driver Deployment
+### Tutorial App: Multi-Host Bridge Driver Deployment
 
 Deploying a multi-host application requires some additional configuration so that distributed components can connect with each other. In the following example we explicitly tell the `web` container the location of `redis` with the environment variable `DB=hostB:8001`. Another change is that we are port mapping port `6379` inside the`redis` container to port `8001` on the `hostB`. Without the port mapping, `redis` would only be accessible on its connected networks (the default `bridge` in this case).
 
@@ -115,7 +115,7 @@ In the overlay driver example we will see that multi-host service discovery is p
 
 
 
-####Bridge Driver Benefits and Use-Cases
+#### Bridge Driver Benefits and Use-Cases
 
 - Very simple architecture promotes easy understanding and troubleshooting
 - Widely deployed in current production environments
@@ -123,7 +123,7 @@ In the overlay driver example we will see that multi-host service discovery is p
 
 
 
-###<a name="overlaymodel"></a>Tutorial App: Overlay Driver 
+### <a name="overlaymodel"></a>Tutorial App: Overlay Driver 
 
 This model utilizes the built-in `overlay` driver to provide multi-host connectivity out of the box. The default settings of the overlay driver will provide external connectivity to the outside world as well as internal connectivity and service discovery within a container application. The [Overlay Driver Architecture](#overlayarch) section reviews the internals of the Overlay driver which you should review before reading this section.
 
@@ -182,7 +182,7 @@ This example uses the following logical topology:
 
 
 
-####Overlay Benefits and Use Cases
+#### Overlay Benefits and Use Cases
 
 - Very simple multi-host connectivity for small and large deployments
 - Provides service discovery and load balancing with no extra configuration or components
@@ -191,7 +191,7 @@ This example uses the following logical topology:
 
 
 
-###<a name="macvlanmodel"></a>Tutorial App: MACVLAN Bridge Mode
+### <a name="macvlanmodel"></a>Tutorial App: MACVLAN Bridge Mode
 
 There may be cases where the application or network environment requires containers to have routable IP addresses that are a part of the underlay subnets. The MACVLAN driver provides an implementation that makes this possible. As described in the [MACVLAN Architecture section](#macvlan), a MACVLAN network binds itself to a host interface. This can be a physical interface, a logical sub-interface, or a bonded logical interface. It acts as a virtual switch and provides communication between containers on the same MACVLAN network. Each container receives a unique MAC address and an IP address of the physical network that the node is attached to.
 
@@ -213,7 +213,7 @@ host-B $ docker run -it --net macvlan --ip 192.168.0.5 --name dog-db redis
 
 When `dog-web` communicates with `dog-db`, the physical network will route or switch the packet using the source and destination addresses of the containers. This can simplify network visibility as the packet headers can be linked directly to specific containers. At the same time application portability is decreased as container IPAM is tied to the physical network. Container addressing must adhere to the physical location of container placement in addition to preventing overlapping address assignment. Because of this, care must be taken to manage IPAM externally to a MACVLAN network. Overlapping IP addressing or incorrect subnets can lead to loss of container connectivity.
 
-####MACVLAN Benefits and Use Cases
+#### MACVLAN Benefits and Use Cases
 
 - Very low latency applications can benefit from the `macvlan` driver because it does not utilize NAT.
 - MACVLAN can provide an IP per container, which may be a requirement in some environments.

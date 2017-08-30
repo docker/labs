@@ -21,9 +21,9 @@ cd example-voting-app
 ```
 
 ### 3.1 Deploying the app
-For this first stage, we will use existing images that are in Docker Hub.
+For this first stage, we will use existing images that are in Docker Store.
 
-This app relies on [Docker Swarm mode](https://docs.docker.com/engine/swarm/). Swarm mode is the cluster management and orchestration features embedded in the Docker. You can easily deploy to a swarm using a file that declares your desired state for the app. Swarm allows you to run your containers on more than one machine. In this tutorial, you can run on just one machine, or you can use something like [Docker for AWS](https://beta.docker.com/) or [Docker for Azure](https://beta.docker.com/) to quickly create a multiple node machine. Alternately, you can use Docker Machine to create a number of local nodes on your development machine. See [the Swarm Mode lab](../../swarm-mode/beginner-tutorial/README.md#creating-the-nodes-and-swarm) for more information.
+This app relies on [Docker Swarm mode](https://docs.docker.com/engine/swarm/). Swarm mode is the cluster management and orchestration features embedded in the Docker engine. You can easily deploy to a swarm using a file that declares your desired state for the app. Swarm allows you to run your containers on more than one machine. In this tutorial, you can run on just one machine, or you can use something like [Docker for AWS](https://beta.docker.com/) or [Docker for Azure](https://beta.docker.com/) to quickly create a multiple node machine. Alternately, you can use Docker Machine to create a number of local nodes on your development machine. See [the Swarm Mode lab](../../swarm-mode/beginner-tutorial/README.md#creating-the-nodes-and-swarm) for more information.
 
 First, create a Swarm.
 
@@ -82,7 +82,7 @@ services:
     depends_on:
       - db
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 2
         delay: 10s
@@ -103,6 +103,8 @@ services:
         delay: 10s
         max_attempts: 3
         window: 120s
+      placement:
+        constraints: [node.role == manager]
 
   visualizer:
     image: manomarks/visualizer
@@ -111,6 +113,9 @@ services:
     stop_grace_period: 1m30s
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
 networks:
   frontend:
@@ -246,5 +251,13 @@ docker stack deploy --compose-file docker-stack.yml vote
 
 Now take it for a spin again. Go to the URLs you used in section [3.1](#31-deploying-the-app) and see the new votes.
 
+#### 3.2.5 Remove the stack
+
+Remove the stack from the swarm.
+
+```
+docker stack rm vote
+```
+
 ### 3.3 Next steps
-Now that you've built some images and pushed them to docker hub, and learned the basics of Swarm mode, you can explore more of Docker by checking out [the documentation](https://docs.docker.com). And if you need any help, check out the [Docker Forums](forums.docker.com) or [StackOverflow](https://stackoverflow.com/tags/docker/).
+Now that you've built some images and pushed them to Docker Cloud, and learned the basics of Swarm mode, you can explore more of Docker by checking out [the documentation](https://docs.docker.com). And if you need any help, check out the [Docker Forums](forums.docker.com) or [StackOverflow](https://stackoverflow.com/tags/docker/).

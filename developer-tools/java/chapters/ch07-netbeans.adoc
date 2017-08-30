@@ -34,7 +34,7 @@ Right-click on Docker node and select "`Pull...`".
 
 image::docker-netbeans-pull-image.png[]
 
-Type the image name to narrow down the search from Docker Hub:
+Type the image name to narrow down the search from Docker Store:
 
 image::docker-netbeans-search-image.png[]
 

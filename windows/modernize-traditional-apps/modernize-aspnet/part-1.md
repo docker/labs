@@ -26,7 +26,7 @@ FROM microsoft/windowsservercore:10.0.14393.693
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 ```
 
-You start `FROM` the `microsoft/windowsservercore` base image, which is managed by Microsoft and is publicly available on Docker Hub. Using the tag `10.0.14393.693` tells Docker to use a specific version of the image, rather than the default `latest` version. That means the build is repeatable, so any time you build the image you should get the exact same output because the base image will always be the same. If you want to update to a newer base image (Microsoft release regular updates with security patches), you can change the tag and rebuild.
+You start `FROM` the `microsoft/windowsservercore` base image, which is managed by Microsoft and is publicly available on Docker Store. Using the tag `10.0.14393.693` tells Docker to use a specific version of the image, rather than the default `latest` version. That means the build is repeatable, so any time you build the image you should get the exact same output because the base image will always be the same. If you want to update to a newer base image (Microsoft release regular updates with security patches), you can change the tag and rebuild.
 
 The `SHELL` instruction tells Docker to switch to using PowerShell, so for the rest of the Dockerfile any commands are run using PowerShell. The shell is configured to fail if there are any errors, and to switch off progress bars for better performance. With this and the `escape` instruction you can use normal PowerShell syntax in the Dockerfile.
 
@@ -63,7 +63,7 @@ From the `v1-src\docker\builder` directory, build the image using the normal `do
 docker build -t dockersamples/modernize-aspnet-builder .
 ```
 
-> The image is already built and available on Docker Hub as [dockersamples/modernize-aspnet-builder](https://hub.docker.com/r/dockersamples/modernize-aspnet-builder/) so you can run `docker pull dockersamples/modernize-aspnet-builder` to use that version rather than building it yourself.
+> The image is already built and available on Docker Store as [dockersamples/modernize-aspnet-builder](https://store.docker.com/community/images/dockersamples/modernize-aspnet-builder) so you can run `docker pull dockersamples/modernize-aspnet-builder` to use that version rather than building it yourself.
 
 With this image you can build any ASP.NET application, you just need to prepare a `docker run` command which mounts the host directories into the container and specifies the MSBuild script to run. The [build.ps1](v1-src/ProductLaunch/build.ps1) script for version 1 of the app is very simple, it just builds the web project from the expected source location, and publishes to the expected output location. Running from the `v1-src` directory, the command to build the ASP.NET project is:
 

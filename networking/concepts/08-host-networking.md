@@ -1,5 +1,5 @@
 
-##<a name="hostdriver"></a>Host (Native) Network Driver
+## <a name="hostdriver"></a>Host (Native) Network Driver
 
 The `host` network driver connects a container directly to the host networking stack. Containers using the `host` driver reside in the same network namespace as the host itself. Thus, containers will have native bare-metal network performance at the cost of namespace isolation. 
 
@@ -53,7 +53,7 @@ Every container using the `host` network will all share the same host interfaces
 
 Full host access and no automated policy management may make the `host` driver a difficult fit as a general network driver. However, `host` does have some interesting properties that may be applicable for use cases such as ultra high performance applications, troubleshooting, or monitoring.
 
-##<a name="nonedriver"></a>None (Isolated) Network Driver
+## <a name="nonedriver"></a>None (Isolated) Network Driver
 
 Similar to the `host` network driver, the `none` network driver is essentially an unmanaged networking option. Docker Engine will not create interfaces inside the container, establish port mapping, or install routes for connectivity. A container using `--net=none` will be completely isolated from other containers and the host. The networking admin or external tools must be responsible for providing this plumbing. In the following example we see that a container using `none` only has a loopback interface and no other interfaces.
 

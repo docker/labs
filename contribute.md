@@ -10,6 +10,6 @@ Anything you contribute will be under an Apache license. Docker will choose whic
 
 We will be following the lightweight version of the Docker contribution policies and procedures as explained in
 - [Docker documentation](https://docs.docker.com)
-- The [Docker engine repo](https://github.com/docker/docker/blob/master/CONTRIBUTING.md).
+- The [Docker engine repo](https://github.com/moby/moby/blob/master/CONTRIBUTING.md).
 
-This largely boils down to [signing your PRs](https://github.com/docker/docker/blob/master/CONTRIBUTING.md#sign-your-work), following the Docker [trademark guidelines](https://www.docker.com/trademark-guidelines), and following the community guidelines.
+This largely boils down to [signing your PRs](https://github.com/moby/moby/blob/master/CONTRIBUTING.md#sign-your-work), following the Docker [trademark guidelines](https://www.docker.com/trademark-guidelines), and following the community guidelines.

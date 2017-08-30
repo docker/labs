@@ -22,14 +22,14 @@ Docker has three main components:
 
 . __Images__ are the *build component* of Docker and are the read-only templates defining an application operating system.
 . __Containers__ are the *run component* of Docker and created from images. Containers can be run, started, stopped, moved, and deleted.
-. Images are stored, shared, and managed in a __registry__ and are the *distribution component* of Docker. Docker Hub is a publicly available registry and is available at http://hub.docker.com.
+. Images are stored, shared, and managed in a __registry__ and are the *distribution component* of Docker. Docker Store is a publicly available registry and is available at http://store.docker.com.
 
 In order for these three components to work together, the *Docker Daemon* (or Docker Engine) runs on a host machine and does the heavy lifting of building, running, and distributing Docker containers. In addition, the *Client* is a Docker binary which accepts commands from the user and communicates back and forth with the Engine.
 
 .Docker architecture
 image::docker-architecture.png[]
 
-The Client communicates with the Engine that is either co-located on the same host or on a different host. Client uses the `pull` command to request the Engine to pull an image from the registry. The Engine then downloads the image from Docker Hub, or whichever registry is configured. Multiple images can be downloaded from the registry and installed on the Engine. Client uses the `run` run the container.
+The Client communicates with the Engine that is either co-located on the same host or on a different host. Client uses the `pull` command to request the Engine to pull an image from the registry. The Engine then downloads the image from Docker Store, or whichever registry is configured. Multiple images can be downloaded from the registry and installed on the Engine. Client uses the `run` run the container.
 
 **How does a Docker Image work?**
 
@@ -39,7 +39,7 @@ One of the reasons Docker is so lightweight is because of these layers. When you
 
 Every image starts from a base image, for example `ubuntu`, a base Ubuntu image, or `fedora`, a base Fedora image. You can also use images of your own as the basis for a new image, for example if you have a base Apache image you could use this as the base of all your web application images.
 
-NOTE: By default, Docker obtains these base images from Docker Hub.
+NOTE: By default, Docker obtains these base images from Docker Store.
 
 Docker images are then built from these base images using a simple, descriptive set of steps we call instructions. Each instruction creates a new layer in our image. Instructions include actions like:
 

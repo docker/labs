@@ -5,7 +5,7 @@
 * created image for the application
   * containing all the parts to run the application (runtime Node.js, librairies, application code)
 
-* portable image (dev / test / qa / prod) available through the Docker Hub
+* portable image (dev / test / qa / prod) available through Docker Cloud
 
 * scalability of the application (API)
   * on a single node (for dev / test purposes)

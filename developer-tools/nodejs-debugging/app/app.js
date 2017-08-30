@@ -1,5 +1,5 @@
 var express = require('express');
-var expressHandlebars  = require('express-handlebars');
+var expressHandlebars = require('express-handlebars');
 var http = require('http');
 
 var PORT = 8000;
@@ -21,7 +21,7 @@ app.get('/', function(req, res) {
     var message = LINES[lineIndex];
 
     lineIndex += 1;
-    if (lineIndex > LINES.length) {
+    if (lineIndex >= LINES.length) {
         lineIndex = 0;
     }
 

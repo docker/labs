@@ -23,11 +23,11 @@ We've created a simple application which includes an error. You can see the app 
 Let's take a look at the `Dockerfile`:
 
 ```
-FROM node:5.11.0-slim
+FROM node:8.2.1-alpine
 
 WORKDIR /code
 
-RUN npm install -g nodemon
+RUN npm install -g nodemon@1.11.0
 
 COPY package.json /code/package.json
 RUN npm install && npm ls
@@ -48,7 +48,7 @@ version: "3"
 services:
   web:
     build: .
-    command: nodemon --debug=5858
+    command: nodemon --inspect=0.0.0.0:5858
     volumes:
       - .:/code
     ports:
@@ -66,7 +66,8 @@ A few things are going on here:
 
 
 ### Run the app
-Using your terminal, navigate to the directory with the app files and start up the app:
+
+Using your terminal, navigate to the *app* directory (where the docker-compose.yml file is located) and start up the application:
 
 ```
 $ docker-compose up
@@ -77,10 +78,10 @@ Docker Compose will build the image and start a container for the app. You shoul
 Creating network "nodeexample_default" with the default driver
 Creating nodeexample_web_1
 Attaching to nodeexample_web_1
-web_1  | [nodemon] 1.9.2
+web_1  | [nodemon] 1.11.0
 web_1  | [nodemon] to restart at any time, enter `rs`
 web_1  | [nodemon] watching: *.*
-web_1  | [nodemon] starting `node --debug=5858 app.js`
+web_1  | [nodemon] starting `node --inspect=0.0.0.0:5858 app.js`
 web_1  | Debugger listening on port 5858
 web_1  | HTTP server listening on port 80
 ```
@@ -102,7 +103,8 @@ Create a boilerplate debugger config by clicking the gear icon and selecting “
 
 ![Image of VS Code dropdown list](images/dropdown.png "Image of Visual Studio Code dropdown list")
 
-A JSON file will be created and displayed. Replace its contents with the following:
+A JSON file will be created and displayed (on the filesystem this file is located at *app/.vscode/launch.json*). Replace its contents with the following 
+
 ```
 {
     "version": "0.2.0",
@@ -115,8 +117,8 @@ A JSON file will be created and displayed. Replace its contents with the followi
             "address": "localhost",
             "restart": true,
             "sourceMaps": false,
-            "outDir": null,
-            "localRoot": "${workspaceRoot}",
+            "outFiles": [],
+            "localRoot": "${workspaceRoot}/",
             "remoteRoot": "/code"
         }
     ]

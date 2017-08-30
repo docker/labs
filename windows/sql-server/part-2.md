@@ -21,7 +21,7 @@ VOLUME c:\\database
 ENV sa_password D0cker!a8s
 ```
 
-> Note: this is a simplified approach to securing SQL Server. The Express instance is set up to allow SQL Server authentication, and an environment variable is used in the image for the `sa` password. Users can override the default password when they run a container, but environment variables are not meant for secrets. [Secret management](https://github.com/docker/docker/pull/27794) is coming to Docker soon.
+> Note: this is a simplified approach to securing SQL Server. The Express instance is set up to allow SQL Server authentication, and an environment variable is used in the image for the `sa` password. Users can override the default password when they run a container, but environment variables are not meant for secrets. [Secret management](https://github.com/moby/moby/pull/27794) is coming to Docker soon.
 
 The rest of the Dockerfile is straightforward. We set up a directory for the deployment package and deployment script, and copy them in from the Docker build context:
 

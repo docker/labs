@@ -16,13 +16,12 @@ This repo contains [Docker](https://docker.com) labs and tutorials authored both
 * [Building a 12 Factor app with Docker](12factor/README.md)
 * [Docker Security](security/README.md)
 * [Docker Networking](networking/)
+* [Hands-on Labs from DockerCon US 2017](dockercon-us-2017/)
 
 
 #### Community tutorials
-* [Docker Tutorials from the Community](https://github.com/docker/community/tree/master/Docker-Meetup-Content) - links to a different repository
+* [Docker Tutorials from the Community](https://github.com/docker/community/blob/master/curated-content.md) - links to a different repository
 * [Advanced Docker orchestration workshop](https://github.com/docker/labs/tree/master/Docker-Orchestration) - links to a different repository
-
-For more information on Docker, see the Official [Docker documentation](https://docs.docker.com).
 
 #### Contributing
 

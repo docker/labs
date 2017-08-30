@@ -16,7 +16,7 @@ Some of the Docker basics will be reviewed but it is recommended to follow [Dock
 
 [Create the application's image](2_application_image.md)
 
-[Publish image on Docker Hub](3_publish_image.md)
+[Publish image on Docker Store](3_publish_image.md)
 
 [Single Docker host networking](4_single_host_networking.md)
 

@@ -1,13 +1,15 @@
 # Docker Swarm Tutorial
+> **Note:** This tutorial uses Docker Machine to simulate multiple machines on your desktop. There's an easier way to learn swarm mode, and that is using [Play with Docker](http://training.play-with-docker.com/swarm-mode-intro/). This tutorial is preserved for legacy reasons, and also in case you really want to learn to do this on your own machine.
+
 Docker includes swarm mode for natively managing a cluster of Docker Engines called a swarm. You can use the Docker CLI to create a swarm, deploy application services to a swarm, and manage swarm behavior. This tutorial uses [Docker Machine](https://docs.docker.com/machine/) to create multiple nodes on your desktop. If you prefer you can create those nodes in your own cloud or on multiple machines.
 
->**Important Note**
-You don't need to use the Docker CLI to perform these operations. You can use `docker stack deploy --compose-file STACKNAME.yml STACKNAME` instead. For an introduction to this, check out the [Deploying an app to a Swarm](https://github.com/docker/labs/blob/master/beginner/chapters/votingapp.md). For an introduction to using a stack file in a compose file format to deploy an app for more information.
+> **Important Note**
+You don't need to use the Docker CLI to perform these operations. You can use `docker stack deploy --compose-file STACKNAME.yml STACKNAME` instead. For an introduction to using a stack file in a compose file format to deploy an app, check out [Deploying an app to a Swarm](https://github.com/docker/labs/blob/master/beginner/chapters/votingapp.md).
 
 ## Preparation
 You need to have Docker and Docker Machine installed on your system. [Download Docker](https://docker.com/getdocker) for your platform and install it.
 
->**Tips:**
+> **Tips:**
 >
 * If you are using Docker for Mac or Docker for Windows, you already have Docker Machine, as it is installed with those applications. See [Download Docker for Mac](https://docs.docker.com/docker-for-mac/#/download-docker-for-mac) and [Download Docker for Windows](https://docs.docker.com/docker-for-windows/#/download-docker-for-windows) for install options and details on what gets installed.
 >
@@ -132,10 +134,10 @@ $ docker-machine ssh manager1 "docker service ls"
 ID            NAME  REPLICAS  IMAGE         COMMAND
 2x4jsk6313az  web   1/1       nginx:latest  
 ```
-Now open the machine address in your browser. You can see above manager1 had a URL of 192.168.99.100
+Now open the machine's IP address in your browser. You can see above manager1 had an IP address of 192.168.99.100
 ![nginx in Chrome at 192.168.99.100](images/manager1-nginx.png)
 
-You can actually load any of the node ip addresses and get the same result because of Swarm Mode's Routing Mesh.
+You can actually load any of the node ip addresses and get the same result because of [Swarm Mode's Routing Mesh](https://docs.docker.com/engine/swarm/ingress/).
 ![nginx in Chrome at 192.168.99.100](images/manager2-nginx.png)
 
 Next let's inspect the service
@@ -387,5 +389,4 @@ Successfully removed manager3
 ```  
 
 ## Next steps
-We have a similar tutorial using Docker Machine to do [Service deployment on a swarm in the Cloud](../cloud-quick-start/README.md).
-Also check out the documentation on [Docker Swarm Mode](https://docs.docker.com/engine/swarm/) for more information.
+Check out the documentation on [Docker Swarm Mode](https://docs.docker.com/engine/swarm/) for more information.
