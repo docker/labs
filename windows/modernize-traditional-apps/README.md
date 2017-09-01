@@ -2,7 +2,9 @@
 
 There are millions of traditional .NET apps running key functions in enterprises. But they're expensive to maintain, complex to upgrade and may be running on old or unsupported versions of Windows. 
 
-Those apps are great candidates for moving to Docker, which you can do *without changing code or rewriting the app*. Running .NET apps in a modern application platform adds [agility, portability and security](https://www.docker.com/sites/default/files/DC_SB_Microsoft.pdf) to existing apps.
+> You can learn about using Docker to [Modernize .NET Apps on YouTube](https://www.youtube.com/playlist?list=PLkA60AVN3hh88hW4dJXMFIGmTQ4iDBVBp)
+
+Traditional apps are great candidates for moving to Docker, which you can do *without changing code or rewriting the app*. Running .NET apps in a modern application platform adds [agility, portability and security](https://www.docker.com/sites/default/files/DC_SB_Microsoft.pdf) to existing apps.
 
 These labs walk through modernization programs for typical .NET application architectures. In each case you'll start with a sample app in a Visual Studio solution, then follow the same process:
 
