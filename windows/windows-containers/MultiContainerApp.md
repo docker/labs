@@ -1,117 +1,137 @@
 ## Multi-Container Applications
 
-This tutorial will walk you through using the sample Music Store application with Windows containers. The Music Store application is a standard .NET sample application, available in the [aspnet GitHub repository](https://github.com/aspnet/MusicStore "Music Store application"). We've [forked it](https://github.com/dockersamples/dotnet-musicstore "link to forked version of Music Store App") to use Windows Containers.
+This tutorial walks you through building and running the sample Album Viewer application with Windows containers. The [Album Viewer](https://github.com/RickStrahl/AlbumViewerVNext) app is an ASP.NET Core application, maintained by Microsoft MVP [Rick Strahl](https://weblog.west-wind.com). There is a fork at [dockersamples/dotnet-album-viewer](https://github.com/dockersamples/dotnet-album-viewer "link to forked version of Album Viewer") which uses Docker Windows containers.
 
-## Using docker-compose on Windows
-Docker Compose is a great way develop complex multi-container consisting of databases, queues and web frontends.
+> Docker isn't just for new apps built with .NET Core. You can run full .NET Framework apps in Docker Windows containers, with production support in [Docker EE](https://www.docker.com/enterprise-edition). Check out the labs for [Modernizing .NET apps with Docker](https://github.com/docker/labs/tree/master/windows/modernize-traditional-apps).
 
-To develop with Docker Compose on a Windows Server 2016 system, install compose too (this is not required on Windows 10 with Docker for Windows installed):
+## Using Docker Compose on Windows
 
-```
-Invoke-WebRequest https://github.com/docker/compose/releases/download/1.11.1/docker-compose-Windows-x86_64.exe -UseBasicParsing -OutFile $env:ProgramFiles\docker\docker-compose.exe
-```
+[Docker Compose](https://docs.docker.com/compose/) is a great way develop distributed applications, where all the components run in their own containers. In this lab you'll use Docker Compose to run SQL Server in a container, as the data store for an ASP.NET Core web application running in another container.
 
-To try out Compose on Windows, clone a variant of the ASP.NET Core MVC MusicStore app, backed by a SQL Server Express 2016 database.
+Docker Compose is installed with [Docker for Windows](https://www.docker.com/docker-windows). If you've installed Docker as a Windows Service instead, you can download the compose command line using PowerShell:
 
 ```
-git clone https://github.com/dockersamples/dotnet-musicstore
-...
-cd dotnet-musicstore
-docker-compose -f .\docker-compose.windows.yml build
-...
-docker-compose -f .\docker-compose.windows.yml up
-...
+Invoke-WebRequest https://github.com/docker/compose/releases/download/1.16.0/docker-compose-Windows-x86_64.exe -UseBasicParsing -OutFile $env:ProgramFiles\docker\docker-compose.exe
 ```
 
-To access the running app from the host running the containers (for example when running on Windows 10 or if opening browser on Windows Server 2016 system running Docker engine) use the container IP and port 5000. `localhost` will not work:
+To run the sample application in multiple Docker Windows containers, start by cloning the GithUb [dockersamples/dotnet-album-viewer](https://github.com/dockersamples/dotnet-album-viewer/) repository:
 
 ```
-docker inspect -f "{{ .NetworkSettings.Networks.nat.IPAddress }}" musicstore_web_1
+git clone https://github.com/dockersamples/dotnet-album-viewer.git
+```
+
+The [Dockerfile for the application](https://github.com/dockersamples/dotnet-album-viewer/blob/master/docker/app/Dockerfile) uses [Docker multi-stage builds](https://docs.docker.com/engine/userguide/eng-image/multistage-build/), where the app is compiled inside a container and then packaged into a Docker image. That means you don't need .NET Core installed on your machine to build and run the app from source:
+
+```
+cd dotnet-album-viewer
+docker-compose build
+```
+
+You'll see a lot of output here. Docker will pull the .NET Core images if you don't already have them, then it will run `dotnet restore` and `dotnet build` inside a container. You will see the usual NuGet and MSBuild output, even if you don't have the SDK installed.
+
+When the build completes, run the app with:
+
+```
+docker-compose up -d
+```
+
+Docker starts a database container using Microsoft's [SQL Server Express Windows image](https://store.docker.com/images/mssql-server-windows-express), and when the database is running it starts the application container. The database and application containers are in the same Docker network, so they can reach each other.
+
+The container for the web application maps to port 80 on the host, so from a different machine you can browse to your host address and see the site:
+
+![ASP.NET Core Album Viewer app running in a Docker Windows container](images/dotnet-album-viewer.png)
+
+If you're working on the host, you need to browse to the container's IP address. You can find it with `docker container inspect`:
+
+```
+docker container inspect -f "{{ .NetworkSettings.Networks.nat.IPAddress }}" dotnetalbumviewer_app_1
 172.21.124.54
 ```
 
-If using Windows Server 2016 and accessing from outside the VM or host, simply use the VM or host IP and port 5000.
+### Organizing Distributed Solutions with Docker Compose
 
-### What's happening here?
-Take a closer look at the `docker-compose.windows.yml` file.
+Take a closer look at the [docker-compose.yml](https://github.com/dockersamples/dotnet-album-viewer/blob/master/docker-compose.yml) file. There are two [services](https://docs.docker.com/compose/compose-file/#service-configuration-reference) defined, which are the different components of the app that will run in Docker containers. The first is the SQL Server database:
 
 ```
-version: '3'
-services:
   db:
     image: microsoft/mssql-server-windows-express
     environment:
-      sa_password: "Password1"
-    ports:
-      - "1433:1433" # for debug. Remove this for production
+      sa_password: "DockerCon!!!"
+      ACCEPT_EULA: "Y"
+```
 
-  web:
+This uses Microsoft SQL Server Express, which runs as a Docker Windows container. Express edition has a production licence, so you can use it for live applications. The environment settings configure the database, setting the password for the `sa` user account, and accepting the licence agreement. 
+
+The second service is the ASP.NET Core web application, which uses the custom image you built at the start of the lab:
+
+```
+  app:
+    image: dockersamples/dotnet-album-viewer
     build:
       context: .
-      dockerfile: Dockerfile.windows
+      dockerfile: docker/app/Dockerfile
     environment:
-      - "Data:DefaultConnection:ConnectionString=Server=db,1433;Database=MusicStore;User Id=sa;Password=Password1;MultipleActiveResultSets=True"
+      - "Data:useSqLite=false"
+      - "Data:SqlServerConnectionString=Server=db;Database=AlbumViewer;User Id=sa;Password=DockerCon!!!;MultipleActiveResultSets=true;App=AlbumViewer"
     depends_on:
-      - "db"
+      - db
     ports:
-      - "5000:5000"
-
-networks:
-  default:
-    external:
-      name: nat
+      - "80:80"
 ```
 
-You can find more details in the [Docker Compose documentation](https://docs.docker.com/compose/ "Docker Compose documentation"), but basically here's what is happening.
-  - Two services are defined, `db` and `web`.
-  - `db` is a Microsoft SQL Express image official image from Microsoft.
-    - The password for `db` is set to `Password1` (obviously only for a developer environment).
-    - Port 1433 on the host is mapped to the exposed port 1433 in the container which is used for debugging.
-  -  `web` is built from `Dockerfile.windows`. 
-    - Compose passes along an environment variable which defines where the database is and how to connect to it. Notice that we can just refer to the database as `db` and Compose will allow `web` to discover the service there.
-    - The port 5000 is mapped to the exposed port 5000 in the container.
-  - The two services are added to an existing network, named `nat`.
+The [build](https://docs.docker.com/compose/compose-file/#build) details capture the path to the Dockerfile. The environment variables are used to configure the app - they override the settings in [appsettings.json](https://github.com/dockersamples/dotnet-album-viewer/blob/master/src/AlbumViewerNetCore/appsettings.json). This configuration uses SQL Server rather than the default SQLite database, and sets the connection string to use the SQL Server container.
 
-Let's look at `Dockerfile.windows` to understand it a bit better.
+> In the database connection string, the server name is `db` - which is the name of the service for the SQL container. Docker has service discovery built-in, so when the app tries to connect using the server name `db`, Docker will direct it to the database container. 
 
-```
-FROM microsoft/dotnet:1.0.0-preview2-windowsservercore-sdk
-```
-This pulls in the official microsoft .NET image based on Windows Server Core
-```
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
-```
-This sets the shell to powershell.
-```
-RUN set-itemproperty -path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters' -Name ServerPriorityTimeLimit -Value 0 -Type DWord
-```
-Temporary workaround for Windows DNS client weirdness
-```
-RUN New-Item -Path \MusicStore\samples\MusicStore.Standalone -Type Directory
-WORKDIR MusicStore
-```
-This creates a new directory in the container and makes it the working directory. Everything else that happens after this point will use MusicStore as the base directory.
-```
-ADD samples/MusicStore.Standalone/project.json samples/MusicStore.Standalone/project.json
-ADD NuGet.config .
-```
-The command adds the project file (detailing NuGet package dependencies) and the NuGet config file.
-```
-RUN dotnet restore --no-cache .\samples\MusicStore.Standalone
-```
-This pulls in the right dependencies to the project.
+The app definition also captures the [dependency](https://docs.docker.com/compose/compose-file/#depends_on) on the database server, and publishes port 80 so any traffic coming into the host gets directed by Docker into the container.
+
+
+## Packaging ASP.NET Core apps in Docker
+
+How can you compile and run this app without .NET Core installed? Docker compiles and runs the app using containers. The tasks are in the [Dockerfile](https://github.com/dockersamples/dotnet-album-viewer/blob/master/docker/app/Dockerfile), which captures all the app dependencies so the only pre-requisite you need is Docker. The first stage in the Dockerfile publishes the app:
 
 ```
-ADD samples samples
-RUN dotnet build .\samples\MusicStore.Standalone
+FROM microsoft/dotnet:2.0.0-sdk-nanoserver AS builder
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+WORKDIR /album-viewer
+COPY AlbumViewerNetCore.sln .
+COPY src/AlbumViewerNetCore/AlbumViewerNetCore.csproj src/AlbumViewerNetCore/AlbumViewerNetCore.csproj
+COPY src/AlbumViewerBusiness/AlbumViewerBusiness.csproj src/AlbumViewerBusiness/AlbumViewerBusiness.csproj
+COPY src/Westwind.Utilities/Westwind.Utilities.csproj src/Westwind.Utilities/Westwind.Utilities.csproj
+RUN dotnet restore
+
+COPY src src
+RUN dotnet publish .\src\AlbumViewerNetCore\AlbumViewerNetCore.csproj
 ```
-This adds the rest of the app source code to the container, and compiles the project.
+
+This uses Microsoft's [.NET Core Docker image](https://store.docker.com/images/dotnet) as the base in the `FROM` instruction. It uses a specific version of the image, with the .NET Core 2.0.0 SDK installed, running on Microsoft Nano Server. Then the `COPY` instructions copy the project files and solution files into the image, and the `RUN` instruction executes `dotnet restore` to restore packages.
+
+Docker caches parts of the image as it build them, and this Dockerfile separates out the restore part to take advantage of that. Unless the solution or project files change, Docker will re-use the image layer with the dependencies already restored, saving time on the `dotnet restore` operation.
+
+After the restore, the rest of the source code is copied into the image and Docker runs `dotnet publish` to compile and publish the app.
+
+The final stage in the Dockerfile packages the published application:
+
 ```
-EXPOSE 5000
-ENV ASPNETCORE_URLS http://0.0.0.0:5000
-CMD dotnet run -p .\samples\MusicStore.Standalone
+# app image
+FROM microsoft/aspnetcore:2.0.0-nanoserver 
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+WORKDIR /album-viewer
+COPY --from=builder /album-viewer/src/AlbumViewerNetCore/bin/Debug/netcoreapp2.0/publish/ .
+CMD ["dotnet", "AlbumViewerNetCore.dll"]
 ```
-These last three commands expose correct ports and set the default run command for the container to run the MusicStore app.
+
+This uses a different base image, which is optimized for running [ASP.NET Core](https://store.docker.com/community/images/microsoft/aspnetcore) apps. It has the .NET Core runtime, but not the SDK, and the ASP.NET core packages are already installed. The `COPY` instruction copies the published .NET Core app from the previous stage in the Dockerfile (called `builder`), and the `CMD` instruction tells Docker how to start the app.
+
+The Dockerfile syntax is simple. You only need to learn a handful of instructions to build production-grade Docker images. Inside the Dockerfile, you can use PowerShell to deploy MSIs, update Windows Registry settings, set file permissions and do anything else you need.
+
 
 ## Next Steps
-This tutorial described how to get setup to build and run native Docker Windows containers on both Windows 10 and using the recently published Windows Server 2016 evaluation release. To find out more info, check out the [Microsoft documentation](https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_server "Windows Containers on Windows Server")
+
+This lab walked you through building and running a simple .NET Core web application using Docker Windows containers. Take a look at some more Windows container labs to see how your existing apps can be moved into Docker:
+
+* [SQL Server](https://github.com/docker/labs/blob/master/windows/sql-server/README.md)
+* [Modernizing ASP.NET apps - for devs](https://github.com/docker/labs/tree/master/windows/modernize-traditional-apps/modernize-aspnet)
+* [Modernizing ASP.NET apps - for IT Pros](https://github.com/docker/labs/tree/master/windows/modernize-traditional-apps/modernize-aspnet-ops)
