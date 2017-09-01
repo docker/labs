@@ -6,19 +6,19 @@ The following procedure describes how to create a repository on Docker Hub and p
 
 * Docker Hub
 
-![hub.docker.com](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/registry_1.png)
+![hub.docker.com](images/registry_1.png)
 
 * List of user’s repositories
 
-![List of user repository](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/registry_2.png)
+![List of user repository](images/registry_2.png)
 
 * Repository details
 
-![Repository details](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/registry_3.png)
+![Repository details](images/registry_3.png)
 
 * Repository created
 
-![Repository created](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/registry_4.png)
+![Repository created](images/registry_4.png)
 
 **the newly created repository will contain all the version of the application’s image**
 
