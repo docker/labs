@@ -5,7 +5,7 @@ MAINTAINER Elton Stoneman <elton@docker.com>
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
 
 EXPOSE 1433
-VOLUME c:\\database
+VOLUME c:\database
 ENV sa_password D0cker!a8s
 
 RUN md c:\init
