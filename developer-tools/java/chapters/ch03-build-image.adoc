@@ -48,42 +48,41 @@ Build the image using the command:
   docker image build . -t helloworld
 ----
 
-`.` in this command is the context for `docker image build`. `-t` adds a tag to the image.
-
+`.` in this command is the context for the command `docker image build`. `-t` adds a tag to the image.
 
 The following output is shown:
 
 [source, text]
 ----
-Sending build context to Docker daemon 2.048 kB
+Sending build context to Docker daemon  2.048kB
 Step 1/2 : FROM ubuntu:latest
 latest: Pulling from library/ubuntu
-8aec416115fd: Pull complete 
-695f074e24e3: Pull complete 
-946d6c48c2a7: Pull complete 
-bc7277e579f0: Pull complete 
-2508cbcde94b: Pull complete 
-Digest: sha256:71cd81252a3563a03ad8daee81047b62ab5d892ebbfbf71cf53415f29c130950
+9fb6c798fa41: Pull complete 
+3b61febd4aef: Pull complete 
+9d99b9777eb0: Pull complete 
+d010c8cf75d7: Pull complete 
+7fac07fb303e: Pull complete 
+Digest: sha256:31371c117d65387be2640b8254464102c36c4e23d2abe1f6f4667e47716483f1
 Status: Downloaded newer image for ubuntu:latest
- ---> f49eec89601e
+ ---> 2d696327ab2e
 Step 2/2 : CMD /bin/echo hello world
- ---> Running in 7615d69d04ec
- ---> 61edf15e4cec
-Removing intermediate container 7615d69d04ec
-Successfully built 61edf15e4cec
+ ---> Running in 9356a508590c
+ ---> e61f88f3a0f7
+Removing intermediate container 9356a508590c
+Successfully built e61f88f3a0f7
+Successfully tagged helloworld:latest
 ----
-
 
 List the images available using `docker image ls`:
 
 [source, text]
 ----
-REPOSITORY            TAG                 IMAGE ID            CREATED              SIZE
-helloworld            latest              61edf15e4cec        About a minute ago   129 MB
-ubuntu                latest              f49eec89601e        21 hours ago         129 MB
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+helloworld          latest              e61f88f3a0f7        3 minutes ago       122MB
+ubuntu              latest              2d696327ab2e        4 days ago          122MB
 ----
 
-Other images may be seen as well but we are interested in these images for now.
+Other images may be shown as well but we are interested in these two images for now.
 
 Run the container using the command:
 
@@ -93,7 +92,7 @@ to see the output:
 
   hello world
 
-If you do not see the expected output, check your Dockerfile that the content exactly matches as shown above. build the image again and now run it!
+If you do not see the expected output, check your Dockerfile that the content exactly matches as shown above. Build the image again and now run it.
 
 Change the base image from `ubuntu` to `busybox` in `Dockerfile`. Build the image again:
 
@@ -103,11 +102,11 @@ and view the images using `docker image ls` command:
 
 [source, text]
 ----
-REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
-helloworld            2                   fd5297466a74        43 seconds ago      1.11 MB
-helloworld            latest              61edf15e4cec        3 minutes ago       129 MB
-ubuntu                latest              f49eec89601e        21 hours ago        129 MB
-busybox               latest              7968321274dc        7 days ago          1.11 MB
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+helloworld          2                   7fbedda27c66        3 seconds ago       1.13MB
+helloworld          latest              e61f88f3a0f7        5 minutes ago       122MB
+ubuntu              latest              2d696327ab2e        4 days ago          122MB
+busybox             latest              54511612f1c4        9 days ago          1.13MB
 ----
 
 `helloworld:2` is the format that allows to specify the image name and assign a tag/version to it separated by `:`.
@@ -160,13 +159,15 @@ This will open a terminal in the container. Check the version of Java:
 
 [source, text]
 ----
-root@84904fb904da:/# java -version
-openjdk version "1.8.0_111"
-OpenJDK Runtime Environment (build 1.8.0_111-8u111-b14-2~bpo8+1-b14)
-OpenJDK 64-Bit Server VM (build 25.111-b14, mixed mode)
+root@8d0af9da5258:/# java -version
+openjdk version "1.8.0_141"
+OpenJDK Runtime Environment (build 1.8.0_141-8u141-b15-1~deb9u1-b15)
+OpenJDK 64-Bit Server VM (build 25.141-b15, mixed mode)
 ----
 
-A different version may be seen in your case. Exit out of the container by typing `exit` in the shell.
+A different JDK version may be shown in your case. 
+
+Exit out of the container by typing `exit` in the container shell.
 
 ==== Package and Run Java application as Docker image
 
@@ -183,11 +184,11 @@ CMD java -cp /usr/src/helloworld-1.0-SNAPSHOT.jar org.examples.java.App
 
 Build the image:
 
-    docker build -t hello-java .
+    docker build -t hello-java:latest .
 
 Run the image:
 
-    docker run hello-java
+    docker run hello-java:latest
 
 This displays the output:
 
@@ -225,9 +226,13 @@ This will show an output like:
 
 [source, text]
 ----
-[INFO] DOCKER> docker-build.tar: Created [hello-java] in 116 milliseconds
-[INFO] DOCKER> [hello-java]: Built image sha256:ea64a
-[INFO] DOCKER> [hello-java]: Removed old image sha256:954b1
+[INFO] Copying files to /Users/argu/workspaces/docker-java-sample/target/docker/hellojava/build/maven
+[INFO] Building tar: /Users/argu/workspaces/docker-java-sample/target/docker/hellojava/tmp/docker-build.tar
+[INFO] DOCKER> [hellojava:latest]: Created docker-build.tar in 87 milliseconds
+[INFO] DOCKER> [hellojava:latest]: Built image sha256:6f815
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
 ----
 
 The list of images can be checked using the command `docker image ls | grep hello-java`:
@@ -248,11 +253,9 @@ This will show an output like:
 
 [source, text]
 ----
-[INFO] DOCKER> [hello-java] : Start container b3b0e4b63174
-[INFO] DOCKER> [hello-java] : Waited on log out 'Hello' 504 ms
-[INFO] 
-[INFO] --- docker-maven-plugin:0.14.2:logs (docker:start) @ helloworld ---
-b3b0e4> Hello World!
+[INFO] DOCKER> [hellojava:latest]: Start container 30a08791eedb
+30a087> Hello World!
+[INFO] DOCKER> [hellojava:latest]: Waited on log out 'Hello World!' 510 ms
 ----
 
 This is similar output when running the Java application using `java` CLI or the Docker container using `docker run` command.
@@ -271,7 +274,7 @@ Only one change was required in the project to enable Docker packaging and runni
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.19.0</version>
+                    <version>0.22.1</version>
                     <configuration>
                         <images>
                             <image>

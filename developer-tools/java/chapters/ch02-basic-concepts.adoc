@@ -68,7 +68,7 @@ Check if your client is working using the following command:
 
 It shows the output:
 
-  Docker version 17.09.0-ce-rc2, build 363a3e7
+  Docker version 17.09.0-ce-rc3, build 2357fb2
 
 NOTE: The exact version may differ based upon how recently the installation was performed.
 
@@ -76,19 +76,19 @@ The exact version of Client and Server can be seen using `docker version` comman
 
 ```
 Client:
- Version:      17.09.0-ce-rc2
+ Version:      17.09.0-ce-rc3
  API version:  1.32
  Go version:   go1.8.3
- Git commit:   363a3e7
- Built:        Thu Sep 14 01:52:38 2017
+ Git commit:   2357fb2
+ Built:        Thu Sep 21 02:31:18 2017
  OS/Arch:      darwin/amd64
 
 Server:
- Version:      17.09.0-ce-rc2
+ Version:      17.09.0-ce-rc3
  API version:  1.32 (minimum version 1.12)
  Go version:   go1.8.3
- Git commit:   363a3e7
- Built:        Thu Sep 14 01:58:47 2017
+ Git commit:   2357fb2
+ Built:        Thu Sep 21 02:36:52 2017
  OS/Arch:      linux/amd64
  Experimental: true
 ```
