@@ -18,6 +18,8 @@ Docker runs natively on Mac, Windows and Linux. This lab will use https://www.do
 
 NOTE: Docker Community Edition have requirements for a fairly recent operating system version. If your machine does not meet these requirements, then you need to install https://www.docker.com/products/docker-toolbox[Docker Toolbox]. 
 
+This workshop is tested with Docker Community Edition `17.09.0-ce-rc2, build 363a3e7` on Mac OS X `10.12.5`.
+
 === Additional components
 
 If Docker is installed using Docker Community Edition or Docker Toolbox, then this section is not required.
