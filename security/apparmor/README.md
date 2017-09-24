@@ -119,7 +119,7 @@ In this step you will check the status of AppArmor on your Docker Host and learn
 5. Stop and remove the container started in the previous steps.
 
    ```
-   $ docker container rm -f appamror1
+   $ docker container rm -f apparmor1
    1bb16561bc06
    ```
 
