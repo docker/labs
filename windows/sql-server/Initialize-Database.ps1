@@ -38,6 +38,10 @@ $SqlPackagePath = 'C:\Program Files (x86)\Microsoft SQL Server\130\DAC\bin\SqlPa
 $SqlCmdVars = "DatabaseName=AssetsDB", "DefaultFilePrefix=AssetsDB", "DefaultDataPath=c:\database\", "DefaultLogPath=c:\database\"  
 Invoke-Sqlcmd -InputFile create.sql -Variable $SqlCmdVars -Verbose
 
-# TODO - use ServiceMonitor.exe when it gets open-sourced (https://github.com/Microsoft/iis-docker/issues/1)
-Write-Verbose "Started SQL Server."
-while ($true) { Start-Sleep -Seconds 3600 }
+# relay SQL event logs to Docker
+$lastCheck = (Get-Date).AddSeconds(-2) 
+while ($true) { 
+    Get-EventLog -LogName Application -Source "MSSQL*" -After $lastCheck | Select-Object TimeGenerated, EntryType, Message	 
+    $lastCheck = Get-Date 
+    Start-Sleep -Seconds 2 
+}
