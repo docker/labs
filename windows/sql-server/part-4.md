@@ -1,6 +1,6 @@
 # Part 4 - Upgrading the SQL Server Database
 
-In [Part 3](part-3.md) we saw different ways of running the image we built in [Part 2](part-2.md), which packaged the Dacpac we generated in [Part 1](part-1.md). By using the Dacpac to deploy the database, we can support many scenarios using the same Docker image, and we also have a path in place to upgrade the database schema in a consistent and reliable way.
+In [Part 3](part-3.md) you saw different ways of running the image you built in [Part 2](part-2.md), which packaged the Dacpac generated with the builder from [Part 1](part-1.md). By using the Dacpac to deploy the database, you can support many scenarios using the same Docker image, and you also have a process to upgrade the database schema in a consistent and reliable way.
 
 ## Changing the Database schema
 
@@ -8,40 +8,48 @@ Databases evolve as the apps they support evolve - new tables are added, columns
 
 SQL Server's Dacpac approach is much cleaner. It contains a model of the desired state of the schema, and you use the SqlPackage tool to generate the change scripts for a target database immediately before you apply them, so the upgrade will always be from the current state to the desired state. 
 
-In this lab we use the Dacpac to underly the fundamental components for a CI/CD pipeline for database upgrades. We just need to change the source code, rebuild and redeploy. I've added a new `Users` table to the schema, and modified some of the columns in the `Assets` table:
+In this lab you use the Dacpac to underly the fundamental components for a CI/CD pipeline for database upgrades. You just need to change the source code, rebuild and redeploy. In version 2 of the schema, there's a new `Users` table and some aditional columns in the `Assets` table:
 
 ![Database schema, version 2](./img/schema-v2.png)
 
-To build a new database image, we first need to run the builder to generate an updated Dacpac with the latest schema model. This is the same command from [Part 1](part-1,md):
+The builder image from [Part 1](part-1.md) is fine for building version 2 of the schema, there are no changes that need different build tools. To package the new image, build [Dockerfile.v2](Dockerfile.v2). The Dockerfile is exactly the same, except that it builds V2 of the database schema.
+
+> The v1 and v2 Dockerfiles are used to illustrate a schema change over time. In a real project, you would have a single Dockerfile in the source code along with your SQL Project.
+
+You can build a new database image and tag it as version 2 of the schema:
 
 ```PowerShell
-docker run --rm -v $pwd\out:c:\bin -v $pwd\src:c:\src assets-db-builder
+docker image build --tag dockersamples/assets-db:v2 --file Dockerfile.v2 .
 ```
-
-That updates the Dacpac file in the `out` directory, so we can build a new database container with the updated package. This is the same command from [Part 2](part-2,md), although I'm using a `v2` tag so I can support multiple image versions:
-
-```PowerShell
-docker build -t assets-db:v2 --no-cache .
-```
-
-> Note: I'm using the [no-cache](https://docs.docker.com/engine/reference/commandline/build/) option to make sure the latest version of the Dacpac gets picked up and packaged into the new image. That shouldn't be necessary, but in my testing on Windows Server 2016 the new Dacpac wasn't always found, so this forces Docker to build each layer rather than using the cached version.
+...
 
 ## Upgrading the Database container
 
-To upgrade the database, we just need to kill the existing database container and spin up a new one from the `v2` image, using the same volume mount as the `v1` container. We can use the same commands from [Part 3](part-3.md), but using the new image tag:
+Now you have two images locally, each packaging a separate version of the database schema. The container is running `v1` of the schema. To upgrade the database, you replace the existing database container and spin up a new one from the `v2` image, using the same volume mount as the `v1` container. You can use the same commands from [Part 3](part-3.md), but using the new image tag:
 
 ```PowerShell
-docker kill assets-db
-docker run -d --rm -p 1433:1433 --name assets-db --ip $ip -v C:\databases\assets:C:\database assets-db:v2
+docker container rm -f assets-db
+
+docker container run -d -p 1433 --name assets-db -v C:\mssql:C:\database dockersamples/assets-db:v2
 ```
 
-When the container starts, it runs the same initialization script - finds the existing database files, attaches them, and runs the upgrade process to bring the database up to the desired state. The container retains the upgrade script which `SqlPackage` generates, so we can copy it out of the container into the local machine and see the exact SQL statements that were used in the upgrade:
+When this new container starts, the init script attaches the existing data files and runs `SqlPackage`. Noe the schema is different from the Dacpac, so the tool generates a diff script to apply. Then it runs the script to update the schema - you can see the output in `docker container logs`:
+
+```
+> docker container logs assets-db
+...
+VERBOSE: Altering [dbo].[Assets]...
+VERBOSE: Creating [dbo].[Users]...
+VERBOSE: Creating [dbo].[FK_Assets_To_Users]...
+```
+
+The container retains the upgrade script which `SqlPackage` generates, and you can read it from the container to see the exact SQL statements that were used in the upgrade:
 
  ```PowerShell
- docker cp assets-db:/init/create.sql .
+ docker container exec assets-db powershell cat C:\init\create.sql
  ```
 
- In my case, the upgrade script generated by `SqlPackage` is 150+ lines of SQL, containing the DDL to update the schema, and the DML post-deployment scripts, to insert reference data. The DDL includes the table changes and the new table, as in this snippet:
+For the v2 upgrade the script is 150+ lines of SQL, containing the DDL to update the schema, and the DML post-deployment scripts. The DDL includes the table changes and the new table, as in this snippet:
 
  ```SQL 
 ALTER TABLE [dbo].[Assets] ALTER COLUMN [AssetDescription] NVARCHAR (500) NULL;
@@ -65,7 +73,7 @@ CREATE TABLE [dbo].[Users] (
 GO
 ```
 
-If you repeat those steps to kill the existing database container and create a new one using the same Docker volume, the upgrade script won't have any DDL changes the next time round. The schema has already been upgraded, so it matches the model in the Dacpac. Only the DML scripts with the `INSERT` statements will be in the generated SQL script.
+If you repeat those steps to remove the existing database container and create a new one using the same Docker volume, the upgrade script won't have any DDL changes the next time round. The schema has already been upgraded, so it matches the model in the Dacpac.
 
 ## Conclusion
 

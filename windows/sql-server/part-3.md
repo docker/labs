@@ -1,28 +1,37 @@
 # Part 3 - Running the SQL Server Container
 
-We now have a SQL Server Express image, packaged with our database. The database image was built in [Part 2](part-2.md), using the Dacpac we generated in [Part 1](part-1.md). We can use that container to spin up a database in different ways
+You now have a Docker image with a SQL schema and deployment script, packaged on top of SQL Server Express. The database image was built in [Part 2](part-2.md), compiling the Dacpac using the builder image from [Part 1](part-1.md). You can use that image to spin up a database container in different ways.
 
-## In Development - Creating an Empty Database
+## In Development - Running a Disposable Database
 
-The image can be used in development environments where a fresh database is needed for working on new app features, and you want to easily reset the data to an initial state. In this scenario you don't want to persist data between containers, so you can just start a database container:
+The image can be used in development environments where a fresh database is needed for working on new app features, and you want to easily reset the data to an initial state. In this scenario you don't want to persist data between containers, you want the database container to be disposable:
 
 ```Docker
-docker run -d --rm -p 1433:1433 --name assets-db assets-db
+docker container run --detach --name assets-db --publish 1433 dockersamples/assets-db:v1
 ```
 
-When the container starts, it will run the deployment script, find there are no existing database files and create a new database. You can connect to SQL Server inside the container using SQL Server Management Studio or Server Explorer in Visual Studio. 
+When the container starts it runs the deployment script, finds that there are no existing database files and creates a new database. You can check that by viewing the logs from the container - you'll see the output from the script:
 
-> Note: the current limitation in Windows networking means you can't access published ports from a Docker container using the engine's localhost address (see [Published Ports On Windows Containers Don't Do Loopback](https://blog.sixeyed.com/published-ports-on-windows-containers-dont-do-loopback/)). 
+```
+> docker container logs assets-db
+...
+VERBOSE: Creating AssetsDB...
+VERBOSE: Changed database context to 'AssetsDB'.
+VERBOSE: Creating [dbo].[Assets]...
+VERBOSE: Creating [dbo].[AssetTypes]...
+VERBOSE: Creating [dbo].[Locations]...
+VERBOSE: Creating [dbo].[FK_Assets_To_Locations]...
+VERBOSE: Creating [dbo].[FK_Assets_To_AssetTypes]...
+```
 
-To connect we can fetch the container's IP address by running `inspect`:
+You can connect to the database container using SQL Server Management Studio or any other SQL client. From your Docker machine you need to get the IP address of the container with `docker container inspect`: 
 
 ```PowerShell
-> $ip = docker inspect --format '{{ .NetworkSettings.Networks.nat.IPAddress }}' assets-db
-> $ip
+> docker container inspect --format '{{ .NetworkSettings.Networks.nat.IPAddress }}' assets-db
 172.24.192.132
 ```
 
-In my case the IP address is `172.24.192.132`, which is the server name for connections - yours will be different. You need to use SQL Server Authentication with the `sa` credentials, and you should see the `AssetsDB` database listed:
+In my case the IP address is `172.24.192.132` - yours will be different. From your machine you can connect to the databse container with a SQL client, connecting to that IP address. You need to use SQL Server Authentication with the `sa` credentials, and you should see the `AssetsDB` database listed:
 
 ![Connecting to AssetsDB](./img/connection-settings.png)
 
@@ -38,53 +47,59 @@ VALUES (1, 1, '2016-11-14', '800', 'SC0002', 'Logitech Office Cam');
 
 And when you `SELECT` from the `Assets` table you'll see the new rows there. 
 
-The data is being stored in a volume, which means the `MDF` and `LDF` files are somewhere on the the host's disk. But because we ran the container with the [--rm](https://docs.docker.com/engine/reference/run/#/clean-up---rm) option, the volume will be removed when the container stops - so this is an ephemeral container. 
+The data is being stored in a volume, which means the `MDF` and `LDF` files are somewhere on the the host's disk. But if you forcibly remove the container, the volume will be removed when the container stops - so this is a disposable database container, the new data won't survive beyond the life of the container. 
 
-We can see that if we kill the container, and start a new one with the same IP address as the original:
+You can see that when you remove the container, and start a new one with the same configuration as the original:
 
 ```PowerShell
-docker kill assets-db
-docker run -d --rm -p 1433:1433 --name assets-db --ip $ip assets-db
+docker container rm --force assets-db
+
+docker container run --detach --publish 1433 --name assets-db dockersamples/assets-db:v1
 ```
 
-Refresh your SQL client connection, repeat the `SELECT * FROM Assets` query and you'll see the table is empty - the old data was lost when we killed the container and its volume was removed. The new container starts with a new database.
+Inspect this container with `docker container inspect` and you'll see it has a new IP address - this is a whole new container. Connect your SQL client, repeat the `SELECT * FROM Assets` query and you'll see the table is empty - the old data was lost when you removed the container, and its volume was removed. The new container starts with a new database.
 
-## In Test - Creating a Reusable Database
+## In Test - Running a Persistent Database
 
-To store the data permanently, we just need to map the database volume to a location on the host. The first time we run a container, it will create the data and log files in the host directory. If we replace the container and use the same volume mount, the new container will attach the existing database and the data will be preserved.  
+To store the data permanently, you can map the database volume to a location on the host. The first time you run a container, it will create the data and log files in the host directory. When you replace the container and use the same volume mount, the new container will attach the existing database and the data is preserved.  
 
-The `run` command is essentially the same, we just lose the `--rm` option and use the `-v` option to mount a volume. [Mounting a host directory as a volume](https://docs.docker.com/engine/tutorials/dockervolumes/#/mount-a-host-directory-as-a-data-volume) just means that when processes in a container think they're accessing files on the local filesystem, it's actually a symlink and the files are on the host. In this case, when SQL Server uses the `MDF` file in `C:\databases` in the container, it's actually using the file in `C:\databases\assets` on ths host:
+The `docker container run` command is essentially the same, you just use the `--volume` option to mount a volume. [Mounting a host directory as a volume](https://docs.docker.com/engine/tutorials/dockervolumes/#/mount-a-host-directory-as-a-data-volume) means that when processes in a container think they're accessing files on the local filesystem, it's actually a symlink and the files are on the host. In this case, when SQL Server uses the `MDF` file in `C:\databases` in the container, it's actually using the file in `C:\mssql` on the host:
 
 ```PowerShell
-docker kill assets-db
-mkdir C:\databases\assets
-docker run -d --rm -p 1433:1433 --name assets-db --ip $ip -v C:\databases\assets:C:\database assets-db
+docker container rm --force assets-db
+
+mkdir C:\mssql
+
+docker container run -d -p 1433 --name assets-db --volume C:\mssql:C:\database dockersamples/assets-db:v1
 ```
 
-When the container has started, you can verify that the new database is created and the files are written to the host directory by listing the contents from the host:
+When the container has started, you can verify that the new database is created and the files are written to the host directory by listing the contents on the host:
 
 ```PowerShell
-> ls C:\databases\assets\
+> ls C:\mssql
 
-    Directory: C:\databases\assets
+    Directory: C:\mssql
 
 Mode                LastWriteTime         Length Name
 ----                -------------         ------ ----
--a----       11/14/2016   1:30 PM        8388608 AssetsDB_Primary.ldf
--a----       11/14/2016   1:30 PM        8388608 AssetsDB_Primary.mdf
+-a----       25/09/2017     16:20        8388608 AssetsDB_Primary.ldf
+-a----       25/09/2017     16:20        8388608 AssetsDB_Primary.mdf
 ```
 
-Now you can insert rows into the `Assets` table, and the data will be stored outside of the container. You can replace the container without changing the schema - say you rebuild it with a new version of the base image to get the latest Windows updates. As long as you use the same volume mapping as the previous container, you'll retain all the data:
+Now you can inspect the container to get its IP address, connect and insert rows into the `Assets` table. The data will be stored outside of the container, in the directory on the host. You can replace the container without changing the schema - say you rebuild it with a new version of the base image to get the latest Windows updates. As long as you use the same volume mapping as the previous container, you'll retain all the data:
 
 ```PowerShell
-docker kill assets-db
-docker run -d --rm -p 1433:1433 --name assets-db --ip $ip -v C:\databases\assets:C:\database assets-db
+docker container rm -f assets-db
+
+docker container run -d -p 1433 --name assets-db --volume C:\mssql:C:\database dockersamples/assets-db:v1
 ```
 
-This is a new container with a new file system, but the database location is mapped to the same host directory as the previous container. When the new container starts, it attaches the database so all the existing data is available. You can check that by executing a query in a SQL client, or by running one in the container directly:
+This is a new container with a new file system, but the database location is mapped to the same host directory as the previous container. The setup script still runs, but it finds no differences in the current database schema and the schema definition in the Dacpac, so there's no diff script to apply.
+
+When the new container starts it attaches the database so all the existing data is available. You can check that by executing a query in a SQL client, or by running one in the container directly:
 
 ```PowerShell
-> docker exec -t assets-db powershell.exe -Command "Invoke-SqlCmd -Query 'SELECT * FROM Assets' -Database AssetsDB"
+> docker container exec assets-db powershell -Command "Invoke-SqlCmd -Query 'SELECT * FROM Assets' -Database AssetsDB"
 
 AssetId          : 1
 AssetTypeId      : 1
@@ -105,7 +120,7 @@ AssetDescription : Logitech Office Cam
 
 ## In Production - Using Shared Storage
 
-For production database use, you can use exactly the same image and the same principle as for test environments, but you may want to use a different type of volume mount. 
+For production databases you can use exactly the same image and the same principle as for test environments, but you may want to use a different type of volume mount. 
 
 In small-scale single-host scenarios, you can mount your database volume from a RAID array on the local server. That gives you data redundancy but not process redundancy - if you lose a disk you won't lose data, but if the server goes down your database won't be accessible.
 
