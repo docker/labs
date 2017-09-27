@@ -7,10 +7,8 @@ MACVLAN offers a number of unique features and capabilities. It has positive per
 The `macvlan` driver uses the concept of a parent interface. This interface can be a physical interface such as `eth0`, a sub-interface for 802.1q VLAN tagging like `eth0.10` (`.10` representing `VLAN 10`), or even a bonded host adaptor which bundle two Ethernet interfaces into a single logical interface.
 
 A gateway address is required during MACVLAN network configuration. The gateway must be external to the host provided by the network infrastructure. MACVLAN networks allow access between container on the same network. Access between different MACVLAN networks on the same host is not possible without routing outside the host.
- 
-<span class="float-right">
+
 ![Connecting Containers with a MACVLAN Network](./img/macvlanarch.png)
-</span>
 
 In this example, we bind a MACVLAN network to `eth0` on the host. We attach two containers to the `mvnet` MACVLAN network and show that they can ping between themselves. Each container has an address on the `192.168.0.0/24` physical network subnet and their default gateway is an interface in the physical network.
 
@@ -32,9 +30,7 @@ As you can see in this diagram, `c1` and `c2` are attached via the MACVLAN netwo
 
 Trunking 802.1q to a Linux host is notoriously painful for many in operations. It requires configuration file changes in order to be persistent through a reboot. If a bridge is involved, a physical NIC needs to be moved into the bridge, and the bridge then gets the IP address. The `macvlan` driver completely manages sub-interfaces and other components of the MACVLAN network through creation, destruction, and host reboots.
 
-<span class="float-right">
 ![VLAN Trunking with MACVLAN](./img/trunk-macvlan.png)
-</span>
 
 When the `macvlan` driver is instantiated with sub-interfaces it allows VLAN trunking to the host and segments containers at L2. The `macvlan` driver automatically creates the sub-interfaces and connects them to the container interfaces. As a result each container will be in a different VLAN, and communication will not be possible between them unless traffic is routed in the physical network. 
 
