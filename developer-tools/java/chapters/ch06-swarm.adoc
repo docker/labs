@@ -101,31 +101,7 @@ Create a new directory and `cd` to it:
     mkdir webapp
     cd webapp
 
-Create a new Compose definition `docker-compose.yml` using the configuration file shown below.
-
-```
-version: '3.3'
-services:
-  db:
-    container_name: db
-    image: mysql:8
-    environment:
-      MYSQL_DATABASE: employees
-      MYSQL_USER: mysql
-      MYSQL_PASSWORD: mysql
-      MYSQL_ROOT_PASSWORD: supersecret
-    ports:
-      - 3306:3306
-  web:
-    image: arungupta/docker-javaee:dockerconeu17
-    ports:
-      - 8080:8080
-      - 9990:9990
-    depends_on:
-      - db
-```
-
-This Compose file is explained at https://github.com/arun-gupta/labs/blob/master/developer-tools/java/chapters/ch05-compose.adoc#configuration-file.
+Create a new Compose definition `docker-compose.yml` using the configuration file from https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch05-compose.adoc#configuration-file.
 
 This application can be started as:
 
