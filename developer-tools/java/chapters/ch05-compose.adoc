@@ -66,6 +66,7 @@ In this Compose file:
 . `environment` attribute defines environment variables to initialize MySQL server.
 .. `MYSQL_DATABASE` allows you to specify the name of a database to be created on image startup.
 .. `MYSQL_USER` and `MYSQL_PASSWORD` are used in conjunction to create a new user and to set that user's password. This user will be granted superuser permissions for the database specified by the `MYSQL_DATABASE` variable.
+.. `MYSQL_ROOT_PASSWORD` is mandatory and specifies the password that will be set for the MySQL root superuser account.
 . Java EE application uses the `db` service as specified in the `connection-url` as specified at https://github.com/arun-gupta/docker-javaee/blob/master/employees/src/main/resources/project-defaults.yml/.
 . The `arungupta/docker-javaee:dockerconeu17` image starts WildFly Swarm application server. It consists of the Java EE application built from https://github.com/arun-gupta/docker-javaee. Clone that project if you want to build your own image.
 . Port forwarding is achieved using `ports` attribute.
