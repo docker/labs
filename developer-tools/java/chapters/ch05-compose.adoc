@@ -39,33 +39,37 @@ Th entry point to Docker Compose is a Compose file, usually called `docker-compo
 ```
 version: '3.3'
 services:
-  web:
-    image: arungupta/couchbase-javaee:travel
+  db:
+    container_name: db
+    image: mysql:8
     environment:
-      - COUCHBASE_URI=db
+      MYSQL_DATABASE: employees
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+      MYSQL_ROOT_PASSWORD: supersecret
+    ports:
+      - 3306:3306
+  web:
+    image: arungupta/docker-javaee:dockerconeu17
     ports:
       - 8080:8080
       - 9990:9990
     depends_on:
       - db
-  db:
-    image: arungupta/couchbase:travel
-    ports:
-      - 8091:8091
-      - 8092:8092 
-      - 8093:8093 
-      - 11210:11210
 ```
 
 In this Compose file:
 
 . Two services in this Compose are defined by the name `db` and `web` attributes
 . Image name for each service defined using `image` attribute
-. The `arungupta/couchbase:travel` image starts Couchbase server, configures it using http://developer.couchbase.com/documentation/server/current/rest-api/rest-endpoints-all.html[Couchbase REST API], and loads a sample bucket
-. The `arungupta/couchbase-javaee:travel` image starts WildFly and deploys application WAR file built from https://github.com/arun-gupta/couchbase-javaee. Clone that project if you want to build your own image.
-. `environment` attribute defines environment variables accessible by the application deployed in WildFly. `COUCHBASE_URI` refers to the database service. This is used in the application code as shown at https://github.com/arun-gupta/couchbase-javaee/blob/master/src/main/java/org/couchbase/sample/javaee/Database.java.
-. Port forwarding is achieved using `ports` attribute
-. `depends_on` attribute allows to express dependency between services. In this case, Couchbase will be started before WildFly. Application-level health are still user's responsibility.
+. The `mysql:8` image starts the MySQL server.
+. `environment` attribute defines environment variables to initialize MySQL server.
+.. `MYSQL_DATABASE` allows you to specify the name of a database to be created on image startup.
+.. `MYSQL_USER` and `MYSQL_PASSWORD` are used in conjunction to create a new user and to set that user's password. This user will be granted superuser permissions for the database specified by the `MYSQL_DATABASE` variable.
+. Java EE application uses the `db` service as specified in the `connection-url` as specified at https://github.com/arun-gupta/docker-javaee/blob/master/employees/src/main/resources/project-defaults.yml/.
+. The `arungupta/docker-javaee:dockerconeu17` image starts WildFly Swarm application server. It consists of the Java EE application built from https://github.com/arun-gupta/docker-javaee. Clone that project if you want to build your own image.
+. Port forwarding is achieved using `ports` attribute.
+. `depends_on` attribute allows to express dependency between services. In this case, MySQL will be started before WildFly. Application-level health check are still user's responsibility.
 
 === Start Application
 
@@ -82,10 +86,12 @@ An alternate directory where the compose file exists can be specified using `-p`
 This shows the output as:
 
 ```
-Creating javaee_db_1 ... 
-Creating javaee_db_1 ... done
-Recreating javaee_web_1 ... 
-Recreating javaee_web_1 ... done
+docker-compose up -d
+Creating network "javaee_default" with the default driver
+Creating db ... 
+Creating db ... done
+Creating javaee_web_1 ... 
+Creating javaee_web_1 ... done
 ```
 
 The output may differ slightly if the images are downloaded as well.
@@ -93,12 +99,10 @@ The output may differ slightly if the images are downloaded as well.
 Started services can be verified using the command `docker-compose ps`:
 
 ```
-    Name                  Command               State                                 Ports                              
--------------------------------------------------------------------------------------------------------------------------
-javaee_db_1    /entrypoint.sh /opt/couchb ...   Up      11207/tcp, 0.0.0.0:11210->11210/tcp, 11211/tcp, 18091/tcp,       
-                                                        18092/tcp, 18093/tcp, 0.0.0.0:8091->8091/tcp,                    
-                                                        0.0.0.0:8092->8092/tcp, 0.0.0.0:8093->8093/tcp, 8094/tcp         
-javaee_web_1   /opt/jboss/wildfly/bin/sta ...   Up      0.0.0.0:8080->8080/tcp, 0.0.0.0:9990->9990/tcp                    
+    Name                  Command               State                       Ports                     
+------------------------------------------------------------------------------------------------------
+db             docker-entrypoint.sh mysqld      Up      0.0.0.0:3306->3306/tcp                        
+javaee_web_1   /bin/sh -c java -jar /opt/ ...   Up      0.0.0.0:8080->8080/tcp, 0.0.0.0:9990->9990/tcp
 ```
 
 This provides a consolidated view of all the services, and containers within each of them.
@@ -106,212 +110,123 @@ This provides a consolidated view of all the services, and containers within eac
 Alternatively, the containers in this application, and any additional containers running on this Docker host can be verified by using the usual `docker container ls` command:
 
 ```
-CONTAINER ID        IMAGE                               COMMAND                  CREATED             STATUS              PORTS                                                                                                         NAMES
-b96193760e34        arungupta/couchbase-javaee:travel   "/opt/jboss/wildfl..."   7 minutes ago       Up 7 minutes        0.0.0.0:8080->8080/tcp, 0.0.0.0:9990->9990/tcp                                                                javaee_web_1
-4a8451affcef        arungupta/couchbase:travel          "/entrypoint.sh /o..."   7 minutes ago       Up 7 minutes        8094/tcp, 0.0.0.0:8091-8093->8091-8093/tcp, 11207/tcp, 11211/tcp, 0.0.0.0:11210->11210/tcp, 18091-18093/tcp   javaee_db_1
+    Name                  Command               State                       Ports                     
+------------------------------------------------------------------------------------------------------
+db             docker-entrypoint.sh mysqld      Up      0.0.0.0:3306->3306/tcp                        
+javaee_web_1   /bin/sh -c java -jar /opt/ ...   Up      0.0.0.0:8080->8080/tcp, 0.0.0.0:9990->9990/tcp
+javaee $ docker container ls
+CONTAINER ID        IMAGE                                   COMMAND                  CREATED             STATUS              PORTS                                            NAMES
+e862a5eb9484        arungupta/docker-javaee:dockerconeu17   "/bin/sh -c 'java ..."   38 seconds ago      Up 36 seconds       0.0.0.0:8080->8080/tcp, 0.0.0.0:9990->9990/tcp   javaee_web_1
+08792c20c066        mysql:8                                 "docker-entrypoint..."   39 seconds ago      Up 37 seconds       0.0.0.0:3306->3306/tcp                           db
 ```
 
 Service logs can be seen using `docker-compose logs` command, and looks like:
 
 [source, text]
 ----
-Attaching to javaee_web_1, javaee_db_1
-web_1  | =========================================================================
-web_1  | 
-web_1  |   JBoss Bootstrap Environment
-web_1  | 
-web_1  |   JBOSS_HOME: /opt/jboss/wildfly
-web_1  | 
-
+Attaching to dockerjavaee_web_1, db
+web_1  | 23:54:21,584 INFO  [org.jboss.msc] (main) JBoss MSC version 1.2.6.Final
+web_1  | 23:54:21,688 INFO  [org.jboss.as] (MSC service thread 1-8) WFLYSRV0049: WildFly Core 2.0.10.Final "Kenny" starting
+web_1  | 2017-10-06 23:54:22,687 INFO  [org.wildfly.extension.io] (ServerService Thread Pool -- 20) WFLYIO001: Worker 'default' has auto-configured to 8 core threads with 64 task threads based on your 4 available processors
 
 . . .
 
-db_1   | ++ /entrypoint.sh couchbase-server
-db_1   | Starting Couchbase Server -- Web UI available at http://<ip>:8091 and logs available in /opt/couchbase/var/lib/couchbase/logs
-web_1  | 00:40:46,265 INFO  [org.jboss.as.ejb3.deployment] (MSC service thread 1-2) WFLYEJB0473: JNDI bindings for session bean named 'Database' in deployment unit 'deployment "airlines.war"' are as follows:
-db_1   | ++ curl -v -X POST http://127.0.0.1:8091/pools/default -d memoryQuota=300 -d indexMemoryQuota=300
+web_1  | 2017-10-06 23:54:23,259 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-3) WFLYJCA0001: Bound data source [java:jboss/datasources/ExampleDS]
+web_1  | 2017-10-06 23:54:24,962 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Core 2.0.10.Final "Kenny" started in 3406ms - Started 112 of 124 services (21 services are lazy, passive or on-demand)
+web_1  | 2017-10-06 23:54:25,020 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-4) WFLYUT0006: Undertow HTTP listener default listening on 0.0.0.0:8080
+web_1  | 2017-10-06 23:54:26,146 INFO  [org.wildfly.swarm.runtime.deployer] (main) deploying docker-javaee.war
+web_1  | 2017-10-06 23:54:26,169 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-3) WFLYSRV0027: Starting deployment of "docker-javaee.war" (runtime-name: "docker-javaee.war")
+web_1  | 2017-10-06 23:54:27,748 INFO  [org.jboss.as.jpa] (MSC service thread 1-2) WFLYJPA0002: Read persistence.xml for MyPU
+web_1  | 2017-10-06 23:54:27,887 WARN  [org.jboss.as.dependency.private] (MSC service thread 1-7) WFLYSRV0018: Deployment "deployment.docker-javaee.war" is using a private module ("org.jboss.jts:main") which may be changed or removed in future versions without notice.
 
 . . .
 
-web_1  | 00:41:03,960 INFO  [stdout] (ServerService Thread Pool -- 64) Trying to connect to the database
-web_1  | 00:41:03,981 INFO  [com.couchbase.client.core.node.Node] (cb-io-1-3) Connected to Node db
-web_1  | 00:41:04,215 INFO  [com.couchbase.client.core.config.ConfigurationProvider] (cb-computations-4) Opened bucket travel-sample
-web_1  | 00:41:04,251 INFO  [stdout] (ServerService Thread Pool -- 64) Sleeping for 3 secs (waiting for travel-sample bucket) ...
-web_1  | 00:41:07,252 INFO  [stdout] (ServerService Thread Pool -- 64) Bucket found!
-web_1  | 00:41:07,267 INFO  [stdout] (ServerService Thread Pool -- 64) Query service not up ...
-web_1  | 00:41:07,267 INFO  [stdout] (ServerService Thread Pool -- 64) Sleeping for 3 secs (waiting for Query service or bucket to be loaded) ...
-web_1  | 00:41:10,358 INFO  [stdout] (ServerService Thread Pool -- 64) Sleeping for 3 secs (waiting for Query service or bucket to be loaded) ...
+web_1  | 2017-10-06 23:54:29,128 INFO  [stdout] (ServerService Thread Pool -- 4) Hibernate: create table EMPLOYEE_SCHEMA (id integer not null, name varchar(40), primary key (id))
+web_1  | 2017-10-06 23:54:29,132 INFO  [stdout] (ServerService Thread Pool -- 4) Hibernate: INSERT INTO EMPLOYEE_SCHEMA(ID, NAME) VALUES (1, 'Penny')
+web_1  | 2017-10-06 23:54:29,133 INFO  [stdout] (ServerService Thread Pool -- 4) Hibernate: INSERT INTO EMPLOYEE_SCHEMA(ID, NAME) VALUES (2, 'Sheldon')
+web_1  | 2017-10-06 23:54:29,133 INFO  [stdout] (ServerService Thread Pool -- 4) Hibernate: INSERT INTO EMPLOYEE_SCHEMA(ID, NAME) VALUES (3, 'Amy')
+web_1  | 2017-10-06 23:54:29,133 INFO  [stdout] (ServerService Thread Pool -- 4) Hibernate: INSERT INTO EMPLOYEE_SCHEMA(ID, NAME) VALUES (4, 'Leonard')
 
 . . .
 
-web_1  | 00:41:25,464 INFO  [stdout] (ServerService Thread Pool -- 64) Sleeping for 3 secs (waiting for Query service or bucket to be loaded) ...
-web_1  | 00:41:28,466 INFO  [stdout] (ServerService Thread Pool -- 64) 31591 number of JSON documents in bucket.
-web_1  | 00:41:28,491 INFO  [stdout] (ServerService Thread Pool -- 64) Sleeping for 3 secs (waiting for indexes) ...
-web_1  | 00:41:31,496 INFO  [stdout] (ServerService Thread Pool -- 64) Sleeping for 3 secs (waiting for indexes) ...
-web_1  | 00:41:35,999 INFO  [org.jboss.resteasy.resteasy_jaxrs.i18n] (ServerService Thread Pool -- 64) RESTEASY002225: Deploying javax.ws.rs.core.Application: class org.couchbase.sample.javaee.MyApplication
+web_1  | 2017-10-06 23:54:30,050 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 4) WFLYUT0021: Registered web context: /
+web_1  | 2017-10-06 23:54:30,518 INFO  [org.jboss.as.server] (main) WFLYSRV0010: Deployed "docker-javaee.war" (runtime-name : "docker-javaee.war")
+web_1  | 2017-10-06 23:56:01,766 INFO  [stdout] (default task-1) Hibernate: select employee0_.id as id1_0_, employee0_.name as name2_0_ from EMPLOYEE_SCHEMA employee0_
+db     | Initializing database
 
 . . .
 
-web_1  | 00:41:36,090 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 64) WFLYUT0021: Registered web context: /airlines
-web_1  | 00:41:36,152 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 34) WFLYSRV0010: Deployed "airlines.war" (runtime-name : "airlines.war")
-web_1  | 00:41:36,351 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
-web_1  | 00:41:36,359 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990
-web_1  | 00:41:36,360 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 10.1.0.Final (WildFly Core 2.2.0.Final) started in 57412ms - Started 443 of 691 services (404 services are lazy, passive or on-demand)
+db     | 
+db     | 
+db     | MySQL init process done. Ready for start up.
+db     | 
+
+. . .
+
+db     | 2017-10-06T23:54:29.434423Z 0 [Note] /usr/sbin/mysqld: ready for connections. Version: '8.0.3-rc-log'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server (GPL)
+db     | 2017-10-06T23:54:30.281973Z 0 [Note] InnoDB: Buffer pool(s) load completed at 171006 23:54:30
 ----
 
-`depends_on` attribute in Compose definition file ensures the container start up order. But application-level start up needs to be ensured by the applications running inside container. In our case, WildFly starts up rather quickly but takes a few seconds for the database to start up. This means the Java EE application deployed in WildFly is not able to communicate with the database. This outlines a best practice when building micro services applications: you must code defensively and ensure in your application initialization that the micro services you depend on have started, without assuming startup order. This is shown in the database initialization code at https://github.com/arun-gupta/couchbase-javaee/blob/master/src/main/java/org/couchbase/sample/javaee/Database.java. It performs the following checks:
-
-. Bucket exists
-. Query service of Couchbase is up and running
-. Sample bucket is fully loaded
+`depends_on` attribute in the Compose definition file ensures the container start up order. But application-level start up needs to be ensured by the applications running inside container. In our case, this can be achieved by WildFly Swarm using `swarm.datasources.data-sources.KEY.stale-connection-checker-class-name` as defined at https://reference.wildfly-swarm.io/fractions/datasources.html.
 
 === Verify Application
 
-Now that the WildFly and Couchbase servers have been configured, let's access the application. You need to specify IP address of the host where WildFly is running (`localhost` in our case).
+Now that the WildFly Swarm and MySQL have been configured, let's access the application. You need to specify IP address of the host where WildFly is running (`localhost` in our case).
 
 The endpoint can be accessed in this case as:
 
-    curl -v http://localhost:8080/airlines/resources/airline
+    curl -v http://localhost:8080/resources/employees
 
 The output is shown as:
 
 ```
+curl -v http://localhost:8080/resources/employees
 *   Trying ::1...
 * TCP_NODELAY set
 * Connected to localhost (::1) port 8080 (#0)
-> GET /airlines/resources/airline HTTP/1.1
+> GET /resources/employees HTTP/1.1
 > Host: localhost:8080
 > User-Agent: curl/7.51.0
 > Accept: */*
 > 
 < HTTP/1.1 200 OK
 < Connection: keep-alive
-< X-Powered-By: Undertow/1
-< Server: WildFly/10
-< Content-Type: application/octet-stream
-< Content-Length: 1402
-< Date: Sat, 23 Sep 2017 00:52:03 GMT
+< Content-Type: application/xml
+< Content-Length: 478
+< Date: Sat, 07 Oct 2017 00:05:41 GMT
 < 
 * Curl_http_done: called premature == 0
 * Connection #0 to host localhost left intact
-[{"travel-sample":{"country":"United States","iata":"Q5","callsign":"MILE-AIR","name":"40-Mile Air","icao":"MLA","id":10,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"TQ","callsign":"TXW","name":"Texas Wings","icao":"TXW","id":10123,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"A1","callsign":"atifly","name":"Atifly","icao":"A1F","id":10226,"type":"airline"}}, {"travel-sample":{"country":"United Kingdom","iata":null,"callsign":null,"name":"Jc royal.britannica","icao":"JRB","id":10642,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"ZQ","callsign":"LOCAIR","name":"Locair","icao":"LOC","id":10748,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"K5","callsign":"SASQUATCH","name":"SeaPort Airlines","icao":"SQH","id":10765,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"KO","callsign":"ACE AIR","name":"Alaska Central Express","icao":"AER","id":109,"type":"airline"}}, {"travel-sample":{"country":"United Kingdom","iata":"5W","callsign":"FLYSTAR","name":"Astraeus","icao":"AEU","id":112,"type":"airline"}}, {"travel-sample":{"country":"France","iata":"UU","callsign":"REUNION","name":"Air Austral","icao":"REU","id":1191,"type":"airline"}}, {"travel-sample":{"country":"France","iata":"A5","callsign":"AIRLINAIR","name":"Airlinair","icao":"RLA","id":1203,"type":"airline"}}]
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><collection><employee><id>1</id><name>Penny</name></employee><employee><id>2</id><name>Sheldon</name></employee><employee><id>3</id><name>Amy</name></employee><employee><id>4</id><name>Leonard</name></employee><employee><id>5</id><name>Bernadette</name></employee><employee><id>6</id><name>Raj</name></employee><employee><id>7</id><name>Howard</name></employee><employee><id>8</id><name>Priya</name></employee></collection>
 ```
 
-This shows 10 airlines from the `travel-sample` bucket.
+This shows the result from querying the database.
 
 A single resource can be obtained:
 
-    curl -v http://localhost:8080/airlines/resources/airline/137
+    curl -v http://localhost:8080/resources/employees/1
 
 It shows the output:
 
 ```
+curl -v http://localhost:8080/resources/employees/1
 *   Trying ::1...
 * TCP_NODELAY set
 * Connected to localhost (::1) port 8080 (#0)
-> GET /airlines/resources/airline/137 HTTP/1.1
+> GET /resources/employees/1 HTTP/1.1
 > Host: localhost:8080
 > User-Agent: curl/7.51.0
 > Accept: */*
 > 
 < HTTP/1.1 200 OK
 < Connection: keep-alive
-< X-Powered-By: Undertow/1
-< Server: WildFly/10
-< Content-Type: application/octet-stream
-< Content-Length: 131
-< Date: Sat, 23 Sep 2017 00:52:30 GMT
+< Content-Type: application/xml
+< Content-Length: 104
+< Date: Sat, 07 Oct 2017 00:06:33 GMT
 < 
 * Curl_http_done: called premature == 0
 * Connection #0 to host localhost left intact
-{"travel-sample":{"country":"France","iata":"AF","callsign":"AIRFRANS","name":"Air France","icao":"AFR","id":137,"type":"airline"}}
-```
-
-A new resource can be created:
-
-    curl -v -H "Content-Type: application/json" -X POST -d '{"country":"France","iata":"A5","callsign":"AIRLINAIR","name":"Airlinair","icao":"RLA","type":"airline"}' http://localhost:8080/airlines/resources/airline
-
-```
-*   Trying ::1...
-* TCP_NODELAY set
-* Connected to localhost (::1) port 8080 (#0)
-> POST /airlines/resources/airline HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.51.0
-> Accept: */*
-> Content-Type: application/json
-> Content-Length: 104
-> 
-* upload completely sent off: 104 out of 104 bytes
-< HTTP/1.1 200 OK
-< Connection: keep-alive
-< X-Powered-By: Undertow/1
-< Server: WildFly/10
-< Content-Type: application/octet-stream
-< Content-Length: 117
-< Date: Sat, 23 Sep 2017 00:52:55 GMT
-< 
-* Curl_http_done: called premature == 0
-* Connection #0 to host localhost left intact
-{"country":"France","iata":"A5","callsign":"AIRLINAIR","name":"Airlinair","icao":"RLA","id":"19810","type":"airline"}
-```
-
-The output shows the id of the newly created resource.
-
-Let's update this resource using the id:
-
-    curl -v -H "Content-Type: application/json" -X PUT -d '{"country":"France","iata":"A5","callsign":"AIRLINAIR","name":"Airlin Air","icao":"RLA","type":"airline","id": "19810"}' http://localhost:8080/airlines/resources/airline/19810
-
-The only change is name from `"AirlineAir"` to `"Airlin Air"`.
-
-```
-*   Trying ::1...
-* TCP_NODELAY set
-* Connected to localhost (::1) port 8080 (#0)
-> PUT /airlines/resources/airline/19810 HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.51.0
-> Accept: */*
-> Content-Type: application/json
-> Content-Length: 119
-> 
-* upload completely sent off: 119 out of 119 bytes
-< HTTP/1.1 200 OK
-< Connection: keep-alive
-< X-Powered-By: Undertow/1
-< Server: WildFly/10
-< Content-Type: application/octet-stream
-< Content-Length: 118
-< Date: Sat, 23 Sep 2017 00:53:26 GMT
-< 
-* Curl_http_done: called premature == 0
-* Connection #0 to host localhost left intact
-{"country":"France","iata":"A5","callsign":"AIRLINAIR","name":"Airlin Air","icao":"RLA","id":"19810","type":"airline"}
-```
-
-Let's delete the created resource:
-
-    curl -v -X DELETE http://localhost:8080/airlines/resources/airline/19810
-
-```
-* TCP_NODELAY set
-* Connected to localhost (::1) port 8080 (#0)
-> DELETE /airlines/resources/airline/19810 HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.51.0
-> Accept: */*
-> 
-< HTTP/1.1 200 OK
-< Connection: keep-alive
-< X-Powered-By: Undertow/1
-< Server: WildFly/10
-< Content-Type: application/octet-stream
-< Content-Length: 136
-< Date: Sat, 23 Sep 2017 00:53:53 GMT
-< 
-* Curl_http_done: called premature == 0
-* Connection #0 to host localhost left intact
-{"travel-sample":{"country":"France","iata":"A5","callsign":"AIRLINAIR","name":"Airlin Air","icao":"RLA","id":"19810","type":"airline"}}
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><employee><id>1</id><name>Penny</name></employee>
 ```
 
 == Shutdown Application
@@ -320,9 +235,9 @@ Shutdown the application using `docker-compose down`:
 
 ```
 Stopping javaee_web_1 ... done
-Stopping javaee_db_1  ... done
+Stopping db           ... done
 Removing javaee_web_1 ... done
-Removing javaee_db_1  ... done
+Removing db           ... done
 Removing network javaee_default
 ```
 
