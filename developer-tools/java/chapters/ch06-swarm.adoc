@@ -3,7 +3,7 @@
 [[Swarm_Mode]]
 = Deploy Application using Swarm Mode
 
-Docker Engine includes swarm mode for natively managing a cluster of Docker Engines called a Swarm. Use the Docker CLI to create a swarm, deploy application services to a swarm, and manage swarm behavior. Complete details at: https://docs.docker.com/engine/swarm/. It's important to understand the https://docs.docker.com/engine/swarm/key-concepts/[Swarm mode key concepts] of Swarm, Node, Service, Task and Load Balancing.
+Docker Engine includes swarm mode for natively managing a cluster of Docker Engines. The Docker CLI can be used to create a swarm, deploy application services to a swarm, and manage swarm behavior. Complete details are available at: https://docs.docker.com/engine/swarm/. It's important to understand the https://docs.docker.com/engine/swarm/key-concepts/[Swarm mode key concepts] before starting with this chapter.
 
 Swarm is typically a cluster of multiple Docker Engines. But for simplicity we'll run a single node Swarm.
 
@@ -15,31 +15,31 @@ Initialize Swarm mode using the following command:
 
     docker swarm init
 
-This starts a Swarm Manager. By default, manager node are also worker but can be configured to be manager-only.
+This starts a Swarm Manager. By default, a manager node is also a worker but can be configured to be a manager-only.
 
 Find some information about this one-node cluster using the command `docker info`
 
-[source, text]
-----
+```
 Containers: 0
  Running: 0
  Paused: 0
  Stopped: 0
 Images: 17
-Server Version: 1.13.0
+Server Version: 17.09.0-ce
 Storage Driver: overlay2
  Backing Filesystem: extfs
  Supports d_type: true
  Native Overlay Diff: true
 Logging Driver: json-file
 Cgroup Driver: cgroupfs
-Plugins: 
+Plugins:
  Volume: local
  Network: bridge host ipvlan macvlan null overlay
+ Log: awslogs fluentd gcplogs gelf journald json-file logentries splunk syslog
 Swarm: active
- NodeID: 92mydh0e09ba5hx3wtmcmvktz
+ NodeID: p9a1tqcjh58ro9ucgtqxa2wgq
  Is Manager: true
- ClusterID: v68ikyaff7rdxpaw1j0c9i60s
+ ClusterID: r3xdxly8zv82e4kg38krd0vog
  Managers: 1
  Nodes: 1
  Orchestration:
@@ -53,43 +53,44 @@ Swarm: active
   Heartbeat Period: 5 seconds
  CA Configuration:
   Expiry Duration: 3 months
+  Force Rotate: 0
+ Autolock Managers: false
+ Root Rotation In Progress: false
  Node Address: 192.168.65.2
  Manager Addresses:
   192.168.65.2:2377
 Runtimes: runc
 Default Runtime: runc
 Init Binary: docker-init
-containerd version: 03e5862ec0d8d3b3f750e19fca3ee367e13c090e
-runc version: 2f7393a47307a16f8cee44a37b262e8b81021e3e
+containerd version: 06b9cb35161009dcb7123345749fef02f7cea8e0
+runc version: 3f2f8b84a77f73d38244dd690525642a72156c64
 init version: 949e6fa
 Security Options:
  seccomp
   Profile: default
-Kernel Version: 4.9.5-moby
+Kernel Version: 4.9.49-moby
 Operating System: Alpine Linux v3.5
 OSType: linux
 Architecture: x86_64
 CPUs: 4
-Total Memory: 1.952 GiB
+Total Memory: 1.952GiB
 Name: moby
-ID: SGCM:KDRD:G3M7:PZHN:J4RL:VFFR:G2SR:EKD5:JV4J:RL3X:LF7T:XF6V
+ID: TJSZ:O44Y:PWGZ:ZWZM:SA73:2UHI:VVKV:KLAH:5NPO:AXQZ:XWZD:6IRJ
 Docker Root Dir: /var/lib/docker
 Debug Mode (client): false
 Debug Mode (server): true
- File Descriptors: 31
- Goroutines: 124
- System Time: 2017-01-27T08:25:58.032295342Z
+ File Descriptors: 35
+ Goroutines: 142
+ System Time: 2017-10-05T20:57:14.037442426Z
  EventsListeners: 1
-No Proxy: *.local, 169.254/16
-Username: arungupta
 Registry: https://index.docker.io/v1/
 Experimental: true
 Insecure Registries:
  127.0.0.0/8
 Live Restore Enabled: false
-----
+```
 
-This cluster has 1 node, and that is a manager.
+This cluster has 1 node, and that is a manager. By default, the manager node is also a worker node. This means the containers can run on this node.
 
 == Multi-container Application
 
@@ -100,34 +101,7 @@ Create a new directory and `cd` to it:
     mkdir webapp
     cd webapp
 
-Create a new Compose definition `docker-compose.yml` using the configuration file shown below.
-
-[source, text]
-----
-version: '3'
-services:
-  web:
-    image: arungupta/couchbase-javaee:travel
-    environment:
-      - COUCHBASE_URI=db
-    ports:
-      - 8080:8080
-      - 9990:9990
-    depends_on:
-      - db
-  db:
-    image: arungupta/couchbase:travel
-    ports:
-      - 8091:8091
-      - 8092:8092 
-      - 8093:8093 
-      - 11210:11210
-----
-
-In this Compose file:
-
-. `arungupta/couchbase-javaee:travel` image is WildFly application server with a https://github.com/arun-gupta/couchbase-javaee[Java EE application] predeployed. `COUCHBASE_URI` environment variable is used to read the host address of Couchbase server. `depends_on` ensures that `web` service starts before `db` service. This only ensures that the container is started first but the application readiness needs to be ensured within the application itself.
-. `arungupta/couchbase-javaee:travel` image is used for Couchbase server. This image pre-configures the Couchbase server and loads `travel-sample` bucket with ~32k JSON documents.
+Create a new Compose definition `docker-compose.yml` using the configuration file from https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch05-compose.adoc#configuration-file.
 
 This application can be started as:
 
@@ -135,27 +109,29 @@ This application can be started as:
 
 This shows the output as:
 
-[source, text]
-----
+```
+Ignoring deprecated options:
+
+container_name: Setting the container name is not supported.
+
 Creating network webapp_default
-Creating service webapp_web
 Creating service webapp_db
-----
+Creating service webapp_web
+```
 
-WildFly and Couchbase services are started on this node. Each service has a single container. If the Swarm mode is enabled on multiple nodes then the containers will be distributed across multiple nodes.
+WildFly Swarm and MySQL services are started on this node. Each service has a single container. If the Swarm mode is enabled on multiple nodes then the containers will be distributed across them.
 
-A new overlay network is created. This allows multiple containers on different hosts to communicate with each other.
+A new overlay network is created. This can be verified using the command `docker network ls`. This network allows multiple containers on different hosts to communicate with each other.
 
 == Verify Service/Containers in Application
 
 Verify that the WildFly and Couchbase services are running using `docker service ls`:
 
-[source, text]
-----
-ID            NAME        MODE        REPLICAS  IMAGE
-a9pkiziw3vgw  webapp_db   replicated  1/1       arungupta/couchbase:travel
-hr5s6ue54kwj  webapp_web  replicated  1/1       arungupta/couchbase-javaee:travel
-----
+```
+ID                  NAME                MODE                REPLICAS            IMAGE                                   PORTS
+j21lwelj529f        webapp_db           replicated          1/1                 mysql:8                                 *:3306->3306/tcp
+m0m44axt35cg        webapp_web          replicated          1/1                 arungupta/docker-javaee:dockerconeu17   *:8080->8080/tcp,*:9990->9990/tcp
+```
 
 More details about the service can be obtained using `docker service inspect webapp_web`:
 
@@ -163,44 +139,75 @@ More details about the service can be obtained using `docker service inspect web
 ----
 [
     {
-        "ID": "z4ljnqteeqwnqcd8kwc5pod5k",
+        "ID": "m0m44axt35cgjetcjwzls7u9r",
         "Version": {
-            "Index": 2611
+            "Index": 22
         },
-        "CreatedAt": "2017-02-01T23:12:34.84286773Z",
-        "UpdatedAt": "2017-02-01T23:12:34.86880268Z",
+        "CreatedAt": "2017-10-07T00:17:44.038961419Z",
+        "UpdatedAt": "2017-10-07T00:17:44.040746062Z",
         "Spec": {
             "Name": "webapp_web",
             "Labels": {
+                "com.docker.stack.image": "arungupta/docker-javaee:dockerconeu17",
                 "com.docker.stack.namespace": "webapp"
             },
             "TaskTemplate": {
                 "ContainerSpec": {
-                    "Image": "arungupta/couchbase-javaee:travel@sha256:7749f40f590108b76e0cbb7967d39e0a9d3637627fd8eb2be5ce53bdda060fcd",
+                    "Image": "arungupta/docker-javaee:dockerconeu17@sha256:6a403c35d2ab4442f029849207068eadd8180c67e2166478bc3294adbf578251",
                     "Labels": {
                         "com.docker.stack.namespace": "webapp"
                     },
-                    "Env": [
-                        "COUCHBASE_URI=db"
-                    ]
+                    "Privileges": {
+                        "CredentialSpec": null,
+                        "SELinuxContext": null
+                    },
+                    "StopGracePeriod": 10000000000,
+                    "DNSConfig": {}
                 },
                 "Resources": {},
-                "Placement": {},
-                "ForceUpdate": 0
+                "RestartPolicy": {
+                    "Condition": "any",
+                    "Delay": 5000000000,
+                    "MaxAttempts": 0
+                },
+                "Placement": {
+                    "Platforms": [
+                        {
+                            "Architecture": "amd64",
+                            "OS": "linux"
+                        }
+                    ]
+                },
+                "Networks": [
+                    {
+                        "Target": "bwnp1nvkkga68dirhp1ue7qey",
+                        "Aliases": [
+                            "web"
+                        ]
+                    }
+                ],
+                "ForceUpdate": 0,
+                "Runtime": "container"
             },
             "Mode": {
                 "Replicated": {
                     "Replicas": 1
                 }
             },
-            "Networks": [
-                {
-                    "Target": "s2b2qevxus1la21ebjseaj5g6",
-                    "Aliases": [
-                        "web"
-                    ]
-                }
-            ],
+            "UpdateConfig": {
+                "Parallelism": 1,
+                "FailureAction": "pause",
+                "Monitor": 5000000000,
+                "MaxFailureRatio": 0,
+                "Order": "stop-first"
+            },
+            "RollbackConfig": {
+                "Parallelism": 1,
+                "FailureAction": "pause",
+                "Monitor": 5000000000,
+                "MaxFailureRatio": 0,
+                "Order": "stop-first"
+            },
             "EndpointSpec": {
                 "Mode": "vip",
                 "Ports": [
@@ -253,18 +260,14 @@ More details about the service can be obtained using `docker service inspect web
             ],
             "VirtualIPs": [
                 {
-                    "NetworkID": "x3u7booiccfteittu8qidfel0",
-                    "Addr": "10.255.0.2/16"
+                    "NetworkID": "vysfza7wgjepdlutuwuigbws1",
+                    "Addr": "10.255.0.5/16"
                 },
                 {
-                    "NetworkID": "s2b2qevxus1la21ebjseaj5g6",
-                    "Addr": "10.0.0.2/24"
+                    "NetworkID": "bwnp1nvkkga68dirhp1ue7qey",
+                    "Addr": "10.0.0.4/24"
                 }
             ]
-        },
-        "UpdateStatus": {
-            "StartedAt": "0001-01-01T00:00:00Z",
-            "CompletedAt": "0001-01-01T00:00:00Z"
         }
     }
 ]
@@ -273,24 +276,16 @@ More details about the service can be obtained using `docker service inspect web
 Logs for the service can be seen using `docker service logs -f webapp_web`:
 
 ```
-webapp_web.1.wby0b04t7bap@moby    | =========================================================================
-webapp_web.1.wby0b04t7bap@moby    | 
-webapp_web.1.wby0b04t7bap@moby    |   JBoss Bootstrap Environment
-webapp_web.1.wby0b04t7bap@moby    | 
-webapp_web.1.wby0b04t7bap@moby    |   JBOSS_HOME: /opt/jboss/wildfly
-webapp_web.1.wby0b04t7bap@moby    | 
-webapp_web.1.wby0b04t7bap@moby    |   JAVA: /usr/lib/jvm/java/bin/java
-webapp_web.1.wby0b04t7bap@moby    | 
-webapp_web.1.wby0b04t7bap@moby    |   JAVA_OPTS:  -server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true
-webapp_web.1.wby0b04t7bap@moby    | 
-webapp_web.1.wby0b04t7bap@moby    | =========================================================================
+webapp_web.1.lf3y5k7pkpt9@moby    | 00:17:47,296 INFO  [org.jboss.msc] (main) JBoss MSC version 1.2.6.Final
+webapp_web.1.lf3y5k7pkpt9@moby    | 00:17:47,404 INFO  [org.jboss.as] (MSC service thread 1-8) WFLYSRV0049: WildFly Core 2.0.10.Final "Kenny" starting
+webapp_web.1.lf3y5k7pkpt9@moby    | 2017-10-07 00:17:48,636 INFO  [org.wildfly.extension.io] (ServerService Thread Pool -- 20) WFLYIO001: Worker 'default' has auto-configured to 8 core threads with 64 task threads based on your 4 available processors
 
 . . .
 
-webapp_web.1.wby0b04t7bap@moby    | 23:14:15,811 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 34) WFLYSRV0010: Deployed "airlines.war" (runtime-name : "airlines.war")
-webapp_web.1.wby0b04t7bap@moby    | 23:14:16,076 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
-webapp_web.1.wby0b04t7bap@moby    | 23:14:16,077 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990
-webapp_web.1.wby0b04t7bap@moby    | 23:14:16,077 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 10.1.0.Final (WildFly Core 2.2.0.Final) started in 98623ms - Started 443 of 691 services (404 services are lazy, passive or on-demand)
+webapp_web.1.lf3y5k7pkpt9@moby    | 2017-10-07 00:17:56,619 INFO  [org.jboss.resteasy.resteasy_jaxrs.i18n] (ServerService Thread Pool -- 12) RESTEASY002225: Deploying javax.ws.rs.core.Application: class org.javaee.samples.employees.MyApplication
+webapp_web.1.lf3y5k7pkpt9@moby    | 2017-10-07 00:17:56,621 WARN  [org.jboss.as.weld] (ServerService Thread Pool -- 12) WFLYWELD0052: Using deployment classloader to load proxy classes for module com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider:main. Package-private access will not work. To fix this the module should declare dependencies on [org.jboss.weld.core, org.jboss.weld.spi]
+webapp_web.1.lf3y5k7pkpt9@moby    | 2017-10-07 00:17:56,682 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 12) WFLYUT0021: Registered web context: /
+webapp_web.1.lf3y5k7pkpt9@moby    | 2017-10-07 00:17:57,094 INFO  [org.jboss.as.server] (main) WFLYSRV0010: Deployed "docker-javaee.war" (runtime-name : "docker-javaee.war")
 ```
 
 Make sure to wait for the last log statement to show.
@@ -301,43 +296,46 @@ Now that the WildFly and Couchbase servers have been configured, let's access th
 
 The endpoint can be accessed in this case as:
 
-    curl -v http://localhost:8080/airlines/resources/airline
+    curl -v http://localhost:8080/resources/employees
 
 The output is shown as:
 
-.Get all resources output
-====
-[source, text]
-----
+```
 *   Trying ::1...
+* TCP_NODELAY set
 * Connected to localhost (::1) port 8080 (#0)
-> GET /airlines/resources/airline HTTP/1.1
+> GET /resources/employees HTTP/1.1
 > Host: localhost:8080
-> User-Agent: curl/7.43.0
+> User-Agent: curl/7.51.0
 > Accept: */*
->
+> 
 < HTTP/1.1 200 OK
 < Connection: keep-alive
-< X-Powered-By: Undertow/1
-< Server: WildFly/10
-< Content-Type: application/octet-stream
-< Content-Length: 1402
-< Date: Wed, 01 Feb 2017 03:04:41 GMT
-<
+< Content-Type: application/xml
+< Content-Length: 478
+< Date: Sat, 07 Oct 2017 00:22:59 GMT
+< 
+* Curl_http_done: called premature == 0
 * Connection #0 to host localhost left intact
-[{"travel-sample":{"country":"United States","iata":"Q5","callsign":"MILE-AIR","name":"40-Mile Air","icao":"MLA","id":10,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"TQ","callsign":"TXW","name":"Texas Wings","icao":"TXW","id":10123,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"A1","callsign":"atifly","name":"Atifly","icao":"A1F","id":10226,"type":"airline"}}, {"travel-sample":{"country":"United Kingdom","iata":null,"callsign":null,"name":"Jc royal.britannica","icao":"JRB","id":10642,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"ZQ","callsign":"LOCAIR","name":"Locair","icao":"LOC","id":10748,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"K5","callsign":"SASQUATCH","name":"SeaPort Airlines","icao":"SQH","id":10765,"type":"airline"}}, {"travel-sample":{"country":"United States","iata":"KO","callsign":"ACE AIR","name":"Alaska Central Express","icao":"AER","id":109,"type":"airline"}}, {"travel-sample":{"country":"United Kingdom","iata":"5W","callsign":"FLYSTAR","name":"Astraeus","icao":"AEU","id":112,"type":"airline"}}, {"travel-sample":{"country":"France","iata":"UU","callsign":"REUNION","name":"Air Austral","icao":"REU","id":1191,"type":"airline"}}, {"travel-sample":{"country":"France","iata":"A5","callsign":"AIRLINAIR","name":"Airlinair","icao":"RLA","id":1203,"type":"airline"}}]
-----
-====
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><collection><employee><id>1</id><name>Penny</name></employee><employee><id>2</id><name>Sheldon</name></employee><employee><id>3</id><name>Amy</name></employee><employee><id>4</id><name>Leonard</name></employee><employee><id>5</id><name>Bernadette</name></employee><employee><id>6</id><name>Raj</name></employee><employee><id>7</id><name>Howard</name></employee><employee><id>8</id><name>Priya</name></employee></collection>
+```
 
-This shows 10 airlines from the `travel-sample` bucket.
-
-Complete set of commands are shown at https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch05-compose.adoc#access-application.
+This shows all employees stored in the database.
 
 == Stop Application
 
 If you only want to stop the application temporarily while keeping any networks that were created as part of this application, the recommended way is to set the amount of service replicas to 0.
 
-`docker service scale webapp_db=0 webapp_web=0`
+    docker service scale webapp_db=0 webapp_web=0
+
+It shows the output:
+
+```
+webapp_db scaled to 0
+webapp_web scaled to 0
+Since --detach=false was not specified, tasks will be scaled in the background.
+In a future release, --detach=false will become the default.
+```
 
 This is especially useful if the stack contains volumes and you want to keep the data. It allows you to simply start the stack again with setting the replicas to a number higher than 0.
 
@@ -345,11 +343,11 @@ This is especially useful if the stack contains volumes and you want to keep the
 
 Shutdown the application using `docker stack rm webapp`:
 
-[source, text]
-----
+```
 Removing service webapp_db
 Removing service webapp_web
 Removing network webapp_default
-----
+```
 
 This stops the container in each service and removes the services. It also deletes any networks that were created as part of this application.
+
