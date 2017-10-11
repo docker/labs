@@ -8,14 +8,12 @@ services:
     image: openjdk:latest
   wildfly:
     image: jboss/wildfly:latest
-  mysql:
-    image: mysql:latest
   javaee7-hol:
     image: arungupta/javaee7-hol:latest
-  couchbase-javaee:
-    image: arungupta/couchbase-javaee:travel
-  couchbase:
-    image: arungupta/couchbase:travel
+  docker-javaee:
+    image: arungupta/docker-javaee:dockerconeu17
+  mysql:
+    image: mysql:8
   hadoop:
     image: tailtarget/hadoop:2.7.2
   jenkins:
