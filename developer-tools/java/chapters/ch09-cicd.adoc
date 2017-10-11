@@ -6,7 +6,7 @@
 
 There are several possible approaches to run Docker builds with Jenkins:
 
-. Install Jenkins on your host machine, where Docker is also installed, and run Docker commands from your build, either using one of the several Jenkins Docker plugins, or by running Docker commands from a build step
+. Install Jenkins on your Docker host machine. Run Docker commands from your build, either using one of the several Jenkins Docker plugins, or by running Docker commands from a build step.
 . Install Jenkins on your host machine and have a Jenkins slave machine with Docker installed to run your Docker builds
 . Run Jenkins on Docker and use the underlying Docker installed on the host to run Docker commands.
 
@@ -16,14 +16,13 @@ NOTE: Another option is running Jenkins on Docker and do a complete Docker insta
 
 In this example, we will run Jenkins on Docker and use the underlying Docker installed on the host to run Docker commands. This technique is known as Docker outside of Docker.
 
-First, clone the project at https://github.com/fabianenardon/jenkins-docker-demo
+First, clone the project:
+
+    git clone https://github.com/fabianenardon/jenkins-docker-demo
 
 Then, in the project folder, run:
 
-[source, text]
-----
-docker-compose up
-----
+    docker-compose up
 
 Wait for jenkins to start and then go to the browser and open `http://localhost:8081`. Jenkins should be running.
 
@@ -117,14 +116,16 @@ image::docker-ci-cd-06.png[]
 
 image::docker-ci-cd-07.png[]
 
-== Running and debugging integration tests outside Jenkins
+== Run integration tests outside Jenkins
 
 When creating integration tests, it is useful to be able to run and debug them outside Jenkins. In order to do that, you can simply run the same commands you ran in the Jenkins build:
 
 [source, text]
 ----
+cd jenkins_home/workspace/ci-test/sample
+
 # Generates the images
-mvn clean install -Papp-docker-image
+mvn -f jenkins_home/workspace/ci-test/sample/pom.xml clean install -Papp-docker-image
 
 # Starts mongo service
 docker-compose --file src/test/resources/docker-compose.yml up -d mongo 
@@ -146,11 +147,17 @@ docker-compose --file src/test/resources/docker-compose.yml \
 docker-compose --file src/test/resources/docker-compose.yml down
 ----
 
+== Debug integration tests outside Jenkins
 
-If you want to debug your integration tests, run the tests with this command:
+You can debug integration tests. This can be achieved by making your test wait for a connection at a port for debugging. You can then attach your IDE to this port and debug. The source code for this project is available at https://github.com/fabianenardon/mongo-docker-demo.git.
 
-[source, text]
-----
+You need to start Mongo service and run the application again as shown in previous section.
+
+Here is how you can debug tests in NetBeans:
+
+. Run the integration tests in debug mode with the command shown below:
++
+```
 # Run integration tests in debug mode
 docker run -v ~/.m2/repository:/m2/repository \
        -p 5005:5005 --link mongo:mongo \
@@ -158,13 +165,25 @@ docker run -v ~/.m2/repository:/m2/repository \
        mvn -f /maven/code/pom.xml \
        -Dmaven.repo.local=/m2/repository \
        -Pintegration-test verify -Dmaven.failsafe.debug
-----
-
-This will make your test wait for a connection on port 5005 for debugging. You can then attach your IDE to this port and debug. Here is how this is done on Netbeans:
-
+```
++
+This command will wait for a connection at port 5005 for debugger.
++
+. Open the project in NetBeans and setup breakpoint in your test code:
++
 image::docker-ci-cd-08.png[]
-
++
+. Use `Debug` menu item to attach the debugger:
++
 image::docker-ci-cd-09.png[]
++
+. Attach the debugger by specifying the correct value of `host` and `port`:
++
+image::docker-ci-cd-10.png[]
++
+. Hit a breakpoint in tests:
++
+image::docker-ci-cd-11.png[]
 
 == Continuous Delivery with Docker and Jenkins
 
