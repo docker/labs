@@ -10,14 +10,14 @@ The application on this example reads a file, count how many words are on that f
 
 [NOTE]
 ====
-Apache Hadoop is an open-source software framework used for distributed storage and processing of big data sets using the MapReduce programming model. The core of Apache Hadoop consists of a storage part, known as Hadoop Distributed File System (HDFS), and a processing part which is a MapReduce programming model. Hadoop splits files into large blocks and distributes them across nodes in a cluster. It then transfers packaged code into nodes to process the data in parallel. The Hadoop framework itself is mostly written in Java.
+http://hadoop.apache.org/[Apache Hadoop] is an open-source software framework used for distributed storage and processing of big data sets using the MapReduce programming model. The core of Apache Hadoop consists of a storage part, known as Hadoop Distributed File System (HDFS), and a processing part which is a MapReduce programming model. Hadoop splits files into large blocks and distributes them across nodes in a cluster. It then transfers packaged code into nodes to process the data in parallel. The Hadoop framework itself is mostly written in Java.
 ====
 
 == Clone the sample application
 
 Clone the project at `https://github.com/fabianenardon/hadoop-docker-demo`
 
-Inspect the `docker/docker-compose.yml` file. It defines a MongoDB service and the services needed to run a Hadoop cluster. It also defines a service for our application. See how the services are linked together.
+Inspect the `sample/docker/docker-compose.yml` file. It defines a MongoDB service and the services needed to run a Hadoop cluster. It also defines a service for our application. See how the services are linked together.
 
 == Build the application
 
@@ -36,18 +36,50 @@ In the command above, `-Papp-docker-image` will fire up the `app-docker-image` p
 
 Go to the `sample/docker` folder and start the services:
 
-[source, text]
-----
-cd docker
-docker-compose up -d
-----
+    cd docker
+    docker-compose up -d
 
 See the logs and wait until everything is up:
 
-[source, text]
-----
-docker-compose logs -f
-----
+    docker-compose logs -f
+
+Here is a sample output:
+
+```
+Attaching to docker_nodemanager_1, docker-hadoop-example, yarn, secondarynamenode, docker_datanode_1, namenode, mongo
+docker-hadoop-example    | Usage: hdfs [--config confdir] [--loglevel loglevel] COMMAND
+docker-hadoop-example    |        where COMMAND is one of:
+
+. . .
+
+nodemanager_1            | 17/10/11 18:26:27 INFO nodemanager.NodeManager: STARTUP_MSG: 
+docker-hadoop-example    |   zkfc                 run the ZK Failover Controller daemon
+nodemanager_1            | /************************************************************
+docker-hadoop-example    |   datanode             run a DFS datanode
+nodemanager_1            | STARTUP_MSG: Starting NodeManager
+docker-hadoop-example    |   dfsadmin             run a DFS admin client
+datanode_1               | 17/10/11 18:26:25 INFO datanode.DataNode: STARTUP_MSG: 
+nodemanager_1            | STARTUP_MSG:   host = db2d63621ba4/172.23.0.8
+namenode                 | FORMATTING NAMENODE
+
+. . .
+
+secondarynamenode        | STARTUP_MSG: Starting SecondaryNameNode
+datanode_1               | STARTUP_MSG:   build = https://git-wip-us.apache.org/repos/asf/hadoop.git -r b165c4fe8a74265c792ce23f546c64604acf0e41; compiled by 'jenkins' on 2016-01-26T00:08Z
+docker-hadoop-example    |   oev                  apply the offline edits viewer to an edits file
+namenode                 | STARTUP_MSG:   build = https://git-wip-us.apache.org/repos/asf/hadoop.git -r b165c4fe8a74265c792ce23f546c64604acf0e41; compiled by 'jenkins' on 2016-01-26T00:08Z
+nodemanager_1            | 17/10/11 18:26:27 INFO nodemanager.NodeManager: registered UNIX signal handlers for [TERM, HUP, INT]
+secondarynamenode        | STARTUP_MSG:   host = secondarynamenode/172.23.0.5
+datanode_1               | STARTUP_MSG:   java = 1.8.0_112
+
+. . .
+
+namenode                 | 17/10/11 18:27:31 INFO namenode.TransferFsImage: Transfer took 0.00s at 0.00 KB/s
+namenode                 | 17/10/11 18:27:31 INFO namenode.TransferFsImage: Downloaded file fsimage.ckpt_0000000000000000015 size 946 bytes.
+namenode                 | 17/10/11 18:27:31 INFO namenode.NNStorageRetentionManager: Going to retain 2 images with txid >= 0
+secondarynamenode        | 17/10/11 18:27:32 INFO namenode.TransferFsImage: Uploaded image with txid 15 to namenode at http://namenode:50070 in 0.115 seconds
+secondarynamenode        | 17/10/11 18:27:32 WARN namenode.SecondaryNameNode: Checkpoint done. New Image Size: 946
+```
 
 In order to see if everything is up, open `http://localhost:8088/cluster`. You should see 1 active node when everything is up and running.
 
@@ -59,10 +91,7 @@ This application reads a text file from HDFS and counts how many words it has. T
 
 First, create a folder on HDFS. We will save the file to be processed on it:
 
-[source, text]
-----
-docker-compose exec yarn hdfs dfs -mkdir /files/
-----
+    docker-compose exec yarn hdfs dfs -mkdir /files/
 
 In the command above, we are executing `hdfs dfs -mkdir /files/` on the service `yarn`. This command creates a new folder called `/files/` on HDFS, the distributed file system used by Hadoop.
 
@@ -95,10 +124,7 @@ If everything ran successful, you should be able to see the results on MongoDB.
 
 Connect to the Mongo container:
 
-[source, text]
-----
-docker-compose exec mongo mongo
-----
+    docker-compose exec mongo mongo
 
 When connected, type:
 
@@ -121,10 +147,7 @@ You should see the results of running the application. Something like this:
 
 If you want, you can scale your cluster, adding more Hadoop nodes to it:
 
-[source, text]
-----
-docker-compose scale nodemanager=2
-----
+    docker-compose scale nodemanager=2
 
 This means that you want to have 2 nodes in your Hadoop cluster. Go to `http://localhost:8088/cluster` and refresh until you see 2 active nodes.
 
@@ -148,10 +171,7 @@ nodemanager:
 
 Stop all the services
 
-[source, text]
-----
-docker-compose down
-----
+    docker-compose down
 
 Note that since our `docker-compose.yml` file defines volume mappings for HDFS and MongoDB, next time you start the services again, your data will still be there.
 
@@ -162,12 +182,9 @@ Debugging distributed Hadoop applications can be cumbersome. However, you can co
 
 First, make sure your services are up:
 
-[source, text]
-----
-docker-compose up -d
-----
+    docker-compose up -d
 
-Then, add this to your /etc/hosts:
+Then, add this to your `/etc/hosts`:
 
 [source, text]
 ----
@@ -180,15 +197,21 @@ Then, add this to your /etc/hosts:
 
 This configuration will allow you to access the docker Hadoop cluster from your IDE.
 
-Then, open your project on Netbeans (or any other IDE) and run the application file:
+Then, open your project from https://github.com/fabianenardon/hadoop-docker-demo in Netbeans (or any other IDE) and run the application file:
 
 image::docker-bigdata-01.png[]
 
 Note that you will be connecting to the docker services at localhost.
 
-You can also set a breakpoint and debug your application:
+You can also set a breakpoint in your application and debug:
 
 image::docker-bigdata-02.png[]
+
+image::docker-bigdata-05.png[]
+
+Shutdown the services:
+
+    docker-compose down
 
 == Integration tests
 
@@ -201,7 +224,7 @@ There are several strategies to run integration tests, but in this application w
 . Run Maven integration tests to check if the application execution produced the expected results. This will be done by checking what was saved on the MongoDB database.
 . Stop the services. No state will be stored, so next time you run the integration tests, you will have a clean environment.
 
-Here is how to execute this strategy, step by step:
+Here is how to execute this strategy, step by step. The complete source code for this is in the `sample` directory of https://github.com/fabianenardon/hadoop-docker-demo.
 
 Start the services with the test configuration:
 
@@ -225,7 +248,6 @@ docker-compose --file src/test/resources/docker-compose.yml \
                run docker-hadoop-example \
                hdfs dfs -put /maven/test-data/text_for_word_count.txt /files/
 ----
-
 
 Run the application
 
@@ -270,7 +292,5 @@ docker run -v ~/.m2:/m2 -p 5005:5005 \
 Running with this configuration, the application will wait until an IDE connects for remote debugging on port 5005.
 
 See more about integration tests in the link:./ch09-cicd.adoc[CI/CD using Docker] chapter
-
-
 
 
