@@ -183,7 +183,8 @@ configured to work with SSL certificates so that the maven wrapper tool can
 successfully download the maven tool.  This image is not produced or in anyway
 endorsed by the OpenJDK project (unlike the JDK 9 distributions that were
 previously required).  It is anticipated that future releases of the JDK from
-the OpenJDK project will have root CA certificates.
+the OpenJDK project will have root CA certificates (see issue
+https://bugs.openjdk.java.net/browse/JDK-8189131[JDK-8189131])
 
 To build Docker image for this application create a new text file
 `helloworld-jdk-9.Dockerfile` with the following contents:
