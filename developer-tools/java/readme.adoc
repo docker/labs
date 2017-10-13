@@ -4,7 +4,9 @@ This tutorial offers Java developers an intro-level and self-paced hands-on work
 
 * link:chapters/ch01-setup.adoc[Setup Environments]
 * link:chapters/ch02-basic-concepts.adoc[Docker Basic Concepts]
-* link:chapters/ch03-build-image.adoc[Build a Docker Image]
+* Building
+** link:chapters/ch03-build-image.adoc[Build a Docker Image]
+** link:chapters/ch03-build-image-java-9.adoc[Build a Docker Image for Java 9]
 * link:chapters/ch04-run-container.adoc[Run a Docker Container]
 * link:chapters/ch05-compose.adoc[Multi-container application using Docker Compose]
 * link:chapters/ch06-swarm.adoc[Multi-container application using Compose and Swarm Mode]
