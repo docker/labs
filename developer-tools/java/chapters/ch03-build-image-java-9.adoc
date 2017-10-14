@@ -54,7 +54,9 @@ debian                  stable-slim         d30525fb4ed2        4 days ago      
 ----
 
 Other images may be shown as well but we are interested in these two images for
-now.
+now.  The large difference in size is attributed to JDK 9, which is larger
+in size than JDK 8 because it also explicitly provides Java modules that we
+shall see more of later on in this chapter.
 
 Run the container using the command:
 
@@ -84,16 +86,21 @@ jshell> Runtime.getRuntime().maxMemory() / (1 << 20)
 $1 ==> 100
 ----
 
-Notice that the Java process is honoring memory constraints and will not
-allocate memory beyond that specified for the container.
+Notice that the Java process is honoring memory constraints (see the `--memory`
+of `docker run`) and will not allocate memory beyond that specified for the
+container.
 
 In a future release of the JDK it will no longer be necessary to specify an
 experimental flag (`-XX:+UnlockExperimentalVMOptions`) once the mechanism by
 which memory constraints are efficiently detected is stable.
 
-JDK 9 supports CPU set constraints but does not currently detect other
-constraints such as cpu shares and quotas.  This is ongoing work
-http://openjdk.java.net/jeps/8182070[tracked] in the OpenJDK project.
+JDK 9 supports the set CPUs constraint (see the `----cpuset-cpus` of
+`docker run`) but does not currently support other CPU constraints such as
+CPU shares.  This is ongoing work http://openjdk.java.net/jeps/8182070[tracked]
+in the OpenJDK project.
+
+Note: the support for CPU sets and memory constraints have also been backported
+to JDK 8 release 8u131 and above.
 
 To list all the Java modules distributed with JDK 9 run the following command:
 
@@ -135,8 +142,8 @@ CMD ["jshell", "-J-XX:+UnlockExperimentalVMOptions", \
 ----
 
 This image uses `alpine` 3.6 as the base image and installs the OpenJDK build
-of JDK for Alpine Linux x64 (see the setup section for how to download this into
-the current directory).
+of JDK for Alpine Linux x64 (see the link:ch01-setup.adoc[Setup Environments]
+chapter for how to download this into the current directory).
 
 The image is configured in the same manner as for the `debian`-based image.
 
@@ -155,7 +162,12 @@ debian                  stable-slim         d30525fb4ed2        4 days ago      
 alpine                  3.6                 7328f6f8b418        3 months ago        3.97MB
 ----
 
-Notice the difference in image sizes.
+Notice the difference in image sizes.  Alpine Linux by design has been carefully
+crafted to produce a minimal running OS image. A cost of such a design is
+an alternative standard library https://www.musl-libc.org/[musl libc] that is
+not compatible with the C standard library (libc).  As a result the JDK requires
+modifications to run on Alpine Linux.  Such modifications have been proposed
+by the OpenJDK http://openjdk.java.net/projects/portola/[Portola Project].
 
 
 === Create a Docker Image using JDK 9 and a Java application
