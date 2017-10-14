@@ -4,7 +4,7 @@
 
 *PURPOSE*: This chapter explains how to create a Docker image with JDK 9.
 
-The prior chapter explained how, in general, to build a Docker image with Java.
+The link:ch03-build-image.adoc[prior chapter] explained how, in general, to build a Docker image with Java.
 This chapter expands on this topic and focuses on JDK 9 features.
 
 === Create a Docker Image using JDK 9
@@ -31,10 +31,10 @@ CMD ["jshell", "-J-XX:+UnlockExperimentalVMOptions", \
 ----
 
 This image uses `debian` slim as the base image and installs the OpenJDK build
-of JDK for linux x64 (see the setup section for how to download this into the
+of JDK for linux x64 (see the link:ch01-setup.adoc[setup section] for how to download this into the
 current directory).
 
-The image is configured by default to run `jshell` the Java REPL.  The
+The image is configured by default to run `jshell` the Java REPL. Read more JShell at link:https://docs.oracle.com/javase/9/jshell/introduction-jshell.htm[Introduction to JShell]. The
 experimental flag `-XX:+UseCGroupMemoryLimitForHeap` is passed to the REPL
 process (the frontend Java process managing user input and the backend Java
 process managing compilation).  This option will ensure container memory
@@ -94,7 +94,7 @@ In a future release of the JDK it will no longer be necessary to specify an
 experimental flag (`-XX:+UnlockExperimentalVMOptions`) once the mechanism by
 which memory constraints are efficiently detected is stable.
 
-JDK 9 supports the set CPUs constraint (see the `----cpuset-cpus` of
+JDK 9 supports the set CPUs constraint (see the `--cpuset-cpus` of
 `docker run`) but does not currently support other CPU constraints such as
 CPU shares.  This is ongoing work http://openjdk.java.net/jeps/8182070[tracked]
 in the OpenJDK project.
@@ -102,9 +102,92 @@ in the OpenJDK project.
 Note: the support for CPU sets and memory constraints have also been backported
 to JDK 8 release 8u131 and above.
 
+Type `Ctrl` + `D` to exit out of `jshell`.
+
 To list all the Java modules distributed with JDK 9 run the following command:
 
     docker container run -m=200M -it --rm jdk-9-debian-slim java --list-modules
+
+This will show an output:
+
+[source, text]
+----
+java.activation@9
+java.base@9
+java.compiler@9
+java.corba@9
+java.datatransfer@9
+java.desktop@9
+java.instrument@9
+java.logging@9
+java.management@9
+java.management.rmi@9
+java.naming@9
+java.prefs@9
+java.rmi@9
+java.scripting@9
+java.se@9
+java.se.ee@9
+java.security.jgss@9
+java.security.sasl@9
+java.smartcardio@9
+java.sql@9
+java.sql.rowset@9
+java.transaction@9
+java.xml@9
+java.xml.bind@9
+java.xml.crypto@9
+java.xml.ws@9
+java.xml.ws.annotation@9
+jdk.accessibility@9
+jdk.aot@9
+jdk.attach@9
+jdk.charsets@9
+jdk.compiler@9
+jdk.crypto.cryptoki@9
+jdk.crypto.ec@9
+jdk.dynalink@9
+jdk.editpad@9
+jdk.hotspot.agent@9
+jdk.httpserver@9
+jdk.incubator.httpclient@9
+jdk.internal.ed@9
+jdk.internal.jvmstat@9
+jdk.internal.le@9
+jdk.internal.opt@9
+jdk.internal.vm.ci@9
+jdk.internal.vm.compiler@9
+jdk.jartool@9
+jdk.javadoc@9
+jdk.jcmd@9
+jdk.jconsole@9
+jdk.jdeps@9
+jdk.jdi@9
+jdk.jdwp.agent@9
+jdk.jlink@9
+jdk.jshell@9
+jdk.jsobject@9
+jdk.jstatd@9
+jdk.localedata@9
+jdk.management@9
+jdk.management.agent@9
+jdk.naming.dns@9
+jdk.naming.rmi@9
+jdk.net@9
+jdk.pack@9
+jdk.policytool@9
+jdk.rmic@9
+jdk.scripting.nashorn@9
+jdk.scripting.nashorn.shell@9
+jdk.sctp@9
+jdk.security.auth@9
+jdk.security.jgss@9
+jdk.unsupported@9
+jdk.xml.bind@9
+jdk.xml.dom@9
+jdk.xml.ws@9
+jdk.zipfs@9
+----
 
 In total there should be 75 modules:
 
