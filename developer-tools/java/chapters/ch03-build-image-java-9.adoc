@@ -340,9 +340,9 @@ module:
         --no-header-files \
         --output /out/target/openjdk-9-base_linux-x64
 
-This command exists as `create-minimal-java-runtime.sh` in the link:https://github.com/PaulSandoz/helloworld-java-9[helloworld-java-9] repo.
+This command exists as `create-minimal-java-runtime.sh` script in the repo earlier checked out from link:https://github.com/PaulSandoz/helloworld-java-9[helloworld-java-9].
 
-The JDK 9 tool `jlink` is used to create the custom Java runtime.  The tool
+The JDK 9 tool `jlink` is used to create the custom Java runtime. Read more jlink in the https://docs.oracle.com/javase/9/tools/jlink.htmp[Tools Reference]. The tool
 is executed from with the container containing JDK 9 and directory where the
 modules reside, `/opt/jdk-9/jmods`, is declared in the module path.  Only the
 `java.base` module is selected.
