@@ -199,7 +199,11 @@ This is accurate as a new container is created and the event is shown in T1 cons
 
 == Prometheus
 
-Docker 1.13 adds an experimental Prometheus-style endpoint with basic metrics on containers, images and other daemon state. This support is only available in Experimental build.
+https://prometheus.io/[Prometheus] is an open-source systems monitoring and alerting toolkit. Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Docker instance can be configured as Prometheus target.
+
+Different targets to scrape are defined in the https://prometheus.io/docs/operating/configuration/[Prometheus configuration file]. Targets may be statically configured via the `static_configs` parameter in the configuration fle or dynamically discovered using one of the supported service-discovery mechanisms (Consul, DNS, Etcd, etc.).
+
+Docker exposes Prometheus-compatible metrics on port `9323`. This support is only available in Experimental build.
 
 . For Docker for Mac, click on Docker icon in the status menu
 . Select `Preferences...`, `Daemon`, `Advanced` tab
@@ -216,8 +220,8 @@ Docker 1.13 adds an experimental Prometheus-style endpoint with basic metrics on
 +
 image::docker-mac-metrics-endpoint.png[]
 +
-. Show the complete list of metrics using `curl http://localhost:1337/metrics`
-. Show the list of engine metrics using `curl http://localhost:1337/metrics | grep engine`
+. Show the complete list of metrics using `curl http://localhost:9323/metrics`
+. Show the list of engine metrics using `curl http://localhost:9323/metrics | grep engine`
 
 === Prometheus node scraper
 
@@ -253,13 +257,27 @@ docker run \
 . Prometheus dashboard is at http://localhost:9090
 . Show the list of metrics
 +
-image::prometheus-metrics.png[]
+image::prometheus-metrics1.png[]
 +
-. Choose `http_request_duration_microseconds`
-. Switch from `Console` to `Graph`
-.. Change the duration from `1h` to `5m`
+. Choose `http_request_total` metrics, click on `Execute`
 +
 image::prometheus-metrics2.png[]
++
+. Switch from `Console` to `Graph`
++
+image::prometheus-metrics3.png[]
++
+. Change the duration from `1h` to `5m`
++
+image::prometheus-metrics4.png[]
++
+. Select a different metric, say `http_requests_duration_microseconds`, and click on `Execute`
++
+image::prometheus-metrics5.png[]
++
+. Switch from `Console` to `Graph`
++
+image::prometheus-metrics6.png[]
 +
 . Stop the container: `docker container rm -f metrics`
 
