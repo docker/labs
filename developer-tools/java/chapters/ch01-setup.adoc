@@ -75,6 +75,6 @@ NOTE: For Linux, `docker-compose` and `docker` commands need `sudo` access. So p
 .. https://www.jetbrains.com/idea/download/[IntelliJ IDEA Community or Ultimate]
 .. http://www.eclipse.org/downloads/eclipse-packages/[Eclipse IDE for Java EE Developers]
 . Download https://maven.apache.org/download.cgi[Maven] and install.
-. Download the OpenJDK build of http://download.java.net/java/GA/jdk9/9/binaries/openjdk-9_linux-x64_bin.tar.gz/[JDK 9 for Linux x64].
+. Download the OpenJDK build of http://download.java.net/java/GA/jdk9/9/binaries/openjdk-9_linux-x64_bin.tar.gz[JDK 9 for Linux x64].
   (See also the http://jdk.java.net/9/[OpenJDK JDK 9 download page].)
 . Download the early-access Open JDK build of http://jdk.java.net/9/ea[JDK 9 for Alpine Linux].
