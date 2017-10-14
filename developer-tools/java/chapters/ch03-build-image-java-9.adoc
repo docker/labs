@@ -281,8 +281,7 @@ previously required).  It is anticipated that future releases of the JDK from
 the OpenJDK project will have root CA certificates (see issue
 https://bugs.openjdk.java.net/browse/JDK-8189131[JDK-8189131])
 
-To build Docker image for this application create a new text file
-`helloworld-jdk-9.Dockerfile` with the following contents:
+To build Docker image for this application use the file `helloworld-jdk-9.Dockerfile` from the checked out repo to build your image. The contents of the file are shown below:
 
 [source, text]
 ----
@@ -341,6 +340,8 @@ module:
         --no-header-files \
         --output /out/target/openjdk-9-base_linux-x64
 
+This command exists as `create-minimal-java-runtime.sh` in the link:https://github.com/PaulSandoz/helloworld-java-9[helloworld-java-9] repo.
+
 The JDK 9 tool `jlink` is used to create the custom Java runtime.  The tool
 is executed from with the container containing JDK 9 and directory where the
 modules reside, `/opt/jdk-9/jmods`, is declared in the module path.  Only the
@@ -366,8 +367,7 @@ $ du -k target/openjdk-9-base_linux-x64/
 31804   target/openjdk-9-base_linux-x64/
 ----
 
-To build Docker image for this application with the custom Java runtime create a
-new text file `helloworld-jdk-9-base.Dockerfile` with the following contents:
+To build Docker image for this application use the file `helloworld-jdk-9-base.Dockerfile` from the checked out repo. The contents of the file are shown below:
 
 [source, text]
 ----
@@ -408,3 +408,4 @@ Alpine Linux was used instead of Debian Slim.
 A realistic application will depend on more JDK modules but it's still possible
 to significantly reduce the Java runtime to only the required modules (for
 example many applications will not require Corba or RMI nor the compiler tools).
+
