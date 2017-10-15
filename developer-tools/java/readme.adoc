@@ -19,7 +19,7 @@ This tutorial offers Java developers an intro-level and self-paced hands-on work
 ** link:chapters/ch08-azure.adoc[Docker for Azure] (coming)
 ** link:chapters/ch08-cloud.adoc[Docker Cloud]
 * link:chapters/ch09-cicd.adoc[CI/CD using Docker]
-* link:chapters/ch10-monitoring.adoc[Monitoring Java Container]
+* link:chapters/ch10-monitoring.adoc[Monitoring Java Application Container]
 * link:chapters/ch11-bigdata.adoc[Big Data Processing with Docker and Hadoop]
 * link:chapters/appa-common-commands.adoc[Common Docker Commands]
 * link:chapters/appb-troubleshooting.adoc[Troubleshooting]

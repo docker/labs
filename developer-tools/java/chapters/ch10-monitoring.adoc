@@ -2,7 +2,7 @@
 
 :imagesdir: images
 
-= Monitoring Docker Containers
+= Monitoring Java Application Container
 
 This chapter will cover different ways to monitor a Docker container.
 
