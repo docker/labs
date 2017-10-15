@@ -416,6 +416,10 @@ image::prometheus-metrics8.png[]
 +
 Complete list of metrics is available at https://github.com/prometheus/node_exporter.
 
+=== Query using PromQL (TODO)
+
+Add some fun queries from https://prometheus.io/docs/querying/basics/.
+
 == cAdvisor
 
 https://github.com/google/cadvisor[cAdvisor] (Container Advisor) provides resource usage and performance characteristics running containers. Let's take a look on how cAdvisor can be used to get these metrics from containers.
@@ -550,4 +554,24 @@ Console output and graphs for all these metrics is now available:
 image::prometheus-metrics10.png[]
 +
 Complete list of metrics is available at https://github.com/google/cadvisor.
+
+Here is a basic query written using https://prometheus.io/docs/querying/basics/[PromQL] worth trying:
+
+```
+sum by (container_label_com_docker_swarm_node_id) (
+  irate(
+    container_cpu_usage_seconds_total{
+      container_label_com_docker_swarm_service_name="metrics"
+      }[1m]
+  )
+)
+```
+
+This shows the average amount of CPU used per minute by the service `metrics` aggregated over multiple CPUs.
+
+== Add Prometheus as data source in Grafana (TODO)
+
+== Monitor Java Applications (TODO)
+
+This section will explain how an existing Java application can be updated to publish metrics and monitored by Prometheus.
 
