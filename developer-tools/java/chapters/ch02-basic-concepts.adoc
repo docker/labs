@@ -3,7 +3,7 @@
 :imagesdir: images
 
 [[Docker_Basics]]
-## Docker Basic Concepts
+= Docker Basic Concepts
 
 *PURPOSE*: This chapter introduces the basic terminology of Docker.
 
@@ -18,7 +18,7 @@ Your application typically require a specific version of operating system, appli
 
 You can certainly provide an installation script that will download and install these components. Docker simplifies this process by allowing to create an image that contains your application and infrastructure together, managed as one component. These images are then used to create Docker containers which run on the container virtualization platform, provided by Docker.
 
-**Main Components of Docker**
+== Main Components
 
 Docker has three main components:
 
@@ -33,7 +33,7 @@ image::docker-architecture.png[]
 
 The Client communicates with the Engine that is either co-located on the same host or on a different host. Client uses the `pull` command to request the Engine to pull an image from the registry. The Engine then downloads the image from Docker Store, or whichever registry is configured. Multiple images can be downloaded from the registry and installed on the Engine. Client uses the `run` run the container.
 
-**How does a Docker Image work?**
+== Docker Image
 
 We've already seen that Docker images are read-only templates from which Docker containers are launched. Each image consists of a series of layers. Docker makes use of union file systems to combine these layers into a single image. Union file systems allow files and directories of separate file systems, known as branches, to be transparently overlaid, forming a single coherent file system.
 
@@ -52,15 +52,15 @@ Docker images are then built from these base images using a simple, descriptive 
 
 These instructions are stored in a file called a Dockerfile. Docker reads this Dockerfile when you request a build of an image, executes the instructions, and returns a final image.
 
-**How does a Container work?**
+== Docker Container
 
 A container consists of an operating system, user-added files, and meta-data. As we've seen, each container is built from an image. That image tells Docker what the container holds, what process to run when the container is launched, and a variety of other configuration data. The Docker image is read-only. When Docker runs a container from an image, it adds a read-write layer on top of the image (using a union file system as we saw earlier) in which your application can then run.
 
-### Docker Engine
+== Docker Engine
 
 Docker Host is created as part of installing Docker on your machine. Once your Docker host has been created, it then allows you to manage images and containers. For example, the image can be downloaded and containers can be started, stopped and restarted.
 
-### Docker Client
+== Docker Client
 
 The client communicates with the Docker Host and let's you work with images and containers.
 

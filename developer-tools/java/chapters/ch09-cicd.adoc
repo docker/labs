@@ -14,7 +14,7 @@ There are several possible approaches to run Docker builds with Jenkins:
 
 NOTE: Another option is running Jenkins on Docker and do a complete Docker installation inside the Jenkins Docker container. This technique is called Docker in Docker and it is usually a bad idea. There are several discussions about the problems with this approach, like this one: http://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/ . A better approach is using Docker outside of Docker, as explained here: http://container-solutions.com/running-docker-in-jenkins-in-docker/
 
-== Run Jenkins on docker
+== Run Jenkins on Docker
 
 In this example, we will run Jenkins on Docker and use the underlying Docker installed on the host to run Docker commands. This technique is known as Docker outside of Docker.
 
@@ -30,7 +30,7 @@ Wait for jenkins to start and then go to the browser and open `http://localhost:
 
 The Jenkins installation on this lab comes pre-configured. To login use the username `jenkins` and the password `jenkins`.
 
-== Running Integration Tests with Docker and Jenkins
+== Running integration tests Jenkins
 
 For this Continuous Integration demo, we will run a simple application that saves data on MongoDB. We will then run integration tests to check if the data was correctly saved on the database.
 
@@ -43,20 +43,20 @@ When running integration tests, you want to test your application in an environm
 
 Create a new job on jenkins:
 
-1 . Select Freestyle project
-
+. Select Freestyle project
++
 image::docker-ci-cd-01.png[]
-
-2 . In Source Code Management, select Git and add the repository URL: `https://github.com/fabianenardon/mongo-docker-demo.git`
-
++
+. In Source Code Management, select Git and add the repository URL: `https://github.com/fabianenardon/mongo-docker-demo.git`
++
 image::docker-ci-cd-02.png[]
-
-3 . In Build, select Add build step and select Execute shell
-
++
+. In Build, select Add build step and select Execute shell
++
 image::docker-ci-cd-03.png[]
-
-4 . In the shell Command, add these instructions:
-
++
+. In the shell Command, add these instructions:
++
 [source, text]
 ----
 cd sample
@@ -82,40 +82,37 @@ sudo docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compos
      mvn -f /maven/code/pom.xml -Dmaven.repo.local=/m2/repository \
      -Pintegration-test verify 
 ----
-
-5 . Click on Add post-build action and select Execute a set of scripts
-
++
+. Click on Add post-build action and select Execute a set of scripts
++
 image::docker-ci-cd-04.png[]
-
-6 . In Post-build Actions, select Execute shell
-
++
+. In Post-build Actions, select Execute shell
++
 image::docker-ci-cd-05.png[]
-
-7 . In the Command box, add:
-
++
+. In the Command box, add:
++
 [source, text]
 ----
 cd sample
 sudo docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compose.yml down
 ----
-
-8 . Uncheck the `Execute script only if build succeeds` and `Execute script only if build fails` options, so this script will run always when the build ends. This way, we make sure to always stop the services.
-
-
++
+. Uncheck the `Execute script only if build succeeds` and `Execute script only if build fails` options, so this script will run always when the build ends. This way, we make sure to always stop the services.
++
 [NOTE]
 ====
 . The `-p app-$BUILD_NUMBER` option allows multiple builds to run at the same time, since we can start multiple instances of the containers. We are using Jenkins $BUILD_NUMBER variable to isolate the containers. This way, each set of services will run on its own network.
 . We are running the commands with sudo because we are actually running the Docker socket on the host. Jenkins runs with the jenkins user and we added the jenkins user to the sudoers list in our image. Obviously, this can have security consequences in a production environment, since one could create a build that would access root level services on the host. You can avoid this by configuring the jenkins user on the host, so it will have access to the Docker socket and then run the commands without sudo.
 ====
-
-
-9 . Save the build and then click on `Build now` to run it. You should see a progress bar when the build is running. You can click on the progress bar to see the build console output.
-
++
+. Save the build and then click on `Build now` to run it. You should see a progress bar when the build is running. You can click on the progress bar to see the build console output.
++
 image::docker-ci-cd-06.png[]
-
-
-10 . If the build is successful, you should see this on the build console output:
-
++
+. If the build is successful, you should see this on the build console output:
++
 image::docker-ci-cd-07.png[]
 
 == Run integration tests outside Jenkins
@@ -187,9 +184,8 @@ image::docker-ci-cd-10.png[]
 +
 image::docker-ci-cd-11.png[]
 
-== Continuous Delivery with Docker and Jenkins
+== Continuous delivery with Jenkins
 
 Continuous Delivery strategies depend greatly on the application architecture. With a dockerized application like the one in our demo, the continuous delivery strategy could be to publish a new version of the application image if the tests passed. This way, next time the application runs on production, the new image will be downloaded and automatically deployed. You can publish images with Jenkins just like you invoked all the other docker commands in the build.
-
 
 
