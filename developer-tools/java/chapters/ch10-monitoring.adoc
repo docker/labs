@@ -203,9 +203,11 @@ https://prometheus.io/[Prometheus] is an open-source systems monitoring and aler
 
 Different targets to scrape are defined in the https://prometheus.io/docs/operating/configuration/[Prometheus configuration file]. Targets may be statically configured via the `static_configs` parameter in the configuration fle or dynamically discovered using one of the supported service-discovery mechanisms (Consul, DNS, Etcd, etc.).
 
+Prometheus collects metrics from monitored targets by scraping metrics from HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.
+
 === Docker metrics for Prometheus
 
-Docker exposes Prometheus-compatible metrics on port `9323`. This support is only available as experimental.
+Docker exposes Prometheus-compatible metrics on port `9323`. This support is only available as an experimental feature.
 
 . For Docker for Mac, click on Docker icon in the status menu
 . Select `Preferences...`, `Daemon`, `Advanced` tab
@@ -225,15 +227,11 @@ image::prometheus-metrics-config.png[]
 . Show the complete list of metrics using `curl http://localhost:9323/metrics`
 . Show the list of engine metrics using `curl http://localhost:9323/metrics | grep engine`
 
-=== Node scraper
+==== Start Prometheus
 
-Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.
+In this section, we'll start Prometheus and use it to scrape it's own health.
 
-In this section, we'll start Prometheus node exporter and scrape its own health.
-
-Let's start Prometheus node exporter
-
-. Create a new directory `prometheus` and change directory
+. Create a new directory `prometheus` and change to that directory
 . Create a text file `prometheus.yml` and use the following content
 +
 ```
@@ -245,35 +243,34 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['localhost:9090']
-  - job_name: 'docker'
-    scrape_interval: 5s
-    static_configs:
-      - targets: ['localhost:9323']
 ```
 +
-This configuration file scrapes data from two targets:
-.. Prometheus container which will be started subsequently on port 9090.
-.. Docker that exposes a Prometheus-compatible metrics at port 9323.
+This configuration file scrapes data from the Prometheus container which will be started subsequently on port 9090.
 +
 . Start a single-replica Prometheus service:
 +
 ```
-docker service create --replicas 1 --name metrics \
-    --mount type=bind,source=`pwd`/prometheus.yml,destination=/etc/prometheus/prometheus.yml \
-    --publish 9090:9090/tcp \
-    prom/prometheus
+docker service create \
+  --replicas 1 \
+  --name metrics \
+  --mount type=bind,source=`pwd`/prometheus.yml,destination=/etc/prometheus/prometheus.yml \
+  --publish 9090:9090/tcp \
+  prom/prometheus
 ```
 +
-. Prometheus dashboard is at http://localhost:9090
-. Check the list of enabled targets at http://localhost:9090/targets
+This will start the Prometheus container on port 9090.
 +
-image::prometheus-metrics0.png[]
+. Prometheus dashboard is at http://localhost:9090. Check the list of enabled targets at http://localhost:9090/targets (also accessible from `Status` -> `Targets` menu).
 +
-This output shows that the metrics exposed by Prometheus container are configured correctly. But, the metrics for Docker Engine are not scraped. This is tracked as https://github.com/docker/labs/issues/344.
+image::prometheus-metrics-target.png[]
 +
-. Show the list of metrics
+It shows that the Prometheus endpoint is available for scraping.
++
+. Click on `Graph` and click on `--insert metric at cursor--` to see the list of metrics available:
 +
 image::prometheus-metrics1.png[]
++
+These are all the metrics published by the Prometheus endpoint.
 +
 . Choose `http_request_total` metrics, click on `Execute`
 +
@@ -287,15 +284,135 @@ image::prometheus-metrics3.png[]
 +
 image::prometheus-metrics4.png[]
 +
-. Select a different metric, say `http_requests_duration_microseconds`, and click on `Execute`
+. Click on `Add Graph`, select a different metric, say `http_requests_duration_microseconds`, and click on `Execute`
 +
 image::prometheus-metrics5.png[]
 +
-. Switch from `Console` to `Graph`
+. Switch from `Console` to `Graph` and change the duration from `1h` to `5m`
 +
 image::prometheus-metrics6.png[]
 +
 . Stop the container: `docker container rm -f metrics`
+
+Multiple graphs can be added this way.
+
+=== Node health
+
+In this section, we'll start Prometheus node exporter that will publish machine metrics. Then we'll use Prometheus to scrape its health information about the node running Docker.
+
+==== Start Node Exporter
+
+. All containers need to use the same overlay network so that they can communicate with each other. Let's create an overlay network:
++
+```
+docker network create --driver overlay prom
+```
++
+. Start Prometheus node exporter:
++
+```
+docker service create --name node \
+ --mode global \
+ --mount type=bind,source=/proc,target=/host/proc \
+ --mount type=bind,source=/sys,target=/host/sys \
+ --mount type=bind,source=/,target=/rootfs \
+ --network prom \
+ --publish 9100:9100 \
+ prom/node-exporter \
+  --path.procfs /host/proc \
+  --path.sysfs /host/sys \
+  --collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc)($|/)"
+```
++
+A few observations in this command:
++
+.. This is started as a global service such that it is started on all nodes of the cluster.
+.. As explained in https://github.com/prometheus/node_exporter/issues/610, node exporter only works with host network on Mac OSX. This is not needed if you are running on Linux.
+.. It uses the overlay network previously created.
+.. It needs access to host's filesystems such that the metrics about the node can be published.
+
+==== Restart Prometheus
+
+. Update `prometheus.yml` to the following text:
++
+```
+global:
+  scrape_interval: 10s
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+        - 'localhost:9090'
+  - job_name: 'node resources'
+    dns_sd_configs:
+      - names: ['tasks.node']
+        type: 'A'
+        port: 9100
+    params:
+      collect[]:
+        - cpu
+        - meminfo
+        - diskstats
+        - netdev
+        - netstat
+
+  - job_name: 'node storage'
+    scrape_interval: 1m
+    dns_sd_configs:
+      - names: ['tasks.node']
+        type: 'A'
+        port: 9100
+    params:
+      collect[]:
+        - filefd
+        - filesystem
+        - xfs
+```
++
+A few observations:
++
+.. DNS-based service discovery is used to discover the scraper for node-exporter. This is further explained at https://prometheus.io/docs/operating/configuration/#<dns_sd_config>[dns_sd_configs]. A record-based queries are used to discover the service.
+.. Two different jobs are created even though they are scraping from the same endpoint. This provides a more logical way to represent data.
++
+. Terminate previously running Prometheus service:
++
+```
+docker service rm metrics
+```
++
+. Restart the Prometheus service, this time using the overlay network, as:
++
+```
+docker service create \
+  --replicas 1 \
+  --name metrics \
+  --network prom \
+  --mount type=bind,source=`pwd`/prometheus.yml,destination=/etc/prometheus/prometheus.yml \
+  --publish 9090:9090/tcp \
+  prom/prometheus
+```
+
+==== Check metrics
+
+. Confirm that both the services have started:
++
+```
+ID                  NAME                MODE                REPLICAS            IMAGE                       PORTS
+lzl41s2i66jd        metrics             replicated          1/1                 prom/prometheus:latest      *:9090->9090/tcp
+dro3ncpyuchp        node                global              1/1                 prom/node-exporter:latest   
+```
++
+. Confirm that all the targets are configured correctly at http://localhost:9090/targets[Prometheus dashboard]:
++
+image::prometheus-metrics-target2.png[]
++
+. Now a lot more metrics, this time from the node, are also available:
++
+image::prometheus-metrics7.png[]
++
+Console output and graphs for all these metrics is now available:
++
+image::prometheus-metrics8.png[]
 
 == cAdvisor
 
@@ -331,7 +448,11 @@ Click on any of the containers and see more details about the container.
 
 cAdvisor samples once a second and has historical data for only one minute. The data generated from https://github.com/google/cadvisor/blob/master/docs/storage/influxdb.md[cAdvisor can be exported to InfluxDB]. Optionally, you may use a Grafana front end to visualize the data as explained in https://www.brianchristner.io/how-to-setup-docker-monitoring/[How to setup Docker monitoring].
 
-cAdvisor also exposes container statistics as Prometheus metrics out of the box. By default, these metrics are served under the `/metrics` HTTP endpoint. The following configuration fragment can be added to `prometheus.yml` to scrape the metrics:
+=== Prometheus and cAdvisor
+
+cAdvisor also exposes container statistics as Prometheus metrics out of the box. By default, these metrics are served under the `/metrics` HTTP endpoint.
+
+The updated Prometheus configuration file to scrape the metrics from cAdvisor is:
 
 [source, text]
 ----
