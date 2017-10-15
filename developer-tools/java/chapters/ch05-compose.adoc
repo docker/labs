@@ -76,7 +76,7 @@ In this Compose file:
 
 === Start Application
 
-All services in the applicaiton can be started, in detached mode, by giving the command:
+All services in the application can be started, in detached mode, by giving the command:
 
 ```
 docker-compose up -d
