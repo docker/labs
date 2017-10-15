@@ -18,3 +18,11 @@ services:
     image: tailtarget/hadoop:2.7.2
   jenkins:
     image: tailtarget/jenkins:2.32.3
+  prometheus:
+    image: prom/prometheus
+  node-exporter:
+    image: prom/node-exporter
+  cadvisor:
+    image: google/cadvisor:latest
+  grafana:
+    image: grafana/grafana
