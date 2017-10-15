@@ -567,9 +567,13 @@ sum by (container_label_com_docker_swarm_node_id) (
 )
 ```
 
-This shows the average amount of CPU used per minute by the service `metrics` aggregated over multiple CPUs.
+This shows the average amount of CPU used per minute by the service `metrics` aggregated over multiple CPUs. The graph will look as shown:
+
+image::prometheus-metrics11.png[]
 
 == Add Prometheus as data source in Grafana (TODO)
+
+http://grafana.com[Grafana] 
 
 == Monitor Java Applications (TODO)
 
