@@ -1,3 +1,5 @@
+:toc:
+
 :imagesdir: images
 
 = Docker for AWS
@@ -169,7 +171,7 @@ rb6rju2eln0bn80z7lqocjkuy *   ip-172-31-46-94.ec2.internal    Ready             
 
 === Multi-container application to multi-host
 
-Use the Compose file from https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch05-compose.adoc#configuration-file to deploy a multi-container application to this Docker cluster. This will deploy a multi-container application to multiple hosts.
+Use the link:ch05-compose.adoc#configuration-file[Compose file] to deploy a multi-container application to this Docker cluster. This will deploy a multi-container application to multiple hosts.
 
 Create a new directory and `cd` to it:
 
