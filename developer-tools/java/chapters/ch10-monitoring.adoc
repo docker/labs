@@ -263,7 +263,7 @@ docker service create --replicas 1 --name metrics \
 +
 image::prometheus-metrics0.png[]
 +
-This shows that metrics exposed by Prometheus and Docker Engine are both available.
+This shows that metrics exposed by Prometheus and Docker Engine are both available. Docker metrics endpoint is currently not recognized by Prometheus scraper. This is reported as https://github.com/docker/labs/issues/344.
 +
 . Show the list of metrics
 +
