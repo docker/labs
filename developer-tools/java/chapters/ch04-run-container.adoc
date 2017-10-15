@@ -67,7 +67,9 @@ IMAGE               CREATED             CREATED BY                              
 <missing>           8 days ago          /bin/sh -c #(nop) ADD file:1ed4d1a29d09a63...   197MB               
 ----
 
-== Run Container Interactively
+== Run Container
+
+=== Interactively
 
 Run WildFly container in an interactive mode.
 
@@ -101,7 +103,7 @@ By default, Docker runs in the foreground. `-i` allows to interact with the STDI
 
 Hit Ctrl+C to stop the container.
 
-== Run a Detached Container
+=== Detached container
 
 Restart the container in detached mode:
 
@@ -125,7 +127,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 
 Also try `docker container ls -a` to see all the containers on this machine.
 
-== Run Container with Default Port
+=== With default port
 
 If you want the container to accept incoming connections, you will need to provide special options when invoking `docker run`. The container, we just started, can't be accessed by our browser. We need to stop it again and restart with different options.
 
@@ -157,7 +159,7 @@ The page would look like:
 
 image::wildfly-first-run-default-page.png[]
 
-== Run Container with Specified Port
+=== With specified port
 
 Stop and remove the previously running container as:
 
@@ -188,7 +190,7 @@ docker container stop wildfly
 docker container rm wildfly
 ----
 
-== Deploy a WAR file to Application Server
+=== Deploy a WAR file to application server
 
 Now that your application server is running, lets see how to deploy a WAR file to it.
 
@@ -272,7 +274,7 @@ See the output:
 
 Optional: `brew install XML-Coreutils` will install XML formatting utility on Mac. This output can then be piped to `xml-fmt` to display a formatted result.
 
-== Stop Container
+== Stop container
 
 Stop a specific container by id or name:
 
@@ -296,7 +298,7 @@ Stop only the exited containers:
 docker container ps -a -f "exited=-1"
 ----
 
-== Remove Container
+== Remove container
 
 Remove a specific container by id or name:
 
@@ -320,7 +322,7 @@ Remove all containers, without any criteria
 docker container rm $(docker container ps -aq)
 ----
 
-== Additional Ways To Find Port Mapping
+== Additional ways to find port mapping
 
 The exact mapped port can also be found using `docker port` command:
 

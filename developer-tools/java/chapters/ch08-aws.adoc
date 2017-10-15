@@ -6,7 +6,7 @@
 
 https://docs.docker.com/docker-for-aws/[Docker for AWS] is a CloudFormation template that configures Docker in swarm-mode, running on EC2 instances backed by custom AMIs. This allows to create a cluster of Docker Engine in swarm-mode with a single click. This workshop will take the https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch06-swarm.adoc#multi-container-application[multi-container application] and deploy it on multiple hosts.
 
-=== Requirements
+== Requirements
 
 What is required for creating this CloudFormation template?
 
@@ -14,7 +14,7 @@ What is required for creating this CloudFormation template?
 . SSH key in AWS in the region where you want to deploy (required to access the completed Docker install). http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html[Amazon EC2 Key Pair] explains how to add SSH key to your account
 . AWS account that support EC2-VPC
 
-=== Create swarm-mode cluster
+== Create cluster
 
 https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=Docker&templateURL=https://editions-us-east-1.s3.amazonaws.com/aws/stable/Docker.tmpl[Launch Stack] to create the CloudFormation template.
 
@@ -169,7 +169,7 @@ k2aprr08b3q28nvze9uv26821     ip-172-31-39-252.ec2.internal   Ready             
 rb6rju2eln0bn80z7lqocjkuy *   ip-172-31-46-94.ec2.internal    Ready               Active              Reachable
 ```
 
-=== Multi-container application to multi-host
+== Multi-container application to multi-host
 
 Use the link:ch05-compose.adoc#configuration-file[Compose file] to deploy a multi-container application to this Docker cluster. This will deploy a multi-container application to multiple hosts.
 
@@ -200,7 +200,7 @@ Creating service webapp_db
 
 WildFly Swarm and MySQL services are started on this cluster. Each service has a single container. A new overlay network is created. This allows multiple containers on different hosts to communicate with each other.
 
-=== Verify service/containers in application
+== Verify service and containers in application
 
 Verify that the WildFly and Couchbase services are running using `docker -H localhost:2374 service ls`:
 
@@ -386,7 +386,7 @@ Pick `webapp_web.xxx` log stream to see the log statements from WildFly Swarm:
 .CloudWatch application log stream
 image::docker-aws-12.png[]
 
-=== Access application
+== Access application
 
 Application is accessed using manager's IP address and on port 8080. By default, the port 8080 is not open. 
 
@@ -419,7 +419,7 @@ Now, the application is accessible using the command `curl -v http://ec2-34-200-
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><collection><employee><id>1</id><name>Penny</name></employee><employee><id>2</id><name>Sheldon</name></employee><employee><id>3</id><name>Amy</name></employee><employee><id>4</id><name>Leonard</name></employee><employee><id>5</id><name>Bernadette</name></employee><employee><id>6</id><name>Raj</name></employee><employee><id>7</id><name>Howard</name></employee><employee><id>8</id><name>Priya</name></employee></collection>
 ```
 
-=== Shutdown application
+== Shutdown application
 
 Shutdown the application using the command `docker -H localhost:2374 stack rm webapp`:
 
@@ -431,7 +431,7 @@ Removing network webapp_default
 
 This stops the container in each service and removes the services. It also deletes any networks that were created as part of this application.
 
-=== Shutdown cluster
+== Shutdown cluster
 
 Docker cluster can be shutdown by deleting the stack created by CloudFormation:
 

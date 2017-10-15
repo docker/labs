@@ -2,13 +2,11 @@
 
 :imagesdir: images
 
-== Build a Docker Image
+= Build a Docker Image
 
 *PURPOSE*: This chapter explains how to create a Docker image.
 
-As explained in <<Docker_Basics>>, Docker image is the *build component* of Docker and a read-only template of application operating system.
-
-=== Dockerfile
+== Dockerfile
 
 Docker build images by reading instructions from a _Dockerfile_. A _Dockerfile_ is a text document that contains all the commands a user could call on the command line to assemble an image. `docker build` command uses this file and executes all the commands in succession to create an image.
 
@@ -28,7 +26,7 @@ _Dockerfile_ is usually called _Dockerfile_. The complete list of commands that 
 | EXPOSE | Informs the network ports that the container will listen on | `EXPOSE 8093`
 |==================
 
-=== Create your first Docker image
+== Create your first image
 
 Create a new directory `hellodocker`.
 
@@ -113,9 +111,9 @@ busybox             latest              54511612f1c4        9 days ago          
 
 `helloworld:2` is the format that allows to specify the image name and assign a tag/version to it separated by `:`.
 
-=== Create your first Docker image using Java
+== Create your first image using Java
 
-==== Create a simple Java application
+=== Create a simple Java application
 
 Create a new Java project:
 
@@ -171,7 +169,7 @@ A different JDK version may be shown in your case.
 
 Exit out of the container by typing `exit` in the container shell.
 
-==== Package and Run Java application as Docker image
+=== Package and run Java application as Docker image
 
 Create a new Dockerfile in `helloworld` directory and use the following content:
 
@@ -198,7 +196,7 @@ This displays the output:
 
 This shows the exactly same output that was printed when the Java class was invoked using Java CLI.
 
-==== Package and Run Java Application using Docker Maven Plugin
+=== Package and run Java Application using Docker Maven Plugin
 
 https://github.com/fabric8io/docker-maven-plugin[Docker Maven Plugin] allows you to manage Docker images and containers using Maven. It comes with predefined goals:
 
@@ -219,10 +217,7 @@ Clone the sample code from https://github.com/arun-gupta/docker-java-sample/.
 
 Create the Docker image:
 
-[source, text]
-----
-mvn -f docker-java-sample/pom.xml package -Pdocker
-----
+    mvn -f docker-java-sample/pom.xml package -Pdocker
 
 This will show an output like:
 
@@ -246,10 +241,7 @@ hello-java                            latest              ea64a9f5011e        5 
 
 Run the Docker container:
 
-[source, text]
-----
-mvn -f docker-java-sample/pom.xml install -Pdocker
-----
+   mvn -f docker-java-sample/pom.xml install -Pdocker
 
 This will show an output like:
 
@@ -320,9 +312,9 @@ Only one change was required in the project to enable Docker packaging and runni
 </profiles>
 ----
 
-=== Dockerfile Command Design Patterns
+== Dockerfile Command Design Patterns
 
-==== Difference between CMD and ENTRYPOINT
+=== Difference between CMD and ENTRYPOINT
 
 *TL;DR* `CMD` will work for most of the cases.
 
@@ -348,7 +340,7 @@ sys:x:3:3:sys:/dev:/usr/sbin/nologin
 
 This command overrides the entry point to the container to `/bin/cat`. The argument(s) passed to the CLI are used by the entry point.
 
-==== Difference between ADD and COPY
+=== Difference between ADD and COPY
 
 *TL;DR* `COPY` will work for most of the cases.
 
@@ -357,7 +349,7 @@ This command overrides the entry point to the container to `/bin/cat`. The argum
 . Allows tar file auto-extraction in the image, for example, `ADD app.tar.gz /opt/var/myapp`.
 . Allows files to be downloaded from a remote URL. However, the downloaded files will become part of the image. This causes the image size to bloat. So its recommended to use `curl` or `wget` to download the archive explicitly, extract, and remove the archive.
 
-==== Import and export images
+=== Import and export images
 
 Docker images can be saved using `image save` command to a `.tar` file:
 

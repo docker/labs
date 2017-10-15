@@ -2,7 +2,7 @@
 
 :imagesdir: images
 
-= Monitoring using Prometheus and Grafana
+= Monitoring Docker Containers
 
 This chapter will cover different ways to monitor a Docker container.
 

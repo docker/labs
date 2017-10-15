@@ -3,7 +3,7 @@
 :imagesdir: images
 
 [[Swarm_Mode]]
-= Deploy Application using Swarm Mode
+= Deploy application using Swarm mode
 
 Docker Engine includes swarm mode for natively managing a cluster of Docker Engines. The Docker CLI can be used to create a swarm, deploy application services to a swarm, and manage swarm behavior. Complete details are available at: https://docs.docker.com/engine/swarm/. It's important to understand the https://docs.docker.com/engine/swarm/key-concepts/[Swarm mode key concepts] before starting with this chapter.
 
@@ -11,7 +11,7 @@ Swarm is typically a cluster of multiple Docker Engines. But for simplicity we'l
 
 This section will deploy an application that will provide a CRUD/REST interface on a data bucket in http://developer.couchbase.com/server[Couchbase]. This is achieved by using a Java EE application deployed on http://wildfly.org[WildFly] to access the database.
 
-== Initialize a Swarm
+== Initialize Swarm
 
 Initialize Swarm mode using the following command:
 
@@ -94,7 +94,7 @@ Live Restore Enabled: false
 
 This cluster has 1 node, and that is a manager. By default, the manager node is also a worker node. This means the containers can run on this node.
 
-== Multi-container Application
+== Multi-container application
 
 This section describes how to deploy a multi-container application using Docker Compose to Swarm mode use Docker CLI. 
 
@@ -103,7 +103,7 @@ Create a new directory and `cd` to it:
     mkdir webapp
     cd webapp
 
-Create a new Compose definition `docker-compose.yml` using the configuration file from https://github.com/docker/labs/blob/master/developer-tools/java/chapters/ch05-compose.adoc#configuration-file.
+Create a new Compose definition `docker-compose.yml` using this link:ch05-compose.adoc#configuration-file[ configuration file].
 
 This application can be started as:
 
@@ -125,7 +125,7 @@ WildFly Swarm and MySQL services are started on this node. Each service has a si
 
 A new overlay network is created. This can be verified using the command `docker network ls`. This network allows multiple containers on different hosts to communicate with each other.
 
-== Verify Service/Containers in Application
+== Verify service and containers in application
 
 Verify that the WildFly and Couchbase services are running using `docker service ls`:
 
@@ -292,7 +292,7 @@ webapp_web.1.lf3y5k7pkpt9@moby    | 2017-10-07 00:17:57,094 INFO  [org.jboss.as.
 
 Make sure to wait for the last log statement to show.
 
-== Access Application
+== Access application
 
 Now that the WildFly and Couchbase servers have been configured, let's access the application. You need to specify IP address of the host where WildFly is running (`localhost` in our case).
 
@@ -324,7 +324,7 @@ The output is shown as:
 
 This shows all employees stored in the database.
 
-== Stop Application
+== Stop application
 
 If you only want to stop the application temporarily while keeping any networks that were created as part of this application, the recommended way is to set the amount of service replicas to 0.
 
@@ -341,7 +341,7 @@ In a future release, --detach=false will become the default.
 
 This is especially useful if the stack contains volumes and you want to keep the data. It allows you to simply start the stack again with setting the replicas to a number higher than 0.
 
-== Remove Application Completely
+== Remove application completely
 
 Shutdown the application using `docker stack rm webapp`:
 

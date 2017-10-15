@@ -5,6 +5,8 @@
 [[Docker_Compose]]
 = Multi-container application using Docker Compose
 
+== What is Docker Compose
+
 [quote, github.com/docker/compose]
 Docker Compose is a tool for defining and running complex applications with Docker. With Compose, you define a multi-container application in a single file, then spin your application up in a single command which does everything that needs to be done to get it running.
 
@@ -30,11 +32,11 @@ An application using Docker containers will typically consist of multiple contai
 | `migrate-to-labels  Recreate containers to add labels
 |====
 
-The application used in this section will show how to query a Couchbase sample data using simple Java EE application deployed on WildFly. The Java EE application will use JAX-RS to publish REST endpoint which will then be invoked using `curl`.
+The application used in this section is a Java EE application talking to a database. The application publishes a REST endpoint that can be invoked using `curl. It is deployed using http://wildfly-swarm.io/[WildFly Swarm] that communicates to MySQL database.
 
-WildFly and Couchbase will be running in two separate containers, and thus making this a multi-container application.
+WildFly Swarm and MySQL will be running in two separate containers, and thus making this a multi-container application.
 
-== Configuration File
+== Configuration file
 
 Th entry point to Docker Compose is a Compose file, usually called `docker-compose.yml`. Create a new directory `javaee`. In that directory, create a new file `docker-compose.yml` in it. Use the following contents:
 
@@ -74,7 +76,7 @@ In this Compose file:
 . Port forwarding is achieved using `ports` attribute.
 . `depends_on` attribute allows to express dependency between services. In this case, MySQL will be started before WildFly. Application-level health check are still user's responsibility.
 
-=== Start Application
+== Start application
 
 All services in the application can be started, in detached mode, by giving the command:
 
@@ -172,7 +174,7 @@ db     | 2017-10-06T23:54:30.281973Z 0 [Note] InnoDB: Buffer pool(s) load comple
 
 `depends_on` attribute in the Compose definition file ensures the container start up order. But application-level start up needs to be ensured by the applications running inside container. In our case, this can be achieved by WildFly Swarm using `swarm.datasources.data-sources.KEY.stale-connection-checker-class-name` as defined at https://reference.wildfly-swarm.io/fractions/datasources.html.
 
-=== Verify Application
+== Verify application
 
 Now that the WildFly Swarm and MySQL have been configured, let's access the application. You need to specify IP address of the host where WildFly is running (`localhost` in our case).
 
@@ -232,7 +234,7 @@ curl -v http://localhost:8080/resources/employees/1
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><employee><id>1</id><name>Penny</name></employee>
 ```
 
-== Shutdown Application
+== Shutdown application
 
 Shutdown the application using `docker-compose down`:
 

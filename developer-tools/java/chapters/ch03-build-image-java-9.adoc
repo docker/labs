@@ -2,14 +2,14 @@
 
 :imagesdir: images
 
-== Build a Docker Image with JDK 9
+= Build a Docker Image with JDK 9
 
 *PURPOSE*: This chapter explains how to create a Docker image with JDK 9.
 
 The link:ch03-build-image.adoc[prior chapter] explained how, in general, to build a Docker image with Java.
 This chapter expands on this topic and focuses on JDK 9 features.
 
-=== Create a Docker Image using JDK 9
+== Create a Docker Image using JDK 9
 
 Create a new directory, for example `docker-jdk9`.
 
@@ -199,7 +199,7 @@ $ docker container run -m=200M -it --rm jdk-9-debian-slim java --list-modules | 
       75
 ----
 
-=== Create a Docker Image using JDK 9 and Alpine Linux
+== Create a Docker Image using JDK 9 and Alpine Linux
 
 Instead of `debian` as the base image it is possible to use Alpine Linux
 with an early access build of JDK 9 that is compatible with the muslc library
@@ -255,7 +255,7 @@ modifications to run on Alpine Linux.  Such modifications have been proposed
 by the OpenJDK http://openjdk.java.net/projects/portola/[Portola Project].
 
 
-=== Create a Docker Image using JDK 9 and a Java application
+== Create a Docker Image using JDK 9 and a Java application
 
 Clone the GitHib project https://github.com/PaulSandoz/helloworld-java-9 that
 contains a simple Java 9-based project:
@@ -321,7 +321,7 @@ Run the `jdeps` tool to see what modules the application depends on:
 
 and observe that the application only depends on the `java.base` module.
 
-=== Reduce the size of a Docker Image using JDK 9 and a Java application
+== Reduce the size of a Docker Image using JDK 9 and a Java application
 
 The Java application is extremely simple and as a result uses very little of the
 functionality shipped with JDK 9 distribution, specifically the application
