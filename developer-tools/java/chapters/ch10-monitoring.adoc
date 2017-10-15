@@ -203,7 +203,9 @@ https://prometheus.io/[Prometheus] is an open-source systems monitoring and aler
 
 Different targets to scrape are defined in the https://prometheus.io/docs/operating/configuration/[Prometheus configuration file]. Targets may be statically configured via the `static_configs` parameter in the configuration fle or dynamically discovered using one of the supported service-discovery mechanisms (Consul, DNS, Etcd, etc.).
 
-Docker exposes Prometheus-compatible metrics on port `9323`. This support is only available in Experimental build.
+=== Docker metrics for Prometheus
+
+Docker exposes Prometheus-compatible metrics on port `9323`. This support is only available as experimental.
 
 . For Docker for Mac, click on Docker icon in the status menu
 . Select `Preferences...`, `Daemon`, `Advanced` tab
@@ -227,8 +229,12 @@ image::prometheus-metrics-config.png[]
 
 Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.
 
+In this section, we'll start Prometheus node exporter and scrape its own health.
+
+Let's start Prometheus node exporter
+
 . Create a new directory `prometheus` and change directory
-. Create `prometheus.yml`
+. Create a text file `prometheus.yml` and use the following content
 +
 ```
 # A scrape configuration scraping a Node Exporter and the Prometheus server
@@ -245,7 +251,7 @@ scrape_configs:
       - targets: ['localhost:9323']
 ```
 +
-This configuration file scrapes data from two endpoints:
+This configuration file scrapes data from two targets:
 .. Prometheus container which will be started subsequently on port 9090.
 .. Docker that exposes a Prometheus-compatible metrics at port 9323.
 +
@@ -263,7 +269,7 @@ docker service create --replicas 1 --name metrics \
 +
 image::prometheus-metrics0.png[]
 +
-This shows that metrics exposed by Prometheus and Docker Engine are both available. Docker metrics endpoint is currently not recognized by Prometheus scraper. This is reported as https://github.com/docker/labs/issues/344.
+This output shows that the metrics exposed by Prometheus container are configured correctly. But, the metrics for Docker Engine are not scraped. This is tracked as https://github.com/docker/labs/issues/344.
 +
 . Show the list of metrics
 +
