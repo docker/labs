@@ -223,7 +223,7 @@ image::docker-mac-metrics-endpoint.png[]
 . Show the complete list of metrics using `curl http://localhost:9323/metrics`
 . Show the list of engine metrics using `curl http://localhost:9323/metrics | grep engine`
 
-=== Prometheus node scraper
+=== Node scraper
 
 Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.
 
@@ -239,22 +239,32 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['localhost:9090']
+  - job_name: 'docker'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9323']
 ```
 +
-This will be scraping metrics for the Prometheus container that will be started on port 9090.
+This configuration file scrape data from two endpoints:
+.. Prometheus container which will be started subsequently on port 9090.
+.. Docker that exposes a Prometheus-compatible metrics at port 9323.
 +
-. Start Prometheus container:
+. Start a single-replica Prometheus service:
 +
 ```
-docker run \
-  -d \
-  --name metrics \
-  -p 9090:9090 \
-  -v `pwd`:/etc/prometheus \
-  prom/prometheus
+docker service create --replicas 1 --name metrics \
+    --mount type=bind,source=`pwd`/prometheus.yml,destination=/etc/prometheus/prometheus.yml \
+    --publish 9090:9090/tcp \
+    prom/prometheus
 ```
 +
 . Prometheus dashboard is at http://localhost:9090
+. Check the list of enabled targets at http://localhost:9090/targets
++
+image::prometheus-metrics0.png[]
++
+This shows that metrics exposed by Prometheus and Docker Engine are both available.
++
 . Show the list of metrics
 +
 image::prometheus-metrics1.png[]
