@@ -245,7 +245,7 @@ scrape_configs:
       - targets: ['localhost:9323']
 ```
 +
-This configuration file scrape data from two endpoints:
+This configuration file scrapes data from two endpoints:
 .. Prometheus container which will be started subsequently on port 9090.
 .. Docker that exposes a Prometheus-compatible metrics at port 9323.
 +
@@ -324,4 +324,13 @@ image::cadvisor-docker-metrics.png[]
 Click on any of the containers and see more details about the container.
 
 cAdvisor samples once a second and has historical data for only one minute. The data generated from https://github.com/google/cadvisor/blob/master/docs/storage/influxdb.md[cAdvisor can be exported to InfluxDB]. Optionally, you may use a Grafana front end to visualize the data as explained in https://www.brianchristner.io/how-to-setup-docker-monitoring/[How to setup Docker monitoring].
+
+cAdvisor also exposes container statistics as Prometheus metrics out of the box. By default, these metrics are served under the `/metrics` HTTP endpoint. The following configuration fragment can be added to `prometheus.yml` to scrape the metrics:
+
+[source, text]
+----
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['localhost:8080']
+----
 
