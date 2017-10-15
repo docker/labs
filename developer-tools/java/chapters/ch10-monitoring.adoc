@@ -413,10 +413,12 @@ image::prometheus-metrics7.png[]
 Console output and graphs for all these metrics is now available:
 +
 image::prometheus-metrics8.png[]
++
+Complete list of metrics is available at https://github.com/prometheus/node_exporter.
 
 == cAdvisor
 
-https://github.com/google/cadvisor[cAdvisor] (Container Advisor) provides resource usage and performance characteristics running containers.
+https://github.com/google/cadvisor[cAdvisor] (Container Advisor) provides resource usage and performance characteristics running containers. Let's take a look on how cAdvisor can be used to get these metrics from containers.
 
 . Run `cAdvisor`
 +
@@ -450,14 +452,102 @@ cAdvisor samples once a second and has historical data for only one minute. The 
 
 === Prometheus and cAdvisor
 
-cAdvisor also exposes container statistics as Prometheus metrics out of the box. By default, these metrics are served under the `/metrics` HTTP endpoint.
+cAdvisor also exposes container statistics as Prometheus metrics out of the box. By default, these metrics are served under the `/metrics` HTTP endpoint. Let's take a look at how these container metrics can be observed using Prometheus.
 
-The updated Prometheus configuration file to scrape the metrics from cAdvisor is:
-
-[source, text]
-----
-  - job_name: 'cadvisor'
+. Terminate previously running cAdvisor:
++
+```
+docker container rm -f cadvisor
+```
++
+. Start a new cAdvisor service, using the `prom` overlay network created earlier:
++
+```
+docker service create \
+  --name cadvisor \
+  --network prom \
+  --mode global \
+  --mount type=bind,source=/,target=/rootfs \
+  --mount type=bind,source=/var/run,target=/var/run \
+  --mount type=bind,source=/sys,target=/sys \
+  --mount type=bind,source=/var/lib/docker,target=/var/lib/docker \
+  google/cadvisor:latest
+```
++
+. Terminate the previously running Prometheus service:
++
+```
+docker service rm metrics
+```
++
+. The update `prometheus.yml` configuration file is:
++
+```
+global:
+  scrape_interval: 10s
+scrape_configs:
+  - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:8080']
-----
+      - targets:
+        - 'localhost:9090'
+
+  - job_name: 'node resources'
+    dns_sd_configs:
+      - names: ['tasks.node']
+        type: 'A'
+        port: 9100
+    params:
+      collect[]:
+        - cpu
+        - meminfo
+        - diskstats
+        - netdev
+        - netstat
+
+  - job_name: 'node storage'
+    scrape_interval: 1m
+    dns_sd_configs:
+      - names: ['tasks.node']
+        type: 'A'
+        port: 9100
+    params:
+      collect[]:
+        - filefd
+        - filesystem
+        - xfs
+
+  - job_name: 'cadvisor'
+    dns_sd_configs:
+      - names: ['tasks.cadvisor']
+        type: 'A'
+        port: 8080
+```
++
+. Start the new Prometheus service
++
+```
+docker service create \
+  --replicas 1 \
+  --name metrics \
+  --network prom \
+  --mount type=bind,source=`pwd`/prometheus.yml,destination=/etc/prometheus/prometheus.yml \
+  --publish 9090:9090/tcp \
+  prom/prometheus
+```
++
+. Confirm that all the targets are configured correctly at http://localhost:9090/targets[Prometheus dashboard]:
++
+image::prometheus-metrics-target3.png[]
++
+Note, all four scrape endpoints are shown here.
++
+. In Graphs, now, a lot more metrics, this time from cAdvisor, are also available:
++
+image::prometheus-metrics9.png[]
++
+Console output and graphs for all these metrics is now available:
++
+image::prometheus-metrics10.png[]
++
+Complete list of metrics is available at https://github.com/google/cadvisor.
 
