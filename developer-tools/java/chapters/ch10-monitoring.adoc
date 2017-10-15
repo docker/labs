@@ -573,7 +573,25 @@ image::prometheus-metrics11.png[]
 
 == Add Prometheus as data source in Grafana (TODO)
 
-http://grafana.com[Grafana] 
+https://github.com/grafana/grafana[Grafana] is an open source metric analytics & visualization suite. It supports many different storage backends, called as Data Source. Prometheus can be added as Grafana data source. It even provides support for runnning Prometheus queries from the Grafana dashboard as well. More details can be found in http://docs.grafana.org/features/datasources/prometheus/[Using Prometheus in Grafana].
+
+This section will explain how to start Grafana, use Prometheus as the data source, and view some container metrics.
+
+. Start Grafana:
++
+```
+docker run \
+  -d \
+  -p 3000:3000 \
+  --name=grafana \
+  -e "GF_SECURITY_ADMIN_PASSWORD=secret" \
+  grafana/grafana
+```
++
+Read more details about different http://docs.grafana.org/installation/configuration/[configuration options].
++
+. Access Grafana dashboard at http://localhost:3000
+.  
 
 == Monitor Java Applications (TODO)
 
