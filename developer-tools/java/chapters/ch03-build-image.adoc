@@ -1,3 +1,5 @@
+:toc:
+
 :imagesdir: images
 
 == Build a Docker Image

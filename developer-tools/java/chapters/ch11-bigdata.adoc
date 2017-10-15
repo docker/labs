@@ -1,3 +1,5 @@
+:toc:
+
 :imagesdir: images
 
 = Big Data Processing with Docker and Hadoop
