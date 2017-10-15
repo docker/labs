@@ -1,3 +1,5 @@
+:toc:
+
 :imagesdir: images
 
 = Monitoring Docker Containers
@@ -199,7 +201,7 @@ This is accurate as a new container is created and the event is shown in T1 cons
 
 == Prometheus
 
-https://prometheus.io/[Prometheus] is an open-source systems monitoring and alerting toolkit. Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Docker instance can be configured as Prometheus target.
+https://prometheus.io/[Prometheus] is an open-source systems monitoring and alerting toolkit. Prometheus collects metrics from monitored targets by scraping metrics from HTTP endpoints on these targets. Docker instance can be configured as Prometheus target.
 
 Different targets to scrape are defined in the https://prometheus.io/docs/operating/configuration/[Prometheus configuration file]. Targets may be statically configured via the `static_configs` parameter in the configuration fle or dynamically discovered using one of the supported service-discovery mechanisms (Consul, DNS, Etcd, etc.).
 
@@ -266,7 +268,7 @@ image::prometheus-metrics-target.png[]
 +
 It shows that the Prometheus endpoint is available for scraping.
 +
-. Click on `Graph` and click on `--insert metric at cursor--` to see the list of metrics available:
+. Click on `Graph` and click on `-insert metric at cursor-` to see the list of metrics available:
 +
 image::prometheus-metrics1.png[]
 +
@@ -571,6 +573,224 @@ This shows the average amount of CPU used per minute by the service `metrics` ag
 
 image::prometheus-metrics11.png[]
 
+
+== Monitor Java Applications
+
+This section will explain how an existing Java application can be updated to publish metrics and monitored by Prometheus.
+
+Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets.
+
+As discussed earlier, Prometheus collects metrics from monitored targets by scraping from an HTTP endpoint on these targets. By default, these metrics are expected to be published at `/metrics`. Any existing Java application can be updated to publish Prometheus-style metrics at this endpoint.
+
+An link:ch05-compose.adoc#configuration-file[earlier chapter] explained a simple Java EE application that talks to a MySQL database. This application also publishes Prometheus-style metrics for the underlying JVM at `/metrics`. It also publishes application-specific metrics such as total number of times `GET /` and `GET /{id}` is called.
+
+The complete set of JVM metrics are explained at https://github.com/prometheus/client_java. Refer to https://github.com/arun-gupta/docker-javaee/tree/master/employees/src/main/java/org/javaee/samples/employees/metrics for more details on how these metrics are enabled. 
+
+=== Start Java application
+
+. Use the link:ch05-compose.adoc#configuration-file[Compose file] to deploy a simple the Java EE application. This will start WildFly Swarm application and MySQL database.
++
+    docker stack deploy --compose-file=docker-compose.yml webapp
++
+This will create `webapp_default` overlay network, and start the `webapp_web` and `webapp_db` services.
++
+. Verify the network:
++
+```
+$ docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+u6ybdaqx5h5y        webapp_default      overlay             swarm
+```
++
+Other networks may be shown here as well.
++
+. Verify the services:
++
+```
+$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE                            PORTS
+ucztcpf1vw0a        webapp_db           replicated          1/1                 mysql:8                          *:3306->3306/tcp
+jttfgvr09kre        webapp_web          replicated          1/1                 arungupta/docker-javaee:latest   *:8080->8080/tcp,*:9990->9990/tcp
+```
++
+. Verify that the endpoint is accessible:
++
+```
+$ curl http://localhost:8080/resources/employees
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><collection><employee><id>1</id><name>Penny</name></employee><employee><id>2</id><name>Sheldon</name></employee><employee><id>3</id><name>Amy</name></employee><employee><id>4</id><name>Leonard</name></employee><employee><id>5</id><name>Bernadette</name></employee><employee><id>6</id><name>Raj</name></employee><employee><id>7</id><name>Howard</name></employee><employee><id>8</id><name>Priya</name></employee></collection>
+```
++
+. Access the metrics published by the endpoint using `curl http://localhost:8080/metrics` to see the output:
++
+```
+# HELP jvm_info JVM version info
+# TYPE jvm_info gauge
+jvm_info{version="1.8.0_141-8u141-b15-1~deb9u1-b15",vendor="Oracle Corporation",} 1.0
+# HELP jvm_gc_collection_seconds Time spent in a given JVM garbage collector in seconds.
+# TYPE jvm_gc_collection_seconds summary
+jvm_gc_collection_seconds_count{gc="PS Scavenge",} 25.0
+jvm_gc_collection_seconds_sum{gc="PS Scavenge",} 0.386
+jvm_gc_collection_seconds_count{gc="PS MarkSweep",} 6.0
+jvm_gc_collection_seconds_sum{gc="PS MarkSweep",} 0.546
+# HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.
+# TYPE process_cpu_seconds_total counter
+process_cpu_seconds_total 25.5
+# HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
+# TYPE process_start_time_seconds gauge
+process_start_time_seconds 1.508056592419E9
+# HELP process_open_fds Number of open file descriptors.
+# TYPE process_open_fds gauge
+process_open_fds 499.0
+# HELP process_max_fds Maximum number of open file descriptors.
+# TYPE process_max_fds gauge
+process_max_fds 1048576.0
+# HELP process_virtual_memory_bytes Virtual memory size in bytes.
+# TYPE process_virtual_memory_bytes gauge
+process_virtual_memory_bytes 4.244393984E9
+# HELP process_resident_memory_bytes Resident memory size in bytes.
+# TYPE process_resident_memory_bytes gauge
+process_resident_memory_bytes 5.06601472E8
+# HELP jvm_classes_loaded The number of classes that are currently loaded in the JVM
+# TYPE jvm_classes_loaded gauge
+jvm_classes_loaded 13096.0
+# HELP jvm_classes_loaded_total The total number of classes that have been loaded since the JVM has started execution
+# TYPE jvm_classes_loaded_total counter
+jvm_classes_loaded_total 13096.0
+# HELP jvm_classes_unloaded_total The total number of classes that have been unloaded since the JVM has started execution
+# TYPE jvm_classes_unloaded_total counter
+jvm_classes_unloaded_total 0.0
+# HELP jvm_threads_current Current thread count of a JVM
+# TYPE jvm_threads_current gauge
+jvm_threads_current 60.0
+# HELP jvm_threads_daemon Daemon thread count of a JVM
+# TYPE jvm_threads_daemon gauge
+jvm_threads_daemon 12.0
+# HELP jvm_threads_peak Peak thread count of a JVM
+# TYPE jvm_threads_peak gauge
+jvm_threads_peak 67.0
+# HELP jvm_threads_started_total Started thread count of a JVM
+# TYPE jvm_threads_started_total counter
+jvm_threads_started_total 93.0
+# HELP jvm_threads_deadlocked Cycles of JVM-threads that are in deadlock waiting to acquire object monitors or ownable synchronizers
+# TYPE jvm_threads_deadlocked gauge
+jvm_threads_deadlocked 0.0
+# HELP jvm_threads_deadlocked_monitor Cycles of JVM-threads that are in deadlock waiting to acquire object monitors
+# TYPE jvm_threads_deadlocked_monitor gauge
+jvm_threads_deadlocked_monitor 0.0
+# HELP jvm_memory_bytes_used Used bytes of a given JVM memory area.
+# TYPE jvm_memory_bytes_used gauge
+jvm_memory_bytes_used{area="heap",} 1.2072508E8
+jvm_memory_bytes_used{area="nonheap",} 9.3550048E7
+# HELP jvm_memory_bytes_committed Committed (bytes) of a given JVM memory area.
+# TYPE jvm_memory_bytes_committed gauge
+jvm_memory_bytes_committed{area="heap",} 2.69484032E8
+jvm_memory_bytes_committed{area="nonheap",} 1.0133504E8
+# HELP jvm_memory_bytes_max Max (bytes) of a given JVM memory area.
+# TYPE jvm_memory_bytes_max gauge
+jvm_memory_bytes_max{area="heap",} 4.66092032E8
+jvm_memory_bytes_max{area="nonheap",} -1.0
+# HELP jvm_memory_pool_bytes_used Used bytes of a given JVM memory pool.
+# TYPE jvm_memory_pool_bytes_used gauge
+jvm_memory_pool_bytes_used{pool="Code Cache",} 1.4589888E7
+jvm_memory_pool_bytes_used{pool="Metaspace",} 6.9998048E7
+jvm_memory_pool_bytes_used{pool="Compressed Class Space",} 8962112.0
+jvm_memory_pool_bytes_used{pool="PS Eden Space",} 2.3732032E7
+jvm_memory_pool_bytes_used{pool="PS Survivor Space",} 6073592.0
+jvm_memory_pool_bytes_used{pool="PS Old Gen",} 9.0919456E7
+# HELP jvm_memory_pool_bytes_committed Committed bytes of a given JVM memory pool.
+# TYPE jvm_memory_pool_bytes_committed gauge
+jvm_memory_pool_bytes_committed{pool="Code Cache",} 1.47456E7
+jvm_memory_pool_bytes_committed{pool="Metaspace",} 7.5800576E7
+jvm_memory_pool_bytes_committed{pool="Compressed Class Space",} 1.0788864E7
+jvm_memory_pool_bytes_committed{pool="PS Eden Space",} 9.2274688E7
+jvm_memory_pool_bytes_committed{pool="PS Survivor Space",} 3.8797312E7
+jvm_memory_pool_bytes_committed{pool="PS Old Gen",} 1.38412032E8
+# HELP jvm_memory_pool_bytes_max Max bytes of a given JVM memory pool.
+# TYPE jvm_memory_pool_bytes_max gauge
+jvm_memory_pool_bytes_max{pool="Code Cache",} 2.5165824E8
+jvm_memory_pool_bytes_max{pool="Metaspace",} -1.0
+jvm_memory_pool_bytes_max{pool="Compressed Class Space",} 1.073741824E9
+jvm_memory_pool_bytes_max{pool="PS Eden Space",} 9.699328E7
+jvm_memory_pool_bytes_max{pool="PS Survivor Space",} 3.8797312E7
+jvm_memory_pool_bytes_max{pool="PS Old Gen",} 3.49700096E8
+```
++
+It shows all the JVM metrics that are published by the https://github.com/prometheus/client_java[Prometheus JVM Client]. The metrics generated by the application are not shown yet. It requires for the application to be accessed first.
+
+Let's access the JVM metrics in Prometheus dashboard first, and then we'll access the app to show app-specific metrics.
+
+=== Start Prometheus service
+
+. Make sure to terminate any previously running Prometheus endpoints:
++
+   docker service rm metrics
++
+. Create a directory `prometheus` and change into that directory.
+. Create a text file `prometheus.yml` and add the following content:
++
+```
+global:
+  scrape_interval: 10s
+scrape_configs:
+  - job_name: 'webapp'
+    dns_sd_configs:
+      - names: ['tasks.webapp_web']
+        type: 'A'
+        port: 8080
+```
++
+This defines the configuration for the HTTP endpoint that publishes Prometheus-style metrics from the Java application.
++
+. Start Prometheus service:
++
+```
+docker service create \
+  --replicas 1 \
+  --network webapp_default \
+  --name metrics \
+  --mount type=bind,source=`pwd`/prometheus.yml,destination=/etc/prometheus/prometheus.yml \
+  --publish 9090:9090 \
+  prom/prometheus
+```
++
+Note, this service is using the `webapp_default` overlay network that is created when the application stack was deployed.
++
+. Access Prometheus dashboard at http://localhost:9090
+. Check the configured targets at http://localhost:9090/targets:
++
+image::prometheus-metrics-target4.png[]
++
+It shows that the application metrics HTTP endpoint is configured as a Prometheus target.
+
+=== View application metrics
+
+. On Prometheus dashboard, click on `-insert metric at cursor-` to see the list of metrics available:
++
+image::prometheus-metrics12.png[]
++
+JVM metrics shown earlier are displayed here as well.
++
+. Select `jvm_memory_pool_bytes_used` metric and click on `Execute` to view the metric.
++
+image::prometheus-metrics13.png[]
++
+. Select `Graph` to view the graphical representation
++
+image::prometheus-metrics14.png[]
++
+. Now access the application using `curl http://localhost:8080/resources/employees` a few times.
+. Refresh Prometheus dashboard and see the updated list of metrics:
++
+image::prometheus-metrics15.png[]
++
+Note, `app*` and `requests*` that are generated by the application.
++
+. Select `requests_get_all` metric and view the graph:
++
+image::prometheus-metrics16.png[]
++
+. Access the application a few times using `curl http://localhost:8080/resources/employees/5` and then watch the `requests_get_one` metric.
+
 == Add Prometheus as data source in Grafana (TODO)
 
 https://github.com/grafana/grafana[Grafana] is an open source metric analytics & visualization suite. It supports many different storage backends, called as Data Source. Prometheus can be added as Grafana data source. It even provides support for runnning Prometheus queries from the Grafana dashboard as well. More details can be found in http://docs.grafana.org/features/datasources/prometheus/[Using Prometheus in Grafana].
@@ -592,8 +812,3 @@ Read more details about different http://docs.grafana.org/installation/configura
 +
 . Access Grafana dashboard at http://localhost:3000
 .  
-
-== Monitor Java Applications (TODO)
-
-This section will explain how an existing Java application can be updated to publish metrics and monitored by Prometheus.
-
