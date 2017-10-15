@@ -6,14 +6,14 @@ This chapter will cover different ways to monitor a Docker container.
 
 == Docker CLI
 
-`docker container stats` command displays a live stream of container(s) resource usage statistics.
+`docker container stats` command displays a live stream of container(s) runtime metrics. The command supports CPU, memory usage, memory limit, and network IO metrics.
 
-. Start a container: `docker container run --name db -d arungupta/couchbase`
-. Check the container stats using `docker container stats db`. It shows the output as:
+. Start a container: `docker container run --name web -d jboss/wildfly:10.1.0.Final`
+. Check the container stats using `docker container stats web`. It shows the output as:
 +
 ```
-CONTAINER           CPU %               MEM USAGE / LIMIT       MEM %               NET I/O             BLOCK I/O           PIDS
-db                  2.02%               374.9 MiB / 1.952 GiB   18.76%              648 B / 648 B       0 B / 156 kB        156
+CONTAINER           CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
+web                 0.14%               274.9MiB / 1.952GiB   13.75%              828B / 0B           96.7MB / 4.1kB      53
 ```
 +
 The output is continually updated. It shows:
@@ -26,21 +26,34 @@ The output is continually updated. It shows:
 .. Disk activity
 .. PIDS??
 +
-. Start another container: `docker container run -d --name web jboss/wildfly`
-. Check the stats for two containers using the command `docker container stats db web`. The output is shown:
+. Check stats for multiple containers
+.. Terminate single instance of the container
 +
 ```
-CONTAINER           CPU %               MEM USAGE / LIMIT       MEM %               NET I/O             BLOCK I/O           PIDS
-db                  4.61%               393.1 MiB / 1.952 GiB   19.67%              2.61 kB / 928 B     24.6 kB / 799 kB    219
-web                 0.18%               266.1 MiB / 1.952 GiB   13.31%              782 B / 718 B       0 B / 4.1 kB        53
+docker container stop web
+docker container rm web
 ```
 +
-. Stats for all the containers can be displayed using the command `docker container stats`
+.. Create a service with multiple replicas of the container
 +
 ```
-CONTAINER           CPU %               MEM USAGE / LIMIT       MEM %               NET I/O             BLOCK I/O           PIDS
-88b04695855e        0.03%               265.9 MiB / 1.952 GiB   13.30%              916 B / 788 B       0 B / 4.1 kB        51
-109d917d17e2        5.61%               394.9 MiB / 1.952 GiB   19.76%              2.75 kB / 928 B     24.6 kB / 807 kB    219
+docker swarm init
+docker service create --name=web jboss/wildfly
+```
++
+.. Now check the stats again:
++
+```
+docker stats
+```
++
+to see the output:
++
+```
+CONTAINER           CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
+55198043b6aa        0.12%               267.3MiB / 1.952GiB   13.38%              782B / 0B           0B / 4.1kB          53
+5b5dd33b675d        0.11%               274.2MiB / 1.952GiB   13.72%              782B / 0B           0B / 4.1kB          53
+6e98a9597e6a        0.10%               273.2MiB / 1.952GiB   13.67%              1.03kB / 0B         0B / 4.1kB          51
 ```
 +
 Note that the container id is shown in this case instead of container's name.
@@ -48,40 +61,51 @@ Note that the container id is shown in this case instead of container's name.
 . Display only container id and percent CPU utilization using the command `docker container stats --format "{{.Container}}: {{.CPUPerc}}"`:
 +
 ```
-88b04695855e: 0.14%
-109d917d17e2: 4.83%
+55198043b6aa: 0.10%
+5b5dd33b675d: 0.11%
+6e98a9597e6a: 0.10%
 ```
 +
-. Format the output in a table. The results should include container name, percent CPU utilization and percent memory utilization. This can be achieved using the command `docker container stats --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"`:
+. Format the output in a table. The results should include container name, percent CPU utilization and percent memory utilization. This can be achieved using the command:
 +
 ```
-NAME                CPU %               MEM USAGE / LIMIT
-web                 0.13%               266.1 MiB / 1.952 GiB
-db                  3.06%               398.9 MiB / 1.952 GiB
+docker container stats --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+```
++
+It shows the output:
++
+```
+NAME                              CPU %               MEM USAGE / LIMIT
+web.2.1ic0vevvvu2nwwyc6css58ref   0.10%               267.5MiB / 1.952GiB
+web.3.pwcgr58s1xo28gwa1znlrn2s3   0.11%               274.7MiB / 1.952GiB
+web.1.bg1dcwagl9tzz0azuegxzoys8   0.12%               274MiB / 1.952GiB
 ```
 +
 . Display only the first result using the command `docker container stats --no-stream`:
 +
 ```
-CONTAINER           CPU %               MEM USAGE / LIMIT       MEM %               NET I/O             BLOCK I/O           PIDS
-88b04695855e        0.15%               263.6 MiB / 1.952 GiB   13.19%              1.38 kB / 928 B     0 B / 4.1 kB        51
-109d917d17e2        3.19%               398.6 MiB / 1.952 GiB   19.94%              3.21 kB / 998 B     24.6 kB / 1.16 MB   220
+CONTAINER           CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
+55198043b6aa        0.12%               267.5MiB / 1.952GiB   13.39%              1.44kB / 0B         0B / 4.1kB          51
+5b5dd33b675d        0.07%               274.7MiB / 1.952GiB   13.75%              1.51kB / 0B         0B / 4.1kB          51
+6e98a9597e6a        0.26%               274.1MiB / 1.952GiB   13.71%              1.69kB / 0B         0B / 4.1kB          51
 ```
 
 == Docker Remote API
 
 Docker Remote API provides a lot more details about the health of the container. It can be invoked using the following format:
 
-```
-curl --unix-socket /var/run/docker.sock http://localhost/containers/<name>/stats
-```
+    curl --unix-socket /var/run/docker.sock http://localhost/containers/<name>/stats
 
 On Docker for Mac, enabling remote HTTP API still requires a few steps. So this command uses the `--unix-socket` option to invoke the Remote API.
 
-A specific invocation using `curl --unix-socket /var/run/docker.sock http://localhost/containers/db/stats` will show the output:
+A specific invocation for a container can be done as:
+
+    curl --unix-socket /var/run/docker.sock http://localhost/containers/web.1.bg1dcwagl9tzz0azuegxzoys8/stats
+
+Note, the container name is from the previous run of the service. It will show the output:
 
 ```
-{"read":"2017-02-28T02:40:29.595511475Z","preread":"0001-01-01T00:00:00Z","pids_stats":{"current":220},"blkio_stats":{"io_service_bytes_recursive":[{"major":254,"minor":0,"op":"Read","value":212992},{"major":254,"minor":0,"op":"Write","value":1339392},{"major":254,"minor":0,"op":"Sync","value":1257472},{"major":254,"minor":0,"op":"Async","value":294912},{"major":254,"minor":0,"op":"Total","value":1552384}],"io_serviced_recursive":[{"major":254,"minor":0,"op":"Read","value":3},{"major":254,"minor":0,"op":"Write","value":249},{"major":254,"minor":0,"op":"Sync","value":230},{"major":254,"minor":0,"op":"Async","value":22},{"major":254,"minor":0,"op":"Total","value":252}],"io_queue_recursive":[],"io_service_time_recursive":[],"io_wait_time_recursive":[],"io_merged_recursive":[],"io_time_recursive":[],"sectors_recursive":[]},"num_procs":0,"storage_stats":{},"cpu_stats":{"cpu_usage":{"total_usage":83724160991,"percpu_usage":[30641144914,10843586791,11798818901,30440610385],"usage_in_kernelmode":12390000000,"usage_in_usermode":15170000000},"system_cpu_usage":132730290000000,"throttling_data":{"periods":0,"throttled_periods":0,"throttled_time":0}},"precpu_stats":{"cpu_usage":{"total_usage":0,"usage_in_kernelmode":0,"usage_in_usermode":0},"throttling_data":{"periods":0,"throttled_periods":0,"throttled_time":0}},"memory_stats":{"usage":419139584,"max_usage":426778624,"stats":{"active_anon":404185088,"active_file":20480,"cache":1589248,"dirty":12288,"hierarchical_memory_limit":9223372036854771712,"hierarchical_memsw_limit":9223372036854771712,"inactive_anon":0,"inactive_file":1568768,"mapped_file":122880,"pgfault":226379,"pgmajfault":2,"pgpgin":202886,"pgpgout":103818,"rss":404193280,"rss_huge":0,"swap":0,"total_active_anon":404185088,"total_active_file":20480,"total_cache":1589248,"total_dirty":12288,"total_inactive_anon":0,"total_inactive_file":1568768,"total_mapped_file":122880,"total_pgfault":226379,"total_pgmajfault":2,"total_pgpgin":202886,"total_pgpgout":103818,"total_rss":404193280,"total_rss_huge":0,"total_swap":0,"total_unevictable":0,"total_writeback":0,"unevictable":0,"writeback":0},"limit":2095898624},"name":"/db","id":"109d917d17e241713341b3d03470444c0144510f1e6de726eb72e1d6786a3e5d","networks":{"eth0":{"rx_bytes":3342,"rx_packets":57,"rx_errors":0,"rx_dropped":0,"tx_bytes":998,"tx_packets":13,"tx_errors":0,"tx_dropped":0}}}
+{"read":"2017-10-13T14:08:38.045217731Z","preread":"0001-01-01T00:00:00Z","pids_stats":{"current":51},"blkio_stats":{"io_service_bytes_recursive":[{"major":8,"minor":0,"op":"Read","value":0},{"major":8,"minor":0,"op":"Write","value":4096},{"major":8,"minor":0,"op":"Sync","value":0},{"major":8,"minor":0,"op":"Async","value":4096},{"major":8,"minor":0,"op":"Total","value":4096}],"io_serviced_recursive":[{"major":8,"minor":0,"op":"Read","value":0},{"major":8,"minor":0,"op":"Write","value":1},{"major":8,"minor":0,"op":"Sync","value":0},{"major":8,"minor":0,"op":"Async","value":1},{"major":8,"minor":0,"op":"Total","value":1}],"io_queue_recursive":[],"io_service_time_recursive":[],"io_wait_time_recursive":[],"io_merged_recursive":[],"io_time_recursive":[],"sectors_recursive":[]},"num_procs":0,"storage_stats":{},"cpu_stats":{"cpu_usage":{"total_usage":11130296115,"percpu_usage":[2687118654,3014514615,2971860160,2456802686],"usage_in_kernelmode":2700000000,"usage_in_usermode":7630000000},"system_cpu_usage":952826800000000,"online_cpus":4,"throttling_data":{"periods":0,"throttled_periods":0,"throttled_time":0}},"precpu_stats":{"cpu_usage":{"total_usage":0,"usage_in_kernelmode":0,"usage_in_usermode":0},"throttling_data":{"periods":0,"throttled_periods":0,"throttled_time":0}},"memory_stats":{"usage":288051200,"max_usage":297189376,"stats":{"active_anon":283893760,"active_file":0,"cache":135168,"dirty":16384,"hierarchical_memory_limit":9223372036854771712,"hierarchical_memsw_limit":9223372036854771712,"inactive_anon":0,"inactive_file":135168,"mapped_file":32768,"pgfault":83204,"pgmajfault":0,"pgpgin":78441,"pgpgout":9093,"rss":283914240,"rss_huge":0,"swap":0,"total_active_anon":283893760,"total_active_file":0,"total_cache":135168,"total_dirty":16384,"total_inactive_anon":0,"total_inactive_file":135168,"total_mapped_file":32768,"total_pgfault":83204,"total_pgmajfault":0,"total_pgpgin":78441,"total_pgpgout":9093,"total_rss":283914240,"total_rss_huge":0,"total_swap":0,"total_unevictable":0,"total_writeback":0,"unevictable":0,"writeback":0},"limit":2095874048},"name":"/web.1.bg1dcwagl9tzz0azuegxzoys8","id":"6e98a9597e6af085e73a4d211fff9a164aa012727a46525d4fbaa164b572e23f","networks":{"eth0":{"rx_bytes":1882,"rx_packets":37,"rx_errors":0,"rx_dropped":0,"tx_bytes":0,"tx_packets":0,"tx_errors":0,"tx_dropped":0}}}
 ```
 
 As you can see, far more details about container's health are shown here. These stats are refereshed every one second. The continuous refresh of metrics can be terminated using `Ctrl + C`.
@@ -91,25 +115,28 @@ As you can see, far more details about container's health are shown here. These 
 `docker system events` provide real time events for the Docker host.
 
 . In one terminal (T1), type `docker system events`. The command does not show output and waits for any event worth reporting to occur. The list of events is listed at https://docs.docker.com/engine/reference/commandline/events/#/extended-description.
-. In a new terminal (T2), kill existing container using `docker container rm -f web`.
+. In a new terminal (T2), kill existing container using `docker service scale web=2`.
 . T1 shows the updated list of events as:
 +
 ```
-2017-02-27T18:48:30.413053776-08:00 container kill 88b04695855ecf5390e57a6955a25f1ff507f7b066c2cd6397a5773a9e7e683f (build-date=20161214, image=jboss/wildfly, license=GPLv2, name=web, signal=9, vendor=CentOS)
-2017-02-27T18:48:30.551760207-08:00 container die 88b04695855ecf5390e57a6955a25f1ff507f7b066c2cd6397a5773a9e7e683f (build-date=20161214, exitCode=137, image=jboss/wildfly, license=GPLv2, name=web, vendor=CentOS)
-2017-02-27T18:48:30.954543362-08:00 network disconnect 83f14a590c9b8875cca8d050d47ec1e0dbff6db67180a56571496cadbe579e10 (container=88b04695855ecf5390e57a6955a25f1ff507f7b066c2cd6397a5773a9e7e683f, name=bridge, type=bridge)
-2017-02-27T18:48:31.192092236-08:00 container destroy 88b04695855ecf5390e57a6955a25f1ff507f7b066c2cd6397a5773a9e7e683f (build-date=20161214, image=jboss/wildfly, license=GPLv2, name=web, vendor=CentOS)
+2017-10-13T07:12:00.223791013-07:00 service update r4i0x8ujnn2q8osj8dowgvw72 (name=web, replicas.new=2, replicas.old=3)
+2017-10-13T07:12:00.332724880-07:00 container kill 5b5dd33b675d3b6be3e6aaf0ecde928b3ac882b0a221ff71e57c86faae8181ab (build-date=20170911, com.docker.swarm.node.id=wgujclh0492kkszpil81d3ugb, com.docker.swarm.service.id=r4i0x8ujnn2q8osj8dowgvw72, com.docker.swarm.service.name=web, com.docker.swarm.task=, com.docker.swarm.task.id=pwcgr58s1xo28gwa1znlrn2s3, com.docker.swarm.task.name=web.3.pwcgr58s1xo28gwa1znlrn2s3, image=jboss/wildfly:latest@sha256:d3af084d024753e4799809c10cd188f675a5b254a8e279b34709035b95d27dc7, license=GPLv2, name=web.3.pwcgr58s1xo28gwa1znlrn2s3, signal=15, vendor=CentOS)
+2017-10-13T07:12:00.613143701-07:00 container die 5b5dd33b675d3b6be3e6aaf0ecde928b3ac882b0a221ff71e57c86faae8181ab (build-date=20170911, com.docker.swarm.node.id=wgujclh0492kkszpil81d3ugb, com.docker.swarm.service.id=r4i0x8ujnn2q8osj8dowgvw72, com.docker.swarm.service.name=web, com.docker.swarm.task=, com.docker.swarm.task.id=pwcgr58s1xo28gwa1znlrn2s3, com.docker.swarm.task.name=web.3.pwcgr58s1xo28gwa1znlrn2s3, exitCode=0, image=jboss/wildfly:latest@sha256:d3af084d024753e4799809c10cd188f675a5b254a8e279b34709035b95d27dc7, license=GPLv2, name=web.3.pwcgr58s1xo28gwa1znlrn2s3, vendor=CentOS)
+2017-10-13T07:12:00.897831488-07:00 network disconnect 8f8e6ce771d6db6065f2472a7e83612ff6a657de3b6d08dab0617b8a596234fa (container=5b5dd33b675d3b6be3e6aaf0ecde928b3ac882b0a221ff71e57c86faae8181ab, name=bridge, type=bridge)
+2017-10-13T07:12:01.017523717-07:00 container stop 5b5dd33b675d3b6be3e6aaf0ecde928b3ac882b0a221ff71e57c86faae8181ab (build-date=20170911, com.docker.swarm.node.id=wgujclh0492kkszpil81d3ugb, com.docker.swarm.service.id=r4i0x8ujnn2q8osj8dowgvw72, com.docker.swarm.service.name=web, com.docker.swarm.task=, com.docker.swarm.task.id=pwcgr58s1xo28gwa1znlrn2s3, com.docker.swarm.task.name=web.3.pwcgr58s1xo28gwa1znlrn2s3, image=jboss/wildfly:latest@sha256:d3af084d024753e4799809c10cd188f675a5b254a8e279b34709035b95d27dc7, license=GPLv2, name=web.3.pwcgr58s1xo28gwa1znlrn2s3, vendor=CentOS)
+2017-10-13T07:12:01.023414108-07:00 container destroy 5b5dd33b675d3b6be3e6aaf0ecde928b3ac882b0a221ff71e57c86faae8181ab (build-date=20170911, com.docker.swarm.node.id=wgujclh0492kkszpil81d3ugb, com.docker.swarm.service.id=r4i0x8ujnn2q8osj8dowgvw72, com.docker.swarm.service.name=web, com.docker.swarm.task=, com.docker.swarm.task.id=pwcgr58s1xo28gwa1znlrn2s3, com.docker.swarm.task.name=web.3.pwcgr58s1xo28gwa1znlrn2s3, image=jboss/wildfly:latest@sha256:d3af084d024753e4799809c10cd188f675a5b254a8e279b34709035b95d27dc7, license=GPLv2, name=web.3.pwcgr58s1xo28gwa1znlrn2s3, vendor=CentOS)
 ```
 +
-The output shows a list of events, one in each line. The events shown here are `container kill`, `container die`, `network disconnect` and `container destroy`. Date and timestamp for each event is displayed at the beginning of the line. Other event specific information is displayed as well.
+The output shows a list of events, one in each line. The events shown here are `container kill`, `container die`, `network disconnect`, `container stop`, and `container destroy`. Date and timestamp for each event is displayed at the beginning of the line. Other event specific information is displayed as well.
 +
-. In T2, create a new container: `docker container run -d --name web jboss/wildfly`
+. In T2, scale the service back to 3 replicas: `docker service scale web=3`
 . The output in T1 is updated to show:
 +
 ```
-2017-02-27T18:49:24.218079500-08:00 container create 3cc3e2bf3c43e278e0e4bd2ea238a829610d0a620ab069010b4881c1bf8e096e (build-date=20161214, image=jboss/wildfly, license=GPLv2, name=web, vendor=CentOS)
-2017-02-27T18:49:24.383788816-08:00 network connect 83f14a590c9b8875cca8d050d47ec1e0dbff6db67180a56571496cadbe579e10 (container=3cc3e2bf3c43e278e0e4bd2ea238a829610d0a620ab069010b4881c1bf8e096e, name=bridge, type=bridge)
-2017-02-27T18:49:24.930142017-08:00 container start 3cc3e2bf3c43e278e0e4bd2ea238a829610d0a620ab069010b4881c1bf8e096e (build-date=20161214, image=jboss/wildfly, license=GPLv2, name=web, vendor=CentOS)
+2017-10-13T07:13:47.161848609-07:00 service update r4i0x8ujnn2q8osj8dowgvw72 (name=web, replicas.new=3, replicas.old=2)
+2017-10-13T07:13:47.429074382-07:00 container create 0574d1fd74bef2e6fc54174e1fbeda25efd7ed270dce1d6dbede4ead19c7c485 (build-date=20170911, com.docker.swarm.node.id=wgujclh0492kkszpil81d3ugb, com.docker.swarm.service.id=r4i0x8ujnn2q8osj8dowgvw72, com.docker.swarm.service.name=web, com.docker.swarm.task=, com.docker.swarm.task.id=xcmylcwlag5vot4tp3l5z6oam, com.docker.swarm.task.name=web.3.xcmylcwlag5vot4tp3l5z6oam, image=jboss/wildfly:latest@sha256:d3af084d024753e4799809c10cd188f675a5b254a8e279b34709035b95d27dc7, license=GPLv2, name=web.3.xcmylcwlag5vot4tp3l5z6oam, vendor=CentOS)
+2017-10-13T07:13:47.445010259-07:00 network connect 8f8e6ce771d6db6065f2472a7e83612ff6a657de3b6d08dab0617b8a596234fa (container=0574d1fd74bef2e6fc54174e1fbeda25efd7ed270dce1d6dbede4ead19c7c485, name=bridge, type=bridge)
+2017-10-13T07:13:47.778855117-07:00 container start 0574d1fd74bef2e6fc54174e1fbeda25efd7ed270dce1d6dbede4ead19c7c485 (build-date=20170911, com.docker.swarm.node.id=wgujclh0492kkszpil81d3ugb, com.docker.swarm.service.id=r4i0x8ujnn2q8osj8dowgvw72, com.docker.swarm.service.name=web, com.docker.swarm.task=, com.docker.swarm.task.id=xcmylcwlag5vot4tp3l5z6oam, com.docker.swarm.task.name=web.3.xcmylcwlag5vot4tp3l5z6oam, image=jboss/wildfly:latest@sha256:d3af084d024753e4799809c10cd188f675a5b254a8e279b34709035b95d27dc7, license=GPLv2, name=web.3.xcmylcwlag5vot4tp3l5z6oam, vendor=CentOS)
 ```
 +
 The list of events shown here are `container create`, `network connect`, and `container start`.
@@ -128,28 +155,59 @@ The list of events can be restricted by filters specified using `--filter` or `-
 . type (`type=<container or image or volume or network or daemon>`)
 . volume (`volume=<name or id>`)
 
-Let's use these filters.
+Let's look at the list of running containers first using `docker container ls`, and then learn how to apply these filters.
+
+Here is the list of running containers from the service:
+
+```
+CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS               NAMES
+074447f26452        jboss/wildfly:latest   "/opt/jboss/wildfl..."   3 minutes ago       Up 3 minutes        8080/tcp            web.1.ytyv0gqi7dzxtetssrlsgvvbu
+0574d1fd74be        jboss/wildfly:latest   "/opt/jboss/wildfl..."   8 minutes ago       Up 8 minutes        8080/tcp            web.3.xcmylcwlag5vot4tp3l5z6oam
+55198043b6aa        jboss/wildfly:latest   "/opt/jboss/wildfl..."   25 minutes ago      Up 25 minutes       8080/tcp            web.2.1ic0vevvvu2nwwyc6css58ref
+```
+
+Let's apply the filters.
 
 . Show events for a container by name
-.. In T1, give the command `docker system events -f container=db`.
-.. In T2, terminate the `web` container as `docker container rm -f web`. 
-.. T1 does not show any events because its only listening for events from `db` container.
+.. In T1, give the command to listen to a specific container as:
++
+```
+docker system events -f container=web.1.ytyv0gqi7dzxtetssrlsgvvbu
+```
++
+You may have to terminate previous run of `docker system events` using `Ctrl` + `C` to give this new command. 
++
+.. In T2, terminate the second replica of the service as `docker container rm -f web.2.1ic0vevvvu2nwwyc6css58ref`. 
+.. T1 does not show any events because its only listening for events from the first replica of the service.
 . Show events for an event
 .. In T1, give the command `docker system events -f event=create`.
-.. In T2, create a container `docker container run -d --name web2 jboss/wildfly`
+.. In T2, scale the service by one more replica:
++
+```
+docker service scale web=4
+```
 .. T1 shows the event for container creation
 +
 ```
-2017-02-28T12:55:45.631795937-08:00 container create 4728dab7c27816351423d64e60adf21a0246c1006b1131655d8b66fc82e8b324 (build-date=20161214, image=jboss/wildfly, license=GPLv2, name=dreamy_lamport, vendor=CentOS)
+2017-10-13T07:24:22.971050949-07:00 container create 84e4604ffd983cfcc53ad619b4c11156518834fe23e4a0a8b299905b978a0022 (build-date=20170911, com.docker.swarm.node.id=wgujclh0492kkszpil81d3ugb, com.docker.swarm.service.id=r4i0x8ujnn2q8osj8dowgvw72, com.docker.swarm.service.name=web, com.docker.swarm.task=, com.docker.swarm.task.id=38unfmcsxmnvr844gysn28lwa, com.docker.swarm.task.name=web.4.38unfmcsxmnvr844gysn28lwa, image=jboss/wildfly:latest@sha256:d3af084d024753e4799809c10cd188f675a5b254a8e279b34709035b95d27dc7, license=GPLv2, name=web.4.38unfmcsxmnvr844gysn28lwa, vendor=CentOS)
 ```
 +
-.. In T2, terminate the container `docker container rm -f web2`
+This is accurate as a new container is created and the event is shown in T1 console.
+.. In T2, scale the service back to 2 using the command `docker servie scale web=2`
 .. T1 does not show any additional events because its only looking for create events
 .. More samples are explained at https://docs.docker.com/engine/reference/commandline/events/#/filter-events-by-criteria.
 
 == Prometheus
 
-Docker 1.13 adds an experimental Prometheus-style endpoint with basic metrics on containers, images and other daemon state. This support is only available in Experimental build.
+https://prometheus.io/[Prometheus] is an open-source systems monitoring and alerting toolkit. Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Docker instance can be configured as Prometheus target.
+
+Different targets to scrape are defined in the https://prometheus.io/docs/operating/configuration/[Prometheus configuration file]. Targets may be statically configured via the `static_configs` parameter in the configuration fle or dynamically discovered using one of the supported service-discovery mechanisms (Consul, DNS, Etcd, etc.).
+
+Prometheus collects metrics from monitored targets by scraping metrics from HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.
+
+=== Docker metrics for Prometheus
+
+Docker exposes Prometheus-compatible metrics on port `9323`. This support is only available as an experimental feature.
 
 . For Docker for Mac, click on Docker icon in the status menu
 . Select `Preferences...`, `Daemon`, `Advanced` tab
@@ -157,24 +215,24 @@ Docker 1.13 adds an experimental Prometheus-style endpoint with basic metrics on
 +
 ```
 {
-  "metrics-addr" : "0.0.0.0:1337",
+  "metrics-addr" : "0.0.0.0:9323",
   "experimental" : true
 }
 ```
 +
 . Click on `Apply & Restart` to restart the daemon
 +
-image::docker-mac-metrics-endpoint.png[]
+image::prometheus-metrics-config.png[]
 +
-. Show the complete list of metrics using `curl http://localhost:1337/metrics`
-. Show the list of engine metrics using `curl http://localhost:1337/metrics | grep engine`
+. Show the complete list of metrics using `curl http://localhost:9323/metrics`
+. Show the list of engine metrics using `curl http://localhost:9323/metrics | grep engine`
 
-=== Prometheus node scraper
+==== Start Prometheus
 
-Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.
+In this section, we'll start Prometheus and use it to scrape it's own health.
 
-. Create a new directory `prometheus` and change directory
-. Create `prometheus.yml`
+. Create a new directory `prometheus` and change to that directory
+. Create a text file `prometheus.yml` and use the following content
 +
 ```
 # A scrape configuration scraping a Node Exporter and the Prometheus server
@@ -187,35 +245,184 @@ scrape_configs:
       - targets: ['localhost:9090']
 ```
 +
-This will be scraping metrics for the Prometheus container that will be started on port 9090.
+This configuration file scrapes data from the Prometheus container which will be started subsequently on port 9090.
 +
-. Start Prometheus container:
+. Start a single-replica Prometheus service:
 +
 ```
-docker run \
-  -d \
+docker service create \
+  --replicas 1 \
   --name metrics \
-  -p 9090:9090 \
-  -v `pwd`:/etc/prometheus \
+  --mount type=bind,source=`pwd`/prometheus.yml,destination=/etc/prometheus/prometheus.yml \
+  --publish 9090:9090/tcp \
   prom/prometheus
 ```
 +
-. Prometheus dashboard is at http://localhost:9090
-. Show the list of metrics
+This will start the Prometheus container on port 9090.
 +
-image::prometheus-metrics.png[]
+. Prometheus dashboard is at http://localhost:9090. Check the list of enabled targets at http://localhost:9090/targets (also accessible from `Status` -> `Targets` menu).
 +
-. Choose `http_request_duration_microseconds`
-. Switch from `Console` to `Graph`
-.. Change the duration from `1h` to `5m`
+image::prometheus-metrics-target.png[]
++
+It shows that the Prometheus endpoint is available for scraping.
++
+. Click on `Graph` and click on `--insert metric at cursor--` to see the list of metrics available:
++
+image::prometheus-metrics1.png[]
++
+These are all the metrics published by the Prometheus endpoint.
++
+. Choose `http_request_total` metrics, click on `Execute`
 +
 image::prometheus-metrics2.png[]
 +
+. Switch from `Console` to `Graph`
++
+image::prometheus-metrics3.png[]
++
+. Change the duration from `1h` to `5m`
++
+image::prometheus-metrics4.png[]
++
+. Click on `Add Graph`, select a different metric, say `http_requests_duration_microseconds`, and click on `Execute`
++
+image::prometheus-metrics5.png[]
++
+. Switch from `Console` to `Graph` and change the duration from `1h` to `5m`
++
+image::prometheus-metrics6.png[]
++
 . Stop the container: `docker container rm -f metrics`
+
+Multiple graphs can be added this way.
+
+=== Node health
+
+In this section, we'll start Prometheus node exporter that will publish machine metrics. Then we'll use Prometheus to scrape its health information about the node running Docker.
+
+==== Start Node Exporter
+
+. All containers need to use the same overlay network so that they can communicate with each other. Let's create an overlay network:
++
+```
+docker network create --driver overlay prom
+```
++
+. Start Prometheus node exporter:
++
+```
+docker service create --name node \
+ --mode global \
+ --mount type=bind,source=/proc,target=/host/proc \
+ --mount type=bind,source=/sys,target=/host/sys \
+ --mount type=bind,source=/,target=/rootfs \
+ --network prom \
+ --publish 9100:9100 \
+ prom/node-exporter \
+  --path.procfs /host/proc \
+  --path.sysfs /host/sys \
+  --collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc)($|/)"
+```
++
+A few observations in this command:
++
+.. This is started as a global service such that it is started on all nodes of the cluster.
+.. As explained in https://github.com/prometheus/node_exporter/issues/610, node exporter only works with host network on Mac OSX. This is not needed if you are running on Linux.
+.. It uses the overlay network previously created.
+.. It needs access to host's filesystems such that the metrics about the node can be published.
+
+==== Restart Prometheus
+
+. Update `prometheus.yml` to the following text:
++
+```
+global:
+  scrape_interval: 10s
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+        - 'localhost:9090'
+  - job_name: 'node resources'
+    dns_sd_configs:
+      - names: ['tasks.node']
+        type: 'A'
+        port: 9100
+    params:
+      collect[]:
+        - cpu
+        - meminfo
+        - diskstats
+        - netdev
+        - netstat
+
+  - job_name: 'node storage'
+    scrape_interval: 1m
+    dns_sd_configs:
+      - names: ['tasks.node']
+        type: 'A'
+        port: 9100
+    params:
+      collect[]:
+        - filefd
+        - filesystem
+        - xfs
+```
++
+A few observations:
++
+.. DNS-based service discovery is used to discover the scraper for node-exporter. This is further explained at https://prometheus.io/docs/operating/configuration/#<dns_sd_config>[dns_sd_configs]. A record-based queries are used to discover the service.
+.. Two different jobs are created even though they are scraping from the same endpoint. This provides a more logical way to represent data.
++
+. Terminate previously running Prometheus service:
++
+```
+docker service rm metrics
+```
++
+. Restart the Prometheus service, this time using the overlay network, as:
++
+```
+docker service create \
+  --replicas 1 \
+  --name metrics \
+  --network prom \
+  --mount type=bind,source=`pwd`/prometheus.yml,destination=/etc/prometheus/prometheus.yml \
+  --publish 9090:9090/tcp \
+  prom/prometheus
+```
+
+==== Check metrics
+
+. Confirm that both the services have started:
++
+```
+ID                  NAME                MODE                REPLICAS            IMAGE                       PORTS
+lzl41s2i66jd        metrics             replicated          1/1                 prom/prometheus:latest      *:9090->9090/tcp
+dro3ncpyuchp        node                global              1/1                 prom/node-exporter:latest   
+```
++
+. Confirm that all the targets are configured correctly at http://localhost:9090/targets[Prometheus dashboard]:
++
+image::prometheus-metrics-target2.png[]
++
+. Now a lot more metrics, this time from the node, are also available:
++
+image::prometheus-metrics7.png[]
++
+Console output and graphs for all these metrics is now available:
++
+image::prometheus-metrics8.png[]
++
+Complete list of metrics is available at https://github.com/prometheus/node_exporter.
+
+=== Query using PromQL (TODO)
+
+Add some fun queries from https://prometheus.io/docs/querying/basics/.
 
 == cAdvisor
 
-https://github.com/google/cadvisor[cAdvisor] (Container Advisor) provides resource usage and performance characteristics running containers.
+https://github.com/google/cadvisor[cAdvisor] (Container Advisor) provides resource usage and performance characteristics running containers. Let's take a look on how cAdvisor can be used to get these metrics from containers.
 
 . Run `cAdvisor`
 +
@@ -246,4 +453,147 @@ image::cadvisor-docker-metrics.png[]
 Click on any of the containers and see more details about the container.
 
 cAdvisor samples once a second and has historical data for only one minute. The data generated from https://github.com/google/cadvisor/blob/master/docs/storage/influxdb.md[cAdvisor can be exported to InfluxDB]. Optionally, you may use a Grafana front end to visualize the data as explained in https://www.brianchristner.io/how-to-setup-docker-monitoring/[How to setup Docker monitoring].
+
+=== Prometheus and cAdvisor
+
+cAdvisor also exposes container statistics as Prometheus metrics out of the box. By default, these metrics are served under the `/metrics` HTTP endpoint. Let's take a look at how these container metrics can be observed using Prometheus.
+
+. Terminate previously running cAdvisor:
++
+```
+docker container rm -f cadvisor
+```
++
+. Start a new cAdvisor service, using the `prom` overlay network created earlier:
++
+```
+docker service create \
+  --name cadvisor \
+  --network prom \
+  --mode global \
+  --mount type=bind,source=/,target=/rootfs \
+  --mount type=bind,source=/var/run,target=/var/run \
+  --mount type=bind,source=/sys,target=/sys \
+  --mount type=bind,source=/var/lib/docker,target=/var/lib/docker \
+  google/cadvisor:latest
+```
++
+. Terminate the previously running Prometheus service:
++
+```
+docker service rm metrics
+```
++
+. The update `prometheus.yml` configuration file is:
++
+```
+global:
+  scrape_interval: 10s
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+        - 'localhost:9090'
+
+  - job_name: 'node resources'
+    dns_sd_configs:
+      - names: ['tasks.node']
+        type: 'A'
+        port: 9100
+    params:
+      collect[]:
+        - cpu
+        - meminfo
+        - diskstats
+        - netdev
+        - netstat
+
+  - job_name: 'node storage'
+    scrape_interval: 1m
+    dns_sd_configs:
+      - names: ['tasks.node']
+        type: 'A'
+        port: 9100
+    params:
+      collect[]:
+        - filefd
+        - filesystem
+        - xfs
+
+  - job_name: 'cadvisor'
+    dns_sd_configs:
+      - names: ['tasks.cadvisor']
+        type: 'A'
+        port: 8080
+```
++
+. Start the new Prometheus service
++
+```
+docker service create \
+  --replicas 1 \
+  --name metrics \
+  --network prom \
+  --mount type=bind,source=`pwd`/prometheus.yml,destination=/etc/prometheus/prometheus.yml \
+  --publish 9090:9090/tcp \
+  prom/prometheus
+```
++
+. Confirm that all the targets are configured correctly at http://localhost:9090/targets[Prometheus dashboard]:
++
+image::prometheus-metrics-target3.png[]
++
+Note, all four scrape endpoints are shown here.
++
+. In Graphs, now, a lot more metrics, this time from cAdvisor, are also available:
++
+image::prometheus-metrics9.png[]
++
+Console output and graphs for all these metrics is now available:
++
+image::prometheus-metrics10.png[]
++
+Complete list of metrics is available at https://github.com/google/cadvisor.
+
+Here is a basic query written using https://prometheus.io/docs/querying/basics/[PromQL] worth trying:
+
+```
+sum by (container_label_com_docker_swarm_node_id) (
+  irate(
+    container_cpu_usage_seconds_total{
+      container_label_com_docker_swarm_service_name="metrics"
+      }[1m]
+  )
+)
+```
+
+This shows the average amount of CPU used per minute by the service `metrics` aggregated over multiple CPUs. The graph will look as shown:
+
+image::prometheus-metrics11.png[]
+
+== Add Prometheus as data source in Grafana (TODO)
+
+https://github.com/grafana/grafana[Grafana] is an open source metric analytics & visualization suite. It supports many different storage backends, called as Data Source. Prometheus can be added as Grafana data source. It even provides support for runnning Prometheus queries from the Grafana dashboard as well. More details can be found in http://docs.grafana.org/features/datasources/prometheus/[Using Prometheus in Grafana].
+
+This section will explain how to start Grafana, use Prometheus as the data source, and view some container metrics.
+
+. Start Grafana:
++
+```
+docker run \
+  -d \
+  -p 3000:3000 \
+  --name=grafana \
+  -e "GF_SECURITY_ADMIN_PASSWORD=secret" \
+  grafana/grafana
+```
++
+Read more details about different http://docs.grafana.org/installation/configuration/[configuration options].
++
+. Access Grafana dashboard at http://localhost:3000
+.  
+
+== Monitor Java Applications (TODO)
+
+This section will explain how an existing Java application can be updated to publish metrics and monitored by Prometheus.
 
