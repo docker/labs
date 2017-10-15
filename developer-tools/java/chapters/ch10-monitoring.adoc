@@ -218,7 +218,7 @@ Docker exposes Prometheus-compatible metrics on port `9323`. This support is onl
 +
 . Click on `Apply & Restart` to restart the daemon
 +
-image::docker-mac-metrics-endpoint.png[]
+image::prometheus-metrics-config.png[]
 +
 . Show the complete list of metrics using `curl http://localhost:9323/metrics`
 . Show the list of engine metrics using `curl http://localhost:9323/metrics | grep engine`
