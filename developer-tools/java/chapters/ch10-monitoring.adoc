@@ -2,7 +2,7 @@
 
 :imagesdir: images
 
-= Monitoring Java Application Container
+= Monitoring using Prometheus and Grafana
 
 This chapter will cover different ways to monitor a Docker container.
 
@@ -320,7 +320,7 @@ docker service create --name node \
  --mount type=bind,source=/,target=/rootfs \
  --network prom \
  --publish 9100:9100 \
- prom/node-exporter \
+ prom/node-exporter:v0.15.0 \
   --path.procfs /host/proc \
   --path.sysfs /host/sys \
   --collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc)($|/)"
@@ -791,9 +791,11 @@ image::prometheus-metrics16.png[]
 +
 . Access the application a few times using `curl http://localhost:8080/resources/employees/5` and then watch the `requests_get_one` metric.
 
-== Add Prometheus as data source in Grafana (TODO)
+== Grafana
 
 https://github.com/grafana/grafana[Grafana] is an open source metric analytics & visualization suite. It supports many different storage backends, called as Data Source. Prometheus can be added as Grafana data source. It even provides support for runnning Prometheus queries from the Grafana dashboard as well. More details can be found in http://docs.grafana.org/features/datasources/prometheus/[Using Prometheus in Grafana].
+
+=== Start Grafana
 
 This section will explain how to start Grafana, use Prometheus as the data source, and view some container metrics.
 
@@ -808,7 +810,32 @@ docker run \
   grafana/grafana
 ```
 +
+Use the login name `admin` and password `secret`.
++
 Read more details about different http://docs.grafana.org/installation/configuration/[configuration options].
 +
-. Access Grafana dashboard at http://localhost:3000
-.  
+. Access Grafana dashboard at http://localhost:3000. Use the login and password as credentials to see Grafana console.
++
+image::grafana-metrics1.png[]
+
+=== Add Prometheus as data source
+
+. Click the `Add data source` button in the top header.
+. Specify the parameters as shown:
++
+image::grafana-metrics2.png[]
++
+. Click on `Add` to test and save the data source:
++
+image::grafana-metrics3.png[]
++
+The green bar indicates that the data source was added successfully.
+
+=== Create chart with Prometheus data source
+
+. Click on `Create your first dashboard`, save it and give it a name, say `Docker and Java dashboard`
+. Click on `Graph`, edit, under the `Metrics` tab, select your Prometheus data source.
+. Enter the following Prometheus query expressions in the query field. The graphs will referesh in a few seconds and will look like as shown:
++
+image::grafana-metrics4.png[]
+
