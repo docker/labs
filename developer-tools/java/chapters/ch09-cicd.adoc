@@ -124,7 +124,7 @@ When creating integration tests, it is useful to be able to run and debug them o
 cd jenkins_home/workspace/ci-test/sample
 
 # Generates the images
-mvn -f jenkins_home/workspace/ci-test/sample/pom.xml clean install -Papp-docker-image
+mvn clean install -Papp-docker-image
 
 # Starts mongo service
 docker-compose --file src/test/resources/docker-compose.yml up -d mongo 
