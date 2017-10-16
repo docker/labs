@@ -802,7 +802,7 @@ This section will explain how to start Grafana, use Prometheus as the data sourc
 . Start Grafana:
 +
 ```
-docker run \
+docker container run \
   -d \
   -p 3000:3000 \
   --name=grafana \
