@@ -17,7 +17,7 @@ services:
   hadoop:
     image: tailtarget/hadoop:2.7.2
   jenkins:
-    image: tailtarget/jenkins:2.32.3
+    image: jenkins/jenkins:lts
   prometheus:
     image: prom/prometheus:latest
   node-exporter:
