@@ -11,8 +11,6 @@ This chapter will show you basic Docker tooling with IntelliJ IDEA:
 - Run, stop, delete a Container
 - Build an Image
 
-NOTE: IntelliJ only supports configuring Docker Engine running using Docker Toolbox. This means that if you are running Docker for Mac or Docker for Windows then IntelliJ cannot be used.
-
 === Install Docker Plugin in IDEA
 
 Go to "`Preferences`", "`Plugins`", "`Install JetBrains plugin...`", search on "`docker`" and click on "`Install`"
