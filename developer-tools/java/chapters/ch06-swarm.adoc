@@ -9,7 +9,7 @@ Docker Engine includes swarm mode for natively managing a cluster of Docker Engi
 
 Swarm is typically a cluster of multiple Docker Engines. But for simplicity we'll run a single node Swarm.
 
-This section will deploy an application that will provide a CRUD/REST interface on a data bucket in http://developer.couchbase.com/server[Couchbase]. This is achieved by using a Java EE application deployed on http://wildfly.org[WildFly] to access the database.
+This section will deploy an application that will provide a CRUD/REST interface on a data bucket in Mysql. This is achieved by using a Java EE application deployed on http://wildfly.org[WildFly] to access the database.
 
 == Initialize Swarm
 
@@ -127,7 +127,7 @@ A new overlay network is created. This can be verified using the command `docker
 
 == Verify service and containers in application
 
-Verify that the WildFly and Couchbase services are running using `docker service ls`:
+Verify that the WildFly and Mysql services are running using `docker service ls`:
 
 ```
 ID                  NAME                MODE                REPLICAS            IMAGE                                   PORTS
@@ -294,7 +294,7 @@ Make sure to wait for the last log statement to show.
 
 == Access application
 
-Now that the WildFly and Couchbase servers have been configured, let's access the application. You need to specify IP address of the host where WildFly is running (`localhost` in our case).
+Now that the WildFly and Mysql servers have been configured, let's access the application. You need to specify IP address of the host where WildFly is running (`localhost` in our case).
 
 The endpoint can be accessed in this case as:
 
@@ -352,4 +352,3 @@ Removing network webapp_default
 ```
 
 This stops the container in each service and removes the services. It also deletes any networks that were created as part of this application.
-
