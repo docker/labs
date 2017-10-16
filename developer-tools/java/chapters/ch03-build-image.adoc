@@ -8,7 +8,7 @@
 
 == Dockerfile
 
-Docker build images by reading instructions from a _Dockerfile_. A _Dockerfile_ is a text document that contains all the commands a user could call on the command line to assemble an image. `docker build` command uses this file and executes all the commands in succession to create an image.
+Docker build images by reading instructions from a _Dockerfile_. A _Dockerfile_ is a text document that contains all the commands a user could call on the command line to assemble an image. `docker image build` command uses this file and executes all the commands in succession to create an image.
 
 `build` command is also passed a context that is used during image creation. This context can be a path on your local filesystem or a URL to a Git repository.
 
@@ -96,7 +96,7 @@ If you do not see the expected output, check your Dockerfile that the content ex
 
 Change the base image from `ubuntu` to `busybox` in `Dockerfile`. Build the image again:
 
-  docker build -t helloworld:2 .
+  docker image build -t helloworld:2 .
 
 and view the images using `docker image ls` command:
 
@@ -172,10 +172,7 @@ Let's package this application as a Docker image.
 
 Run the OpenJDK container in an interactive manner:
 
-[source, text]
-----
-docker run -it openjdk
-----
+    docker container run -it openjdk
 
 This will open a terminal in the container. Check the version of Java:
 
@@ -206,11 +203,11 @@ CMD java -cp /usr/src/helloworld-1.0-SNAPSHOT.jar org.examples.java.App
 
 Build the image:
 
-    docker build -t hello-java:latest .
+    docker image build -t hello-java:latest .
 
 Run the image:
 
-    docker run hello-java:latest
+    docker container run hello-java:latest
 
 This displays the output:
 
@@ -274,7 +271,7 @@ This will show an output like:
 [INFO] DOCKER> [hellojava:latest]: Waited on log out 'Hello World!' 510 ms
 ----
 
-This is similar output when running the Java application using `java` CLI or the Docker container using `docker run` command.
+This is similar output when running the Java application using `java` CLI or the Docker container using `docker container run` command.
 
 The container is running in the foreground. Use `Ctrl` + `C` to interrupt the container and return back to terminal.
 
@@ -342,17 +339,17 @@ Only one change was required in the project to enable Docker packaging and runni
 
 Default entry point for a container is `/bin/sh`, the default shell.
 
-Running a container as `docker run -it ubuntu` uses that command and starts the default shell. The output is shown as:
+Running a container as `docker container run -it ubuntu` uses that command and starts the default shell. The output is shown as:
 
 ```console
-> docker run -it ubuntu
+> docker container run -it ubuntu
 root@88976ddee107:/#
 ```
 
 `ENTRYPOINT` allows to override the entry point to some other command, and even customize it. For example, a container can be started as:
 
 ```console
-> docker run -it --entrypoint=/bin/cat ubuntu /etc/passwd
+> docker container run -it --entrypoint=/bin/cat ubuntu /etc/passwd
 root:x:0:0:root:/root:/bin/bash
 daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
 bin:x:2:2:bin:/bin:/usr/sbin/nologin
