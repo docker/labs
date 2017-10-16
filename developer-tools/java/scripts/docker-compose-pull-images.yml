@@ -19,7 +19,7 @@ services:
   jenkins:
     image: tailtarget/jenkins:2.32.3
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
   node-exporter:
     image: prom/node-exporter
   cadvisor:
