@@ -53,12 +53,25 @@ to see the output:
 +
 ```
 CONTAINER           CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
-55198043b6aa        0.12%               267.3MiB / 1.952GiB   13.38%              782B / 0B           0B / 4.1kB          53
-5b5dd33b675d        0.11%               274.2MiB / 1.952GiB   13.72%              782B / 0B           0B / 4.1kB          53
-6e98a9597e6a        0.10%               273.2MiB / 1.952GiB   13.67%              1.03kB / 0B         0B / 4.1kB          51
+1f9d5a1c08a8        0.24%               294.9MiB / 1.952GiB   14.75%              828B / 0B           96.5MB / 4.1kB      115
 ```
 +
-Note that the container id is shown in this case instead of container's name.
+Note that the container id is shown instead of container's name in this case.
++
+. Scale the service to 3 replicas:
++
+```
+docker service scale web=3
+```
++
+. The stats are now shown for all three containers:
++
+```
+CONTAINER           CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
+1f9d5a1c08a8        0.14%               287.8MiB / 1.952GiB   14.40%              1.03kB / 0B         96.5MB / 4.1kB      53
+a3395efbb6ff        0.77%               263.4MiB / 1.952GiB   13.18%              578B / 0B           0B / 4.1kB          114
+f484ff2f4c12        0.06%               294.8MiB / 1.952GiB   14.75%              578B / 0B           0B / 4.1kB          114
+```
 +
 . Display only container id and percent CPU utilization using the command `docker container stats --format "{{.Container}}: {{.CPUPerc}}"`:
 +
@@ -802,7 +815,7 @@ This section will explain how to start Grafana, use Prometheus as the data sourc
 . Start Grafana:
 +
 ```
-docker run \
+docker container run \
   -d \
   -p 3000:3000 \
   --name=grafana \

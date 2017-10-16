@@ -19,10 +19,16 @@ services:
   jenkins:
     image: tailtarget/jenkins:2.32.3
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
   node-exporter:
     image: prom/node-exporter
   cadvisor:
     image: google/cadvisor:latest
   grafana:
     image: grafana/grafana
+  debian:
+    image: debian:stable-slim
+  alpine:
+    image: alpine:3.6
+  openjdk-slim:
+    image: openjdk:9-jdk-slim

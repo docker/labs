@@ -44,7 +44,7 @@ constraints are honored.
 
 Build the image using the command:
 
-  docker build -t jdk-9-debian-slim -f jdk-9-debian-slim.Dockerfile .
+  docker image build -t jdk-9-debian-slim -f jdk-9-debian-slim.Dockerfile .
 
 List the images available using `docker image ls`:
 
@@ -89,7 +89,7 @@ $1 ==> 100
 ----
 
 Notice that the Java process is honoring memory constraints (see the `--memory`
-of `docker run`) and will not allocate memory beyond that specified for the
+of `docker container run`) and will not allocate memory beyond that specified for the
 container.
 
 In a future release of the JDK it will no longer be necessary to specify an
@@ -97,7 +97,7 @@ experimental flag (`-XX:+UnlockExperimentalVMOptions`) once the mechanism by
 which memory constraints are efficiently detected is stable.
 
 JDK 9 supports the set CPUs constraint (see the `--cpuset-cpus` of
-`docker run`) but does not currently support other CPU constraints such as
+`docker container run`) but does not currently support other CPU constraints such as
 CPU shares.  This is ongoing work http://openjdk.java.net/jeps/8182070[tracked]
 in the OpenJDK project.
 
@@ -234,7 +234,7 @@ The image is configured in the same manner as for the `debian`-based image.
 
 Build the image using the command:
 
-  docker build -t jdk-9-alpine -f jdk-9-alpine.Dockerfile .
+  docker image build -t jdk-9-alpine -f jdk-9-alpine.Dockerfile .
 
 List the images available using `docker image ls`:
 
@@ -268,7 +268,7 @@ so you can make modifications.)
 Enter the directory `helloworld-java-9` and build the project from within a
 running Docker container with JDK 9 installed:
 
-  docker run --volume $PWD:/helloworld-java-9 --workdir /helloworld-java-9 \
+  docker container run --volume $PWD:/helloworld-java-9 --workdir /helloworld-java-9 \
       -it --rm openjdk:9-jdk-slim \
       ./mvnw package
 
@@ -298,7 +298,7 @@ CMD java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap \
 Build a Docker image containing the simple Java application based of the Docker
 image `jdk-9-debian-slim`:
 
-    docker build -t helloworld-jdk-9 -f helloworld-jdk-9.Dockerfile .
+    docker image build -t helloworld-jdk-9 -f helloworld-jdk-9.Dockerfile .
 
 List the images available using `docker image ls`:
 
@@ -317,7 +317,7 @@ Notice how large the application image `helloworld-jdk-9`.
 
 Run the `jdeps` tool to see what modules the application depends on:
 
-  docker run -it --rm helloworld-jdk-9 jdeps --list-deps /opt/helloworld/helloworld-1.0-SNAPSHOT.jar
+  docker container run -it --rm helloworld-jdk-9 jdeps --list-deps /opt/helloworld/helloworld-1.0-SNAPSHOT.jar
 
 and observe that the application only depends on the `java.base` module.
 
@@ -332,7 +332,7 @@ that in application Docker image.
 Create a custom Java runtime that is small and only contains the `java.base`
 module:
 
-    docker run --rm \
+    docker container run --rm \
       --volume $PWD:/out \
       jdk-9-debian-slim \
       jlink --module-path /opt/jdk-9/jmods \
@@ -344,7 +344,7 @@ module:
 
 This command exists as `create-minimal-java-runtime.sh` script in the repo earlier checked out from link:https://github.com/PaulSandoz/helloworld-java-9[helloworld-java-9].
 
-The JDK 9 tool `jlink` is used to create the custom Java runtime. Read more jlink in the https://docs.oracle.com/javase/9/tools/jlink.htmp[Tools Reference]. The tool
+The JDK 9 tool `jlink` is used to create the custom Java runtime. Read more jlink in the https://docs.oracle.com/javase/9/tools/jlink.htm[Tools Reference]. The tool
 is executed from with the container containing JDK 9 and directory where the
 modules reside, `/opt/jdk-9/jmods`, is declared in the module path.  Only the
 `java.base` module is selected.
@@ -387,7 +387,7 @@ CMD java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap \
 Build a Docker image containing the simple Java application based of the Docker
 image `debian:stable-slim`:
 
-    docker build -t helloworld-jdk-9-base -f helloworld-jdk-9-base.Dockerfile .
+    docker image build -t helloworld-jdk-9-base -f helloworld-jdk-9-base.Dockerfile .
 
 List the images available using `docker image ls`:
 

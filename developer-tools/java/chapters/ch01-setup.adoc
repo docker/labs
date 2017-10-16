@@ -16,60 +16,25 @@ NOTE: An older version of the operating system may be used. The installation ins
 
 == Install Docker
 
-Docker runs natively on Mac, Windows and Linux. This lab will use https://www.docker.com/community-edition[Docker Community Edition]. Follow the https://www.docker.com/community-edition[instructions] to install Docker.
+Docker runs natively on Mac, Windows and Linux. This lab will use https://www.docker.com/community-edition[Docker Community Edition (CE)]. Download the Docker CE edition for your machine from the https://store.docker.com/search?type=edition&offering=community[Docker Store]. 
+
+NOTE: Docker CE requires a fairly recent operating system version. If your machine does not meet the requirements, then you need to install https://www.docker.com/products/docker-toolbox[Docker Toolbox]. 
 
 This workshop is tested with Docker Community Edition `17.09.0-ce-rc2, build 363a3e7` on Mac OS X `10.12.5`.
-
-NOTE: Docker Community Edition have requirements for a fairly recent operating system version. If your machine does not meet these requirements, then you need to install https://www.docker.com/products/docker-toolbox[Docker Toolbox]. However, the workshop instructions are all explained using Docker CE.
-
-=== Additional components
-
-If Docker is installed using Docker CE or Docker Toolbox, then this section is not required.
-
-Install the following additional components:
-
-. https://docs.docker.com/compose/install/[Docker Compose]
-
-=== Docker Toolbox Notes
-
-Skip this section if you are using Docker CE.
-
-. *Default Docker Machine*: Docker Toolbox creates a Docker Machine named `default`. To make it easier to start/stop the containers, an entry is added into the host mapping table of your operating system. 
-+
-Find out the IP address of your Docker Machine:
-+
-```
-docker-machine ip default
-```
-+
-This will provide the IP address associated with the Docker Machine created by Toolbox.
-+
-Edit `/etc/hosts` (Mac OS) or `C:\Windows\System32\drivers\etc\hosts` (Windows) and add:
-+
-[source, text]
-----
-<IP ADDRESS>  dockerhost
-----
-+
-This allows to access Docker containers using `dockerhost`.
-+
-. *Docker CLI Shell*: Any Docker CLI command needs to be issued from the Terminal or Command Prompt where `eval $(docker-machine env default)` command was issued. This will make sure Docker CLI is configured to talk to the VM created by Docker Toolbox.
 
 == Download Images
 
 This tutorial uses a few Docker images and software. Let's download them before we start the tutorial.
 
-Download the file from https://raw.githubusercontent.com/docker/labs/master/developer-tools/java/scripts/docker-compose-pull-images.yml and give the command to pull all the images:
+Download the file from https://raw.githubusercontent.com/docker/labs/master/developer-tools/java/scripts/docker-compose-pull-images.yml and use the following command to pull the required images:
 
-```
-docker-compose -f docker-compose-pull-images.yml pull --parallel
-```
-
-NOTE: `--parallel` switch will not work for Docker Compose version prior to 1.12. If you are using an older version then remove the `--parallel` switch.
+    docker-compose -f docker-compose-pull-images.yml pull --parallel
 
 NOTE: For Linux, `docker-compose` and `docker` commands need `sudo` access. So prefix all commands with `sudo`.
 
 == Other Software
+
+The software in this section is specific to certain parts of the workshop. Install them only if you plan to attempt them.
 
 . Install https://git-scm.com//[git].
 . Install Docker Cloud CLI following the https://docs.docker.com/docker-cloud/installing-cli/[instructions].
