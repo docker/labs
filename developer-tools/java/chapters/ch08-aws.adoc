@@ -59,7 +59,7 @@ It will take a few minutes for the CloudFormation template to complete. The outp
 .Swarm CloudFormation complete
 image::docker-aws-7.png[]
 
-https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#Instances:search=docker;sort=instanceState[EC2 Console] will show the EC2 instances for manager and worker.
+https://console.aws.amazon.com/ec2/v2/home?#Instances:search=docker;sort=instanceState[EC2 Console] will show the EC2 instances for manager and worker.
 
 .EC2 console
 image::docker-aws-8.png[]
@@ -371,7 +371,7 @@ More details about the service can be obtained using `docker -H localhost:2374 s
 ]
 ```
 
-Logs for the service are redirected to CloudWatch and thus cannot be seen using `docker service logs`. This will be fixed with https://github.com/moby/moby/issues/30691[#30691]. Let's view the logs using using https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logs:prefix=Docker[CloudWatch Logs].
+Logs for the service are redirected to CloudWatch and thus cannot be seen using `docker service logs`. This will be fixed with https://github.com/moby/moby/issues/30691[#30691]. Let's view the logs using using https://console.aws.amazon.com/cloudwatch/home?#logs:prefix=Docker[CloudWatch Logs].
 
 .CloudWatch log group
 image::docker-aws-10.png[]
@@ -390,7 +390,7 @@ image::docker-aws-12.png[]
 
 Application is accessed using manager's IP address and on port 8080. By default, the port 8080 is not open. 
 
-In https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#Instances:search=docker;sort=instanceState[EC2 Console], select an EC2 instance with name `Docker-Manager`, click on `Docker-Managerxxx` in `Security groups`. Click on `Inbound`, `Edit`, `Add Rule`, and create a rule to enable TCP traffic on port 8080.
+In https://console.aws.amazon.com/ec2/v2/home?#Instances:search=docker;sort=instanceState[EC2 Console], select an EC2 instance with name `Docker-Manager`, click on `Docker-Managerxxx` in `Security groups`. Click on `Inbound`, `Edit`, `Add Rule`, and create a rule to enable TCP traffic on port 8080.
 
 .Open port 8080 in Docker manager
 image::docker-aws-13.png[]
