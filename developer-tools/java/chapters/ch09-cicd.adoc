@@ -26,6 +26,8 @@ Then, in the project folder, run:
 
     docker-compose up
 
+NOTE: if running on Windows, run `dos2unix plugins.txt` before running `docker-compose up`, to avoid possible errors if your file is in the Windows format.
+
 Wait for jenkins to start and then go to the browser and open `http://localhost:8081`. Jenkins should be running.
 
 The Jenkins installation on this lab comes pre-configured. To login use the username `jenkins` and the password `jenkins`.
