@@ -26,3 +26,9 @@ services:
     image: google/cadvisor:latest
   grafana:
     image: grafana/grafana
+  debian:
+    image: debian:stable-slim
+  alpine:
+    image: alpine:3.6
+  openjdk-slim:
+    image: openjdk:9-jdk-slim
