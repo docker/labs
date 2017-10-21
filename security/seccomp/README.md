@@ -21,7 +21,7 @@ You will need all of the following to complete this lab:
 
 - A Linux-based Docker Host with seccomp enabled
 - Docker 1.10 or higher (preferably 1.12 or higher)
-- This lab was created using Ubunti 16.04 and Docker 17.04.0-ce. If you are using older versions of Docker you may need to replace `docker container run` commands with `docker run` commands.
+- This lab was created using Ubuntu 16.04 and Docker 17.04.0-ce. If you are using older versions of Docker you may need to replace `docker container run` commands with `docker run` commands.
 
 The following commands show you how to check if seccomp is enabled in your system's kernel:
 
