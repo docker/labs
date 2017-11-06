@@ -107,12 +107,12 @@ services:
         constraints: [node.role == manager]
 
   visualizer:
-    image: manomarks/visualizer
+    image: dockersamples/visualizer
     ports:
       - "8080:8080"
     stop_grace_period: 1m30s
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - /var/run/docker.sock:/var/run/docker.sock
     deploy:
       placement:
         constraints: [node.role == manager]
