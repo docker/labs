@@ -8,7 +8,7 @@ Ruby on Rails is a popular web application framework. Implementng RoR in contain
 
 There are many different versions of Ruby in use. Ruby applications can be based on 1.8, 1.9, 2.0 and all intermediary versions up to the latest release. This includes "upstream" Ruby but also REE (an "Enterprise Edition" set of patches, for older versions of Ruby), and a number of "Ruby on X" ports: JRuby (on top of the JVM), IronRuby (on top of .NET), Maglev, Rubinius, RubyMotion, and more. 
 
-In contrast, there are also many many versions of Python in use, but the majority of applications use the lastest 2.X or 3.X versions. Simialrly, Java applications use the last two major releases of either Java released by Oracle or OpenJDK. 
+In contrast, there are also many many versions of Python in use, but the majority of applications use the lastest 2.X or 3.X versions. Similarly, Java applications use the last two major releases of either Java released by Oracle or OpenJDK. 
 
 Earlier versions of Ruby are used in production because upgrading presents challenges such as, critical gems are not backward-compatible. Debugging tools like pry, rubocop, byebug... do work on many versions, but not consistently on all Ruby verisons.
 
