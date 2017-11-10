@@ -1,8 +1,8 @@
 # SQL Server Lab
 
-Microsoft SQL Server is available to run in Docker containers on Linux and Windows. This lab focuses on Windows and shows you how to use Docker to modernize your database delivery - bringing modern practices like CI/CD into database management.
+Microsoft SQL Server is available to run in Docker containers on Linux and Windows. This lab focuses on Windows and shows you how to use Docker to modernize your database delivery — bringing modern practices like CI/CD into database management.
 
-The SQL Server Express image -[microsoft/mssql-server-windows-express](https://store.docker.com/images/mssql-server-windows-express) - lets you run a SQL Server database in a Docker container on Windows, without having SQL Server installed. All you need is Docker. 
+The SQL Server Express image — [microsoft/mssql-server-windows-express](https://store.docker.com/images/mssql-server-windows-express) — lets you run a SQL Server database in a Docker container on Windows, without having SQL Server installed. All you need is Docker. 
 
 In this lab we'll build a Docker image which packages up a whole database schema on top of the SQL Server image, so when you run the container you have a fully-deployed database ready to use from your applications, or from SQL Server Management Studio. 
 
