@@ -26,7 +26,7 @@ The output is continually updated. It shows:
 .. Percent memory utilization
 .. Network activity
 .. Disk activity
-.. PIDS??
+.. Number of PIDs
 +
 . Check stats for multiple containers
 .. Terminate single instance of the container
