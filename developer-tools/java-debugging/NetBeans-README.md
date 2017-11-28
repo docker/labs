@@ -11,7 +11,7 @@
 Using your git client clone the repository.
 
 ```
-git clone https://github.docker.com/labs
+git clone https://github.com/docker/labs
 cd labs/developer-tools/java-debugging
 ```
 
