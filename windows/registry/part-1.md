@@ -31,7 +31,7 @@ The base image is the [official Go image](https://store.docker.com/images/golang
 There's a single `CMD` instruction to build the latest version of the registry and copy the built files to a known output location:
 
 ```Dockerfile
-CMD .\go get github.com/docker/distribution/cmd/registry ; `
+CMD go get github.com/docker/distribution/cmd/registry ; `
     cp \"$env:GOPATH\bin\registry.exe\" c:\out\ ; `
     cp \"$env:GOPATH\src\github.com\docker\distribution\cmd\registry\config-example.yml\" c:\out\config.yml
 ```
