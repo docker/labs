@@ -24,10 +24,10 @@ You will need all of the following to complete this lab:
 
 # <a name="tag"></a>Step 1: Pulling images by tag
 
-The most common and basic way to pull Docker iamges is by `tag`. The is where you specify an image name followed by an alphanumeric tag. The image name and tag are separated by a colon `:`. For example:
+The most common and basic way to pull Docker images is by `tag`. The is where you specify an image name followed by an alphanumeric tag. The image name and tag are separated by a colon `:`. For example:
 
    ```
-   $ sudo docker pull alpine:edge
+   $ docker pull alpine:edge
    ```
 
 This command will pull the Alpine image tagged as `edge`. The corresponding image can be found [here on Docker Store](https://store.docker.com/images/alpine).
@@ -37,7 +37,7 @@ If no tag is specified, Docker will pull the image with the `latest` tag.
 1. Pull the Alpine image with the `edge` tag.
 
    ```
-   $ sudo docker pull alpine:edge
+   $ docker pull alpine:edge
 
    edge: Pulling from library/alpine
    e587fa4f6e1f: Pull complete
@@ -48,7 +48,7 @@ If no tag is specified, Docker will pull the image with the `latest` tag.
 2. Confirm that the pull was successful.
 
    ```
-   $ sudo docker images
+   $ docker images
 
    REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
    alpine              edge                3fc33d6d5e74        4 weeks ago         4.799 MB
@@ -57,7 +57,7 @@ If no tag is specified, Docker will pull the image with the `latest` tag.
 3. Run a new container from the image and ping www.docker.com.
 
    ```
-   $ sudo docker run --rm -it alpine:edge sh
+   $ docker run --rm -it alpine:edge sh
 
    / # ping www.docker.com
    PING www.docker.com (104.239.220.248): 56 data bytes
@@ -80,7 +80,7 @@ This is why pulling by digest is such a powerful operation. Thanks to the conten
 1.  Pull the Alpine image with the `sha256:b7233dafbed64e3738630b69382a8b231726aa1014ccaabc1947c5308a8910a7` digest.
 
    ```
-   $ sudo docker pull alpine@sha256:b7233dafbed64e3738630b69382a8b231726aa1014ccaabc1947c5308a8910a7
+   $ docker pull alpine@sha256:b7233dafbed64e3738630b69382a8b231726aa1014ccaabc1947c5308a8910a7
 
    sha256:b7233dafbed64e3738630b69382a8b231726aa1014ccaabc1947c5308a8910a7: Pulling from library/alpine
    6589332ef57c: Pull complete
@@ -91,7 +91,7 @@ This is why pulling by digest is such a powerful operation. Thanks to the conten
 2. Check that the pull succeeded.
 
    ```
-   $ sudo docker images --digests alpine
+   $ docker images --digests alpine
 
    REPOSITORY          TAG                 DIGEST                                                                    IMAGE ID            CREATED             SIZE
    alpine              edge                <none>                                                                    3fc33d6d5e74        4 weeks ago         4.799 MB
@@ -127,7 +127,7 @@ In this step you will enable Docker Content Trust, sign images as you push them,
 2. Pull the `riyaz/dockercon:trust` signed image.
 
    ```
-   $ sudo docker pull riyaz/dockercon:trust
+   $ docker pull riyaz/dockercon:trust
 
    Pull (1 of 1): riyaz/dockercon:trust@sha256:88a7163227a54bf0343aae9e7a4404fdcdcfef8cc777daf9686714f4376ede46
    sha256:88a7163227a54bf0343aae9e7a4404fdcdcfef8cc777daf9686714f4376ede46: Pulling from riyaz/dockercon
@@ -146,7 +146,7 @@ In this step you will enable Docker Content Trust, sign images as you push them,
 3.  Pull and unsigned image.
 
    ```
-   $ sudo docker pull riyaz/dockercon:untrusted
+   $ docker pull riyaz/dockercon:untrusted
 
    No trust data for untrusted
    ```
@@ -156,8 +156,8 @@ In this step you will enable Docker Content Trust, sign images as you push them,
 4.  Tag and push your own signed image with Docker Content Trust.
 
    ```
-   $ sudo docker tag alpine:edge <your-docker-id>/alpine:trusted
-   $ sudo docker push <your-docker-id>/alpine:trusted
+   $ docker tag alpine:edge <your-docker-id>/alpine:trusted
+   $ docker push <your-docker-id>/alpine:trusted
 
    The push refers to a repository [docker.io/nigelpoulton/alpine]
    4fe15f8d0ae6: Pushed
@@ -194,7 +194,7 @@ In this step you will enable Docker Content Trust, sign images as you push them,
 6. Pull the image you just pushed in the previous step.
 
    ```
-   $ sudo docker pull <your-docker-id>/alpine:trusted
+   $ docker pull <your-docker-id>/alpine:trusted
 
    trusted: Pulling from nigelpoulton/alpine
    Digest: sha256:dc89ce8401da81f24f7ba3f0ab2914ed9013608bdba0b7e7e5d964817067dc06
@@ -210,7 +210,7 @@ In this step you will enable Docker Content Trust, sign images as you push them,
 8. Pull the same image again.
 
    ```
-   $ sudo docker pull <your-docker-id>/alpine:trusted
+   $ docker pull <your-docker-id>/alpine:trusted
 
    Pull (1 of 1): nigelpoulton/alpine:trusted@sha256:dc89ce8401da81f24f7ba3f0ab2914ed9013608bdba0b7e7e5d964817067dc06
    sha256:dc89ce8401da81f24f7ba3f0ab2914ed9013608bdba0b7e7e5d964817067dc06: Pulling from nigelpoulton/alpine
