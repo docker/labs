@@ -112,6 +112,8 @@ $ docker network inspect bridge
 
 # <a name="ping_local"></a>Step 3: Test network connectivity
 
+> Note: this won't work on docker for windows or docker for mac (https://github.com/docker/for-win/issues/221)
+
 The output to the previous `docker network inspect` command shows the IP address of the new container. In the previous example it is "172.17.0.2" but yours might be different.
 
 Ping the IP address of the container from the shell prompt of your Docker host. Remember to use the IP of the container in **your** environment.
