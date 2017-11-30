@@ -22,7 +22,7 @@ The Dockerfile for the registry builder is in [Dockerfile.builder](Dockerfile.bu
 
 ```Dockerfile
 # escape=`
-FROM golang:nanoserver
+FROM golang:windowsservercore
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
 ```
 
