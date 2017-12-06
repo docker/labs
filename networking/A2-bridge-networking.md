@@ -132,7 +132,7 @@ rtt min/avg/max/mdev = 0.049/0.053/0.069/0.012 ms
 Press `Ctrl-C` to stop the ping. The replies above show that the Docker host can ping the container over the **bridge** network.
 
 Log in to the container, install the `ping`
- program and ping `www.docker.com`.
+ program and ping `www.dockercon.com`.
 
  ```
 # Get the ID of the container started in the previous step.
@@ -151,14 +151,14 @@ root@6dd93d6cdc80:/# apt-get update
  Reading package lists... Done
 <Snip>
 
-# Ping www.docker.com from within the container
-root@6dd93d6cdc80:/# ping www.docker.com
-PING www.docker.com (104.239.220.248) 56(84) bytes of data.
+# Ping www.dockercon.com from within the container
+root@6dd93d6cdc80:/# ping www.dockercon.com
+PING www.dockercon.com (104.239.220.248) 56(84) bytes of data.
 64 bytes from 104.239.220.248: icmp_seq=1 ttl=39 time=93.9 ms
 64 bytes from 104.239.220.248: icmp_seq=2 ttl=39 time=93.8 ms
 64 bytes from 104.239.220.248: icmp_seq=3 ttl=39 time=93.8 ms
 ^C
---- www.docker.com ping statistics ---
+--- www.dockercon.com ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2002ms
 rtt min/avg/max/mdev = 93.878/93.895/93.928/0.251 ms
 ```
