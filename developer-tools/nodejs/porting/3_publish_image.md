@@ -37,7 +37,7 @@ Image can then be published to the user repository
 
 ## Instantiate the image
 
-The image can then be used form any Docker host (the image is public in this example)
+The image can then be used from any Docker host (the image is public in this example)
   * ```docker pull lucj/message-app```
   * ```docker run -dP lucj/message-app``` (will start with an error as no database information is provided)
 
