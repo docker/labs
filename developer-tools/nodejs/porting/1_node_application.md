@@ -27,7 +27,7 @@ DELETE | /message/ID | delete message with ID
 ```
 config/model.js:
 module.exports.models = {
-connections: 'sails-mongo',
+connection: 'mongo',
  migrate: 'safe'
 };
 ```
