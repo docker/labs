@@ -144,6 +144,15 @@ Create a new Java project:
 mvn archetype:generate -DgroupId=org.examples.java -DartifactId=helloworld -DinteractiveMode=false
 ----
 
+if you had errors while executing mvn command like me,you can deal with it like this
+[source, text]
+----
+mvn archetype:generate
+----
+then chose 7: internal -> org.apache.maven.archetypes:maven-archetype-quickstart,last you can type your groupID and artifactId as well as others like version.
+(如果你和我一样在利用上述maven命令无法创建java工程的话，遇到诸如没有POM文件等一系列的问题，你也许可以通过mvn archetype:generate命令来让maven引导你一步步的创建，选择相应的groupID和artifactId以及其他的像快照版本等参数)
+
+
 Build the project:
 
 [source, text]
