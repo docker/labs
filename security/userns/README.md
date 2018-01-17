@@ -151,7 +151,13 @@ In this step you'll see how to implement user namespaces.
    See 'docker run --help'.
    ```
 
-  As stated in the error response, *privileged* containers are not currently supported with user namespaces.
+  As stated in the error response, *privileged* containers are not currently supported with user namespaces. But user namespaces for a container can be disabled by using the 'host' user namespace:
+  
+  ```
+  ubuntu@node:~$ sudo docker run --rm --privileged --userns=host alpine id
+  uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy),20(dialout),26(tape),27(video)
+  ubuntu@node:~$ 
+  ```
 
 6. Start a new container in interactive mode and mount the Docker Host's `/bin` directory as a volume.
 
