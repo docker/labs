@@ -38,7 +38,7 @@ WildFly Swarm and MySQL will be running in two separate containers, and thus mak
 
 == Configuration file
 
-Th entry point to Docker Compose is a Compose file, usually called `docker-compose.yml`. Create a new directory `javaee`. In that directory, create a new file `docker-compose.yml` in it. Use the following contents:
+The entry point to Docker Compose is a Compose file, usually called `docker-compose.yml`. Create a new directory `javaee`. In that directory, create a new file `docker-compose.yml` in it. Use the following contents:
 
 ```
 version: '3.3'
