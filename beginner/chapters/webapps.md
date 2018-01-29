@@ -340,7 +340,7 @@ When you run the `docker build` command given below, make sure to replace `<YOUR
 The `docker build` command is quite simple - it takes an optional tag name with the `-t` flag, and the location of the directory containing the `Dockerfile` - the `.` indicates the current directory:
 
 ```
-$ docker build -t <YOUR_USERNAME>/myfirstapp .
+$ docker build -t <YOUR_USERNAME>:myfirstapp .
 Sending build context to Docker daemon 9.728 kB
 Step 1 : FROM alpine:latest
  ---> 0d81fc72e790
