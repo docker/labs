@@ -13,7 +13,7 @@ You will complete the following steps as part of this lab.
 - [Step 1 - cgroups and the Docker CLI](#cli)
 - [Step 2 - Max-out two CPUs](#cpu_max)
 - [Step 3 - Set CPU affinity](#cpu_affinity)
-- [Step 4 - CPU share constraints](#cpu-share)
+- [Step 4 - CPU share constraints](#cpu_share)
 - [Step 5 - Docker Compose and cgroups](#compose)
 - [Step 6 - Preventing a fork bomb](#fork_bomb)
 
@@ -187,7 +187,7 @@ In this step you will use the `docker run` command with the `--cpu-shares` flag 
 2. Start the second container with 256 CPU shares.
 
    ```
-    $ sudo docker run -d --name container-2 --cpuset-cpus 0 --cpu-shares 256 cpu-stress
+   $ sudo docker run -d --name container-2 --cpuset-cpus 0 --cpu-shares 256 cpu-stress
    ```
 
 3. Verify that both containers are running with the `docker ps` command.
@@ -196,8 +196,8 @@ In this step you will use the `docker run` command with the `--cpu-shares` flag 
    $ sudo docker ps
 
    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
-725dc16fac5a        cpu-stress          "/bin/sh -c 'stress -"   2 minutes ago       Up 2 minutes                            container-2
-f82f95757d3f        cpu-stress          "/bin/sh -c 'stress -"   2 minutes ago       Up 2 minutes                            container-1
+   725dc16fac5a        cpu-stress          "/bin/sh -c 'stress -"   2 minutes ago       Up 2 minutes                            container-2
+   f82f95757d3f        cpu-stress          "/bin/sh -c 'stress -"   2 minutes ago       Up 2 minutes                            container-1
    ```
 
 4. View the output of `htop`.
