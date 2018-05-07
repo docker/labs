@@ -164,7 +164,7 @@ Take a look at the file again. You'll see it starts with
 ```
 version: "3"
 ```
-It's important that you use version 3 of compose files, as `docker stack deploy` won't support use of earlier versions. You will see there's also a `services` key, under which there is a separate key for each of the services. Such as:
+It's important that you use [version 3](https://docs.docker.com/compose/compose-file/) of compose files, as `docker stack deploy` won't support use of earlier versions. You will see there's also a `services` key, under which there is a separate key for each of the services. Such as:
 ```
   vote:
     image: dockersamples/examplevotingapp_vote:before
@@ -186,7 +186,7 @@ The `image` key there specifies which image you can use, in this case the image 
 
 Much like `docker run` you will see you can define `ports` and `networks`. There's also a `depends_on` key which allows you to specify that a service is only deployed after another service, in this case `vote` only deploys after `redis`.
 
-The `deploy` key is new in version 3. It allows you to specify various properties of the deployment to the Swarm. In this case, you are specifying that you want two replicas, that is two containers are deployed on the Swarm. You can specify other properties, like when to restart, what [healthcheck](https://docs.docker.com/engine/reference/builder/#healthcheck) to use, placement constraints, resources.
+The [`deploy`](https://docs.docker.com/compose/compose-file/#deploy) key is new in version 3. It allows you to specify various properties of the deployment to the Swarm. In this case, you are specifying that you want two replicas, that is two containers are deployed on the Swarm. You can specify other properties, like when to restart, what [healthcheck](https://docs.docker.com/engine/reference/builder/#healthcheck) to use, placement constraints, resources, etc.
 
 #### Test run
 
