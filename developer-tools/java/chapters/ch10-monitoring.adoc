@@ -307,7 +307,7 @@ image::prometheus-metrics5.png[]
 +
 image::prometheus-metrics6.png[]
 +
-. Stop the container: `docker container rm -f metrics`
+. Stop the container: `docker service rm metrics`
 
 Multiple graphs can be added this way.
 
