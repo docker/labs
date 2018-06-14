@@ -11,7 +11,7 @@ ADD tomcat/run.sh $CATALINA_HOME/bin/run.sh
 RUN chmod +x $CATALINA_HOME/bin/run.sh
 
 # add MySQL JDBC driver jar
-ADD tomcat/mysql-connector-java-5.1.36-bin.jar $CATALINA_HOME/lib/
+ADD tomcat/mysql-connector-java-8.0.11.jar $CATALINA_HOME/lib/
 
 # create mount point for volume with application
 RUN mkdir $CATALINA_HOME/webapps/UserSignup
