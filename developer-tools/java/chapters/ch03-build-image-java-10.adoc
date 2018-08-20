@@ -2,30 +2,31 @@
 
 :imagesdir: images
 
-= Build a Docker Image with JDK 9
+= Build a Docker Image with JDK 10
 
-*PURPOSE*: This chapter explains how to create a Docker image with JDK 9.
+*PURPOSE*: This chapter explains how to create a Docker image with JDK 10.
 
 The link:ch03-build-image.adoc[prior chapter] explained how, in general, to build a Docker image with Java.
-This chapter expands on this topic and focuses on JDK 9 features.
 
-== Create a Docker Image using JDK 9
+== Create a Docker Image using JDK 10
 
-Create a new directory, for example `docker-jdk9`.
+Create a new directory, for example `docker-jdk10`.
 
-In that directory, create a new text file `jdk-9-debian-slim.Dockerfile`.
+In that directory, create a new text file `jdk-10-debian-slim.Dockerfile`.
 Use the following contents:
 
 [source, text]
 ----
-# A JDK 9 with Debian slim
-FROM debian:stable-slim
-# Download from http://jdk.java.net/9/
-# ADD http://download.java.net/java/GA/jdk9/9/binaries/openjdk-9_linux-x64_bin.tar.gz /opt
-ADD openjdk-9_linux-x64_bin.tar.gz /opt
+# A JDK 10 with Debian slimFROM debian:stable-slim
+# Download from http://jdk.java.net/10/
+# Add https://download.java.net/java/GA/jdk10/10/binaries/openjdk-10_linux-x64_bin.tar.gz /opt
+COPY openjdk-10_linux-x64_bin.tar.gz /opt
+RUN cd /opt \
+	&& tar -xzvf openjdk-10_linux-x64_bin.tar.gz \
+	&& rm -rf openjdk-10_linux-x64_bin.tar.gz
 # Set up env variables
-ENV JAVA_HOME=/opt/jdk-9
-ENV PATH=$PATH:$JAVA_HOME/bin
+ENV JAVA_HOME /opt/jdk-10
+ENV PATH $PATH:$JAVA_HOME/bin
 CMD ["jshell", "-J-XX:+UnlockExperimentalVMOptions", \
                "-J-XX:+UseCGroupMemoryLimitForHeap", \
                "-R-XX:+UnlockExperimentalVMOptions", \
@@ -44,32 +45,32 @@ constraints are honored.
 
 Build the image using the command:
 
-  docker image build -t jdk-9-debian-slim -f jdk-9-debian-slim.Dockerfile .
+  docker image build -t jdk-10-debian-slim -f jdk-10-debian-slim.Dockerfile .
 
 List the images available using `docker image ls`:
 
 [source, text]
 ----
 REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
-jdk-9-debian-slim       latest              023f6999d94a        4 hours ago         400MB
+jdk-10-debian-slim      latest              8b94f31a3b97        4 hours ago         603MB
 debian                  stable-slim         d30525fb4ed2        4 days ago          55.3MB
 ----
 
 Other images may be shown as well but we are interested in these two images for
-now.  The large difference in size is attributed to JDK 9, which is larger
+now.  The large difference in size is attributed to JDK 10, which is larger
 in size than JDK 8 because it also explicitly provides Java modules that we
 shall see more of later on in this chapter.
 
 Run the container using the command:
 
-  docker container run -m=200M -it --rm jdk-9-debian-slim
+  docker container run -m=200M -it --rm jdk-10-debian-slim
 
 to see the output:
 
 [source, text]
 ----
 INFO: Created user preferences directory.
-|  Welcome to JShell -- Version 9
+|  Welcome to JShell -- Version 10
 |  For an introduction type: /help intro
 
 jshell>
@@ -96,7 +97,7 @@ In a future release of the JDK it will no longer be necessary to specify an
 experimental flag (`-XX:+UnlockExperimentalVMOptions`) once the mechanism by
 which memory constraints are efficiently detected is stable.
 
-JDK 9 supports the set CPUs constraint (see the `--cpuset-cpus` of
+JDK 10 supports the set CPUs constraint (see the `--cpuset-cpus` of
 `docker container run`) but does not currently support other CPU constraints such as
 CPU shares.  This is ongoing work http://openjdk.java.net/jeps/8182070[tracked]
 in the OpenJDK project.
@@ -106,127 +107,128 @@ to JDK 8 release 8u131 and above.
 
 Type `Ctrl` + `D` to exit out of `jshell`.
 
-To list all the Java modules distributed with JDK 9 run the following command:
+To list all the Java modules distributed with JDK 10 run the following command:
 
-    docker container run -m=200M -it --rm jdk-9-debian-slim java --list-modules
+    docker container run -m=200M -it --rm jdk-10-debian-slim java --list-modules
 
 This will show an output:
 
 [source, text]
 ----
-java.activation@9
-java.base@9
-java.compiler@9
-java.corba@9
-java.datatransfer@9
-java.desktop@9
-java.instrument@9
-java.logging@9
-java.management@9
-java.management.rmi@9
-java.naming@9
-java.prefs@9
-java.rmi@9
-java.scripting@9
-java.se@9
-java.se.ee@9
-java.security.jgss@9
-java.security.sasl@9
-java.smartcardio@9
-java.sql@9
-java.sql.rowset@9
-java.transaction@9
-java.xml@9
-java.xml.bind@9
-java.xml.crypto@9
-java.xml.ws@9
-java.xml.ws.annotation@9
-jdk.accessibility@9
-jdk.aot@9
-jdk.attach@9
-jdk.charsets@9
-jdk.compiler@9
-jdk.crypto.cryptoki@9
-jdk.crypto.ec@9
-jdk.dynalink@9
-jdk.editpad@9
-jdk.hotspot.agent@9
-jdk.httpserver@9
-jdk.incubator.httpclient@9
-jdk.internal.ed@9
-jdk.internal.jvmstat@9
-jdk.internal.le@9
-jdk.internal.opt@9
-jdk.internal.vm.ci@9
-jdk.internal.vm.compiler@9
-jdk.jartool@9
-jdk.javadoc@9
-jdk.jcmd@9
-jdk.jconsole@9
-jdk.jdeps@9
-jdk.jdi@9
-jdk.jdwp.agent@9
-jdk.jlink@9
-jdk.jshell@9
-jdk.jsobject@9
-jdk.jstatd@9
-jdk.localedata@9
-jdk.management@9
-jdk.management.agent@9
-jdk.naming.dns@9
-jdk.naming.rmi@9
-jdk.net@9
-jdk.pack@9
-jdk.policytool@9
-jdk.rmic@9
-jdk.scripting.nashorn@9
-jdk.scripting.nashorn.shell@9
-jdk.sctp@9
-jdk.security.auth@9
-jdk.security.jgss@9
-jdk.unsupported@9
-jdk.xml.bind@9
-jdk.xml.dom@9
-jdk.xml.ws@9
-jdk.zipfs@9
+java.activation@10
+java.base@10
+java.compiler@10
+java.corba@10
+java.datatransfer@10
+java.desktop@10
+java.instrument@10
+java.logging@10
+java.management@10
+java.management.rmi@10
+java.naming@10
+java.prefs@10
+java.rmi@10
+java.scripting@10
+java.se@10
+java.se.ee@10
+java.security.jgss@10
+java.security.sasl@10
+java.smartcardio@10
+java.sql@10
+java.sql.rowset@10
+java.transaction@10
+java.xml@10
+java.xml.bind@10
+java.xml.crypto@10
+java.xml.ws@10
+java.xml.ws.annotation@10
+jdk.accessibility@10
+jdk.aot@10
+jdk.attach@10
+jdk.charsets@10
+jdk.compiler@10
+jdk.crypto.cryptoki@10
+jdk.crypto.ec@10
+jdk.dynalink@10
+jdk.editpad@10
+jdk.hotspot.agent@10
+jdk.httpserver@10
+jdk.incubator.httpclient@10
+jdk.internal.ed@10
+jdk.internal.jvmstat@10
+jdk.internal.le@10
+jdk.internal.opt@10
+jdk.internal.vm.ci@10
+jdk.internal.vm.compiler@10
+jdk.internal.vm.compiler.management@10
+jdk.jartool@10
+jdk.javadoc@10
+jdk.jcmd@10
+jdk.jconsole@10
+jdk.jdeps@10
+jdk.jdi@10
+jdk.jdwp.agent@10
+jdk.jlink@10
+jdk.jshell@10
+jdk.jsobject@10
+jdk.jstatd@10
+jdk.localedata@10
+jdk.management@10
+jdk.management.agent@10
+jdk.naming.dns@10
+jdk.naming.rmi@10
+jdk.net@10
+jdk.pack@10
+jdk.rmic@10
+jdk.scripting.nashorn@10
+jdk.scripting.nashorn.shell@10
+jdk.sctp@10
+jdk.security.auth@10
+jdk.security.jgss@10
+jdk.unsupported@10
+jdk.xml.bind@10
+jdk.xml.dom@10
+jdk.xml.ws@10
+jdk.zipfs@10
 ----
 
 In total there should be 75 modules:
 
 [source, text]
 ----
-$ docker container run -m=200M -it --rm jdk-9-debian-slim java --list-modules | wc -l
+$ docker container run -m=200M -it --rm jdk-10-debian-slim java --list-modules | wc -l
       75
 ----
 
-== Create a Docker Image using JDK 9 and Alpine Linux
+== Create a Docker Image using JDK 10 and Alpine Linux
 
 Instead of `debian` as the base image it is possible to use Alpine Linux
-with an early access build of JDK 9 that is compatible with the muslc library
+with an early access build of JDK 10 that is compatible with the muslc library
 shipped with Alpine Linux.
 
-Create a new text file `jdk-9-alpine.Dockerfile`.
+Create a new text file `jdk-10-alpine.Dockerfile`.
 Use the following contents:
 
 [source, text]
 ----
-# A JDK 9 with Alpine Linux
-FROM alpine:3.6
-# Add the musl-based JDK 9 distribution
+# A JDK 10 with Alpine LinuxFROM alpine:3.8
+# Download from http://jdk.java.net/10/
+# Add https://download.java.net/java/GA/jdk10/10/binaries/openjdk-10_linux-x64_bin.tar.gz /opt
 RUN mkdir /opt
-# Download from http://jdk.java.net/9/
-# ADD http://download.java.net/java/jdk9-alpine/archive/181/binaries/jdk-9-ea+181_linux-x64-musl_bin.tar.gz
-ADD jdk-9-ea+181_linux-x64-musl_bin.tar.gz /opt
+COPY openjdk-10_linux-x64_bin.tar.gz /opt
+RUN cd /opt \
+	&& tar -xzvf openjdk-10_linux-x64_bin.tar.gz \
+	&& rm -rf openjdk-10_linux-x64_bin.tar.gz
 # Set up env variables
-ENV JAVA_HOME=/opt/jdk-9
-ENV PATH=$PATH:$JAVA_HOME/bin
+ENV JAVA_HOME /opt/jdk-10
+ENV PATH $PATH:$JAVA_HOME/bin
 CMD ["jshell", "-J-XX:+UnlockExperimentalVMOptions", \
                "-J-XX:+UseCGroupMemoryLimitForHeap", \
                "-R-XX:+UnlockExperimentalVMOptions", \
                "-R-XX:+UseCGroupMemoryLimitForHeap"]
 ----
 
-This image uses `alpine` 3.6 as the base image and installs the OpenJDK build
+This image uses `alpine` 3.8 as the base image and installs the OpenJDK build
 of JDK for Alpine Linux x64 (see the link:ch01-setup.adoc[Setup Environments]
 chapter for how to download this into the current directory).
 
@@ -234,17 +236,17 @@ The image is configured in the same manner as for the `debian`-based image.
 
 Build the image using the command:
 
-  docker image build -t jdk-9-alpine -f jdk-9-alpine.Dockerfile .
+  docker image build -t jdk-10-alpine -f jdk-10-alpine.Dockerfile .
 
 List the images available using `docker image ls`:
 
 [source, text]
 ----
 REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
-jdk-9-debian-slim       latest              023f6999d94a        4 hours ago         400MB
-jdk-9-alpine            latest              f5a57382f240        4 hours ago         356MB
+jdk-10-debian-slim      latest              8b94f31a3b97        4 hours ago         603MB
+jdk-10-alpine           latest              d25d050e0bce        24 seconds ago      552MB
 debian                  stable-slim         d30525fb4ed2        4 days ago          55.3MB
-alpine                  3.6                 7328f6f8b418        3 months ago        3.97MB
+alpine                  3.8                 7328f6f8b418        6 weeks ago         4.41MB
 ----
 
 Notice the difference in image sizes.  Alpine Linux by design has been carefully
@@ -255,27 +257,27 @@ modifications to run on Alpine Linux.  Such modifications have been proposed
 by the OpenJDK http://openjdk.java.net/projects/portola/[Portola Project].
 
 
-== Create a Docker Image using JDK 9 and a Java application
+== Create a Docker Image using JDK 10 and a Java application
 
-Clone the GitHib project https://github.com/PaulSandoz/helloworld-java-9 that
-contains a simple Java 9-based project:
+Clone the GitHib project https://github.com/SwEngin/helloworld-java-10 that
+contains a simple Java 10-based project:
 
-  git clone https://github.com/PaulSandoz/helloworld-java-9.git
+  git clone https://github.com/SwEngin/helloworld-java-10.git
 
 (If you have a github account you may wish to fork it and then clone the fork
 so you can make modifications.)
 
-Enter the directory `helloworld-java-9` and build the project from within a
-running Docker container with JDK 9 installed:
+Enter the directory `helloworld-java-10` and build the project from within a
+running Docker container with JDK 10 installed:
 
-  docker container run --volume $PWD:/helloworld-java-9 --workdir /helloworld-java-9 \
-      -it --rm openjdk:9-jdk-slim \
+  docker container run --volume $PWD:/helloworld-java-10 --workdir /helloworld-java-10 \
+      -it --rm openjdk:10-jdk-slim \
       ./mvnw package
 
-(If you have JDK 9 installed locally on the host system you can build directly
+(If you have JDK 10 installed locally on the host system you can build directly
 with `./mvnw package`.)
 
-In this case we are using the `openjdk:9-jdk-slim` on Docker hub that has been
+In this case we are using the `openjdk:10-jdk-slim` on Docker hub that has been
 configured to work with SSL certificates so that the maven wrapper tool can
 successfully download the maven tool.  This image is not produced or in anyway
 endorsed by the OpenJDK project (unlike the JDK 9 distributions that were
@@ -283,12 +285,12 @@ previously required).  It is anticipated that future releases of the JDK from
 the OpenJDK project will have root CA certificates (see issue
 https://bugs.openjdk.java.net/browse/JDK-8189131[JDK-8189131])
 
-To build Docker image for this application use the file `helloworld-jdk-9.Dockerfile` from the checked out repo to build your image. The contents of the file are shown below:
+To build Docker image for this application use the file `helloworld-jdk-10.Dockerfile` from the checked out repo to build your image. The contents of the file are shown below:
 
 [source, text]
 ----
-# Hello world application with JDK 9 and Debian slim
-FROM jdk-9-debian-slim
+# Hello world application with JDK 10 and Debian slim
+FROM jdk-10-debian-slim
 COPY target/helloworld-1.0-SNAPSHOT.jar /opt/helloworld/helloworld-1.0-SNAPSHOT.jar
 # Set up env variables
 CMD java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap \
@@ -298,33 +300,33 @@ CMD java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap \
 Build a Docker image containing the simple Java application based of the Docker
 image `jdk-9-debian-slim`:
 
-    docker image build -t helloworld-jdk-9 -f helloworld-jdk-9.Dockerfile .
+    docker image build -t helloworld-jdk-10 -f helloworld-jdk-10.Dockerfile .
 
 List the images available using `docker image ls`:
 
 [source, text]
 ----
 REPOSITORY              TAG                 IMAGE ID            CREATED              SIZE
-helloworld-jdk-9        latest              eb0539e9529a        19 seconds ago       400MB
-jdk-9-debian-slim       latest              023f6999d94a        5 hours ago          400MB
-jdk-9-alpine            latest              f5a57382f240        5 hours ago          356MB
-openjdk                 9-jdk-slim          6dca67f4790e        3 days ago           372MB
+helloworld-jdk-10       latest              5935ac1e3a95        19 seconds ago       603MB
+jdk-10-debian-slim      latest              8b94f31a3b97        4 hours ago          603MB
+jdk-10-alpine           latest              d25d050e0bce        3 hours ago          552MB
+openjdk                 10-jdk-slim         6dca67f4790e        3 days ago           372MB
 debian                  stable-slim         d30525fb4ed2        4 days ago           55.3MB
 alpine                  3.6                 7328f6f8b418        3 months ago         3.97MB
 ----
 
-Notice how large the application image `helloworld-jdk-9`.
+Notice how large the application image `helloworld-jdk-10`.
 
 Run the `jdeps` tool to see what modules the application depends on:
 
-  docker container run -it --rm helloworld-jdk-9 jdeps --list-deps /opt/helloworld/helloworld-1.0-SNAPSHOT.jar
+  docker container run -it --rm helloworld-jdk-10 jdeps --list-deps /opt/helloworld/helloworld-1.0-SNAPSHOT.jar
 
 and observe that the application only depends on the `java.base` module.
 
-== Reduce the size of a Docker Image using JDK 9 and a Java application
+== Reduce the size of a Docker Image using JDK 10 and a Java application
 
 The Java application is extremely simple and as a result uses very little of the
-functionality shipped with JDK 9 distribution, specifically the application
+functionality shipped with JDK 10 distribution, specifically the application
 only depends on functionality present in the `java.base` module.  We can create
 a custom Java runtime that only contains the `java.base` module and include
 that in application Docker image.
@@ -334,80 +336,80 @@ module:
 
     docker container run --rm \
       --volume $PWD:/out \
-      jdk-9-debian-slim \
-      jlink --module-path /opt/jdk-9/jmods \
+      jdk-10-debian-slim \
+      jlink --module-path /opt/jdk-10/jmods \
         --verbose \
         --add-modules java.base \
         --compress 2 \
         --no-header-files \
-        --output /out/target/openjdk-9-base_linux-x64
+        --output /out/target/openjdk-10-base_linux-x64
 
 This command exists as `create-minimal-java-runtime.sh` script in the repo earlier checked out from link:https://github.com/PaulSandoz/helloworld-java-9[helloworld-java-9].
 
-The JDK 9 tool `jlink` is used to create the custom Java runtime. Read more jlink in the https://docs.oracle.com/javase/9/tools/jlink.htm[Tools Reference]. The tool
+The JDK 10 tool `jlink` is used to create the custom Java runtime. Read more jlink in the https://docs.oracle.com/javase/9/tools/jlink.htm[Tools Reference]. The tool
 is executed from with the container containing JDK 9 and directory where the
-modules reside, `/opt/jdk-9/jmods`, is declared in the module path.  Only the
+modules reside, `/opt/jdk-10/jmods`, is declared in the module path.  Only the
 `java.base` module is selected.
 
 The custom runtime is output to the `target` directory:
 
 [source, text]
 ----
-$ du -k target/openjdk-9-base_linux-x64/
-24      target/openjdk-9-base_linux-x64//bin
-12      target/openjdk-9-base_linux-x64//conf/security/policy/limited
-8       target/openjdk-9-base_linux-x64//conf/security/policy/unlimited
-24      target/openjdk-9-base_linux-x64//conf/security/policy
-68      target/openjdk-9-base_linux-x64//conf/security
-76      target/openjdk-9-base_linux-x64//conf
-44      target/openjdk-9-base_linux-x64//legal/java.base
-44      target/openjdk-9-base_linux-x64//legal
-72      target/openjdk-9-base_linux-x64//lib/jli
-16      target/openjdk-9-base_linux-x64//lib/security
-19824   target/openjdk-9-base_linux-x64//lib/server
-31656   target/openjdk-9-base_linux-x64//lib
-31804   target/openjdk-9-base_linux-x64/
+$ du -k target/openjdk-10-base_linux-x64/
+24      target/openjdk-10-base_linux-x64//bin
+12      target/openjdk-10-base_linux-x64//conf/security/policy/limited
+8       target/openjdk-10-base_linux-x64//conf/security/policy/unlimited
+24      target/openjdk-10-base_linux-x64//conf/security/policy
+68      target/openjdk-10-base_linux-x64//conf/security
+76      target/openjdk-10-base_linux-x64//conf
+44      target/openjdk-10-base_linux-x64//legal/java.base
+44      target/openjdk-10-base_linux-x64//legal
+72      target/openjdk-10-base_linux-x64//lib/jli
+16      target/openjdk-10-base_linux-x64//lib/security
+19824   target/openjdk-10-base_linux-x64//lib/server
+31656   target/openjdk-10-base_linux-x64//lib
+31804   target/openjdk-10-base_linux-x64/
 ----
 
-To build Docker image for this application use the file `helloworld-jdk-9-base.Dockerfile` from the checked out repo. The contents of the file are shown below:
+To build Docker image for this application use the file `helloworld-jdk-10-base.Dockerfile` from the checked out repo. The contents of the file are shown below:
 
 [source, text]
 ----
 # Hello world application with custom Java runtime with just the base module and Debian slim
 FROM debian:stable-slim
-COPY target/openjdk-9-base_linux-x64 /opt/jdk-9
+COPY target/openjdk-10-base_linux-x64 /opt/jdk-10
 COPY target/helloworld-1.0-SNAPSHOT.jar /opt/helloworld/helloworld-1.0-SNAPSHOT.jar
 # Set up env variables
-ENV JAVA_HOME=/opt/jdk-9
+ENV JAVA_HOME=/opt/jdk-10
 ENV PATH=$PATH:$JAVA_HOME/bin
 CMD java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap \
   -cp /opt/helloworld/helloworld-1.0-SNAPSHOT.jar org.examples.java.App
+
 ----
 
 Build a Docker image containing the simple Java application based of the Docker
 image `debian:stable-slim`:
 
-    docker image build -t helloworld-jdk-9-base -f helloworld-jdk-9-base.Dockerfile .
+    docker image build -t helloworld-jdk-10-base -f helloworld-jdk-10-base.Dockerfile .
 
 List the images available using `docker image ls`:
 
 [source, text]
 ----
 REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
-helloworld-jdk-9-base   latest              7052483fdb77        24 seconds ago      87.7MB
-helloworld-jdk9         latest              eb0539e9529a        17 minutes ago      400MB
-jdk-9-debian-slim       latest              023f6999d94a        5 hours ago         400MB
-jdk-9-alpine            latest              f5a57382f240        5 hours ago         356MB
-openjdk                 9-jdk-slim          6dca67f4790e        3 days ago          372MB
+helloworld-jdk-10-base  latest              7052483fdb77        24 seconds ago     89.1MB
+helloworld-jdk-10       latest              5935ac1e3a95        19 miutes ago       603MB
+jdk-10-debian-slim      latest              8b94f31a3b97        5 hours ago         603MB
+jdk-10-alpine           latest              d25d050e0bce        4 hours ago         552MB
+openjdk                 10-jdk-slim         6dca67f4790e        3 days ago          372MB
 debian                  stable-slim         d30525fb4ed2        4 days ago          55.3MB
 alpine                  3.6                 7328f6f8b418        3 months ago        3.97MB
 [source, text]
 ----
 
-The `helloworld-jdk-9-base` is much smaller and could be reduced further if
+The `helloworld-jdk-10-base` is much smaller and could be reduced further if
 Alpine Linux was used instead of Debian Slim.
 
 A realistic application will depend on more JDK modules but it's still possible
 to significantly reduce the Java runtime to only the required modules (for
 example many applications will not require Corba or RMI nor the compiler tools).
-
