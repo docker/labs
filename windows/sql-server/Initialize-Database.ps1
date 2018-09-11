@@ -1,47 +1,66 @@
-# Adapted from Microsoft's SQL Server Express sample:
-# https://github.com/Microsoft/sql-server-samples/blob/master/samples/manage/windows-containers/mssql-server-2016-express-windows/start.ps1
-
 param(
-    [Parameter(Mandatory=$false)]
-    [string]$sa_password)
+    [string] $sa_password = $env:sa_password,
+    [string] $data_path = $env:data_path,
+    [string] $TargetServerName = '.\SQLEXPRESS',
+    [string] $TargetDatabaseName = 'AssetsDB',
+    [string] $TargetUser = 'sa',
+    [string] $TargetPassword = $env:sa_password
+)
 
-# start the service
-Write-Verbose 'Starting SQL Server'
-start-service MSSQL`$SQLEXPRESS
+if ($TargetDatabaseName -eq '.\SQLEXPRESS') {
 
-if ($sa_password -ne "_") {
-	Write-Verbose 'Changing SA login credentials'
-    $sqlcmd = "ALTER LOGIN sa with password='$sa_password'; ALTER LOGIN sa ENABLE;"
-    Invoke-Sqlcmd -Query $sqlcmd -ServerInstance ".\SQLEXPRESS" 
-}
+    # start the service
+    Write-Verbose 'Starting SQL Server'
+    Start-Service MSSQL`$SQLEXPRESS
 
-# attach data files if they exist: 
-$mdfPath = 'c:\database\AssetsDB_Primary.mdf'
-if ((Test-Path $mdfPath) -eq $true) {
-    $sqlcmd = "CREATE DATABASE AssetsDB ON (FILENAME = N'$mdfPath')"
-    $ldfPath = 'c:\database\AssetsDB_Primary.ldf'
-    if ((Test-Path $mdfPath) -eq $true) {
-        $sqlcmd =  "$sqlcmd, (FILENAME = N'$ldfPath')"
+    if ($sa_password -ne "_") {
+        Write-Verbose 'Changing SA login credentials'
+        $sqlcmd = "ALTER LOGIN sa with password='$sa_password'; ALTER LOGIN sa ENABLE;"
+        Invoke-SqlCmd -Query $sqlcmd -ServerInstance ".\SQLEXPRESS" 
     }
-    $sqlcmd = "$sqlcmd FOR ATTACH;"
-    Write-Verbose "Invoke-Sqlcmd -Query $($sqlcmd) -ServerInstance '.\SQLEXPRESS'"
-    Invoke-Sqlcmd -Query $sqlcmd -ServerInstance ".\SQLEXPRESS"
+
+    $mdfPath = "$data_path\AssetsDB_Primary.mdf"
+    $ldfPath = "$data_path\AssetsDB_Primary.ldf"
+
+    # attach data files if they exist: 
+    if ((Test-Path $mdfPath) -eq $true) {
+        $sqlcmd = "IF DB_ID('AssetsDB') IS NULL BEGIN CREATE DATABASE AssetsDB ON (FILENAME = N'$mdfPath')"
+        if ((Test-Path $ldfPath) -eq $true) {
+            $sqlcmd = "$sqlcmd, (FILENAME = N'$ldfPath')"
+        }
+        $sqlcmd = "$sqlcmd FOR ATTACH; END"
+        Write-Verbose 'Data files exist - will attach and upgrade database'
+        Invoke-Sqlcmd -Query $sqlcmd -ServerInstance ".\SQLEXPRESS"
+    }
+    else {
+        Write-Verbose 'No data files - will create new database'
+    }
 }
 
 # deploy or upgrade the database:
-$SqlPackagePath = 'C:\Program Files (x86)\Microsoft SQL Server\130\DAC\bin\SqlPackage.exe'
+$SqlPackagePath = 'C:\Program Files\Microsoft SQL Server\140\DAC\bin\SqlPackage.exe'
 & $SqlPackagePath  `
     /sf:Assets.Database.dacpac `
-    /a:Script /op:create.sql /p:CommentOutSetVarDeclarations=true `
-    /tsn:.\SQLEXPRESS /tdn:AssetsDB /tu:sa /tp:$sa_password 
+    /a:Script /op:deploy.sql /p:CommentOutSetVarDeclarations=true `
+    /TargetServerName:$TargetServerName /TargetDatabaseName:$TargetDatabaseName `
+    /TargetUser:$TargetUser /TargetPassword:$TargetPassword 
 
-$SqlCmdVars = "DatabaseName=AssetsDB", "DefaultFilePrefix=AssetsDB", "DefaultDataPath=c:\database\", "DefaultLogPath=c:\database\"  
-Invoke-Sqlcmd -InputFile create.sql -Variable $SqlCmdVars -Verbose
+if ($TargetServerName -eq '.\SQLEXPRESS') {
+    $SqlCmdVars = "DatabaseName=$TargetDatabaseName", "DefaultFilePrefix=$TargetDatabaseName", "DefaultDataPath=$data_path\", "DefaultLogPath=$data_path\"  
+    Invoke-Sqlcmd -InputFile deploy.sql -Variable $SqlCmdVars -Verbose
 
-# relay SQL event logs to Docker
-$lastCheck = (Get-Date).AddSeconds(-2) 
-while ($true) { 
-    Get-EventLog -LogName Application -Source "MSSQL*" -After $lastCheck | Select-Object TimeGenerated, EntryType, Message	 
-    $lastCheck = Get-Date 
-    Start-Sleep -Seconds 2 
+    Write-Verbose "Deployed AssetsDB database, data files at: $data_path"
+
+    $lastCheck = (Get-Date).AddSeconds(-2) 
+    while ($true) { 
+        Get-EventLog -LogName Application -Source "MSSQL*" -After $lastCheck | Select-Object TimeGenerated, EntryType, Message	 
+        $lastCheck = Get-Date 
+        Start-Sleep -Seconds 2 
+    }
+}
+else {
+    $SqlCmdVars = "DatabaseName=$TargetDatabaseName", "DefaultFilePrefix=$TargetDatabaseName", "DefaultDataPath=$data_path\", "DefaultLogPath=$data_path\"  
+    Invoke-Sqlcmd -ServerInstance $TargetServerName -Database $TargetDatabaseName -User $TargetUser -Password $TargetPassword -InputFile deploy.sql -Variable $SqlCmdVars -Verbose
+
+    Write-Verbose "Deployed AssetsDB database, data files at: $data_path"
 }

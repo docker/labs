@@ -30,7 +30,7 @@ Now you have two images locally, each packaging a separate version of the databa
 ```PowerShell
 docker container rm -f assets-db
 
-docker container run -d -p 1433 --name assets-db -v C:\mssql:C:\database dockersamples/assets-db:v2
+docker container run -d -p 1433:1433 --name assets-db -v C:\mssql:C:\database dockersamples/assets-db:v2
 ```
 
 When this new container starts, the init script attaches the existing data files and runs `SqlPackage`. Noe the schema is different from the Dacpac, so the tool generates a diff script to apply. Then it runs the script to update the schema - you can see the output in `docker container logs`:
@@ -46,7 +46,7 @@ VERBOSE: Creating [dbo].[FK_Assets_To_Users]...
 The container retains the upgrade script which `SqlPackage` generates, and you can read it from the container to see the exact SQL statements that were used in the upgrade:
 
  ```PowerShell
- docker container exec assets-db powershell cat C:\init\create.sql
+ docker container exec assets-db powershell cat C:\init\deploy.sql
  ```
 
 For the v2 upgrade the script is 150+ lines of SQL, containing the DDL to update the schema, and the DML post-deployment scripts. The DDL includes the table changes and the new table, as in this snippet:

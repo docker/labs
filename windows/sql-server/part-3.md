@@ -7,21 +7,23 @@ You now have a Docker image with a SQL schema and deployment script, packaged on
 The image can be used in development environments where a fresh database is needed for working on new app features, and you want to easily reset the data to an initial state. In this scenario you don't want to persist data between containers, you want the database container to be disposable:
 
 ```Docker
-docker container run --detach --name assets-db --publish 1433 dockersamples/assets-db:v1
+docker container run --detach --name assets-db --publish 1433:1433 dockersamples/assets-db:v1
 ```
 
 When the container starts it runs the deployment script, finds that there are no existing database files and creates a new database. You can check that by viewing the logs from the container - you'll see the output from the script:
 
 ```
 > docker container logs assets-db
-...
+VERBOSE: Starting SQL Server
+VERBOSE: Changing SA login credentials
+VERBOSE: No data files - will create new database
+Generating publish script for database 'AssetsDB' on server '.\SQLEXPRESS'.
+Successfully generated script to file C:\init\deploy.sql.
+VERBOSE: Changed database context to 'master'.
 VERBOSE: Creating AssetsDB...
 VERBOSE: Changed database context to 'AssetsDB'.
 VERBOSE: Creating [dbo].[Assets]...
 VERBOSE: Creating [dbo].[AssetTypes]...
-VERBOSE: Creating [dbo].[Locations]...
-VERBOSE: Creating [dbo].[FK_Assets_To_Locations]...
-VERBOSE: Creating [dbo].[FK_Assets_To_AssetTypes]...
 ```
 
 You can connect to the database container using SQL Server Management Studio or any other SQL client. From your Docker machine you need to get the IP address of the container with `docker container inspect`: 
@@ -54,7 +56,7 @@ You can see that when you remove the container, and start a new one with the sam
 ```PowerShell
 docker container rm --force assets-db
 
-docker container run --detach --publish 1433 --name assets-db dockersamples/assets-db:v1
+docker container run --detach --publish 1433:1433 --name assets-db dockersamples/assets-db:v1
 ```
 
 Inspect this container with `docker container inspect` and you'll see it has a new IP address - this is a whole new container. Connect your SQL client, repeat the `SELECT * FROM Assets` query and you'll see the table is empty - the old data was lost when you removed the container, and its volume was removed. The new container starts with a new database.
@@ -70,7 +72,7 @@ docker container rm --force assets-db
 
 mkdir C:\mssql
 
-docker container run -d -p 1433 --name assets-db --volume C:\mssql:C:\database dockersamples/assets-db:v1
+docker container run -d -p 1433:1433 --name assets-db --volume C:\mssql:C:\database dockersamples/assets-db:v1
 ```
 
 When the container has started, you can verify that the new database is created and the files are written to the host directory by listing the contents on the host:
@@ -82,8 +84,8 @@ When the container has started, you can verify that the new database is created 
 
 Mode                LastWriteTime         Length Name
 ----                -------------         ------ ----
--a----       25/09/2017     16:20        8388608 AssetsDB_Primary.ldf
--a----       25/09/2017     16:20        8388608 AssetsDB_Primary.mdf
+-a----       10/09/2018     15:13        8388608 AssetsDB_Primary.ldf
+-a----       10/09/2018     15:13        8388608 AssetsDB_Primary.mdf
 ```
 
 Now you can inspect the container to get its IP address, connect and insert rows into the `Assets` table. The data will be stored outside of the container, in the directory on the host. You can replace the container without changing the schema - say you rebuild it with a new version of the base image to get the latest Windows updates. As long as you use the same volume mapping as the previous container, you'll retain all the data:
@@ -91,7 +93,7 @@ Now you can inspect the container to get its IP address, connect and insert rows
 ```PowerShell
 docker container rm -f assets-db
 
-docker container run -d -p 1433 --name assets-db --volume C:\mssql:C:\database dockersamples/assets-db:v1
+docker container run -d -p 1433:1433 --name assets-db --volume C:\mssql:C:\database dockersamples/assets-db:v1
 ```
 
 This is a new container with a new file system, but the database location is mapped to the same host directory as the previous container. The setup script still runs, but it finds no differences in the current database schema and the schema definition in the Dacpac, so there's no diff script to apply.
