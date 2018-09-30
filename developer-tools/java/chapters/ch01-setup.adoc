@@ -4,7 +4,7 @@
 
 = Setup Environments
 
-This section describes the hardware and software needed for this workshop, and how to configure them. This workshop is designed for a BYOL (Brying Your Own Laptop) style hands-on-lab.
+This section describes the hardware and software needed for this workshop, and how to configure them. This workshop is designed for a BYOL (Bring Your Own Laptop) style hands-on-lab.
 
 == Hardware & Software
 
