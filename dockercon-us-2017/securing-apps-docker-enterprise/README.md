@@ -333,7 +333,7 @@ Creating network pets_backend
 Creating service pets_web
 ```
 
-6. Go to your browser and in the address pane type in `<node0-public-ip>`. You should see that the app has succesfully deployed with the new change.
+6. Go to your browser and in the address pane type in `<node0-public-ip>`. You should see that the app has successfully deployed with the new change.
 
 ### <a name="Task 3.2"></a>Task 3.2: Rescan the Remediated Application
 

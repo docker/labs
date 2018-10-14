@@ -407,7 +407,7 @@ Now we'll explore delegation roles in notary. Delegation roles are a subset of t
 
    This command will allow the collaborator to push any target (from `--all-paths`) to the `targets/releases` role if they can sign with their private key `delegation.key` in order to produce a valid signature that can be verified by `delegation.crt`'s public key material.
 
-   Be aware that this commmand only stages the delegation role addition.
+   Be aware that this command only stages the delegation role addition.
 
 5. Publish the addition of the delegation role
 

@@ -10,7 +10,7 @@ There are many different versions of Ruby in use. Ruby applications can be based
 
 In contrast, there are also many many versions of Python in use, but the majority of applications use the lastest 2.X or 3.X versions. Similarly, Java applications use the last two major releases of either Java released by Oracle or OpenJDK. 
 
-Earlier versions of Ruby are used in production because upgrading presents challenges such as, critical gems are not backward-compatible. Debugging tools like pry, rubocop, byebug... do work on many versions, but not consistently on all Ruby verisons.
+Earlier versions of Ruby are used in production because upgrading presents challenges such as, critical gems are not backward-compatible. Debugging tools like pry, rubocop, byebug... do work on many versions, but not consistently on all Ruby versions.
 
 As a result, Ruby developers (and people deploying Ruby apps) rely on tools like [rvm](https://rvm.io/) or [rbenv](https://github.com/rbenv/rbenv) to install a specific version of Ruby. These tools enable developers to switch between different versions of Ruby, and between different sets of gems (when different applications have conflicting requirements).
 

@@ -14,7 +14,7 @@ The Customizer Library adds sections, settings and controls to the customizer ba
 
 At the moment there is only one custom control (for textarea), but look for additional controls as the library matures.
 
-The Customizer Library includes additional classes and helper functions for creating inline styles and loading Google fonts.  These functions and classes were developed by [The Theme Foundry](https://thethemefoundry.com/) for their theme [Make](https://thethemefoundry.com/wordpress-themes/make/) and I've found them quite useful in my own projects.  However, I'm considering moving them into seperate modules in order to make the core library as focused as possible.  Feedback on this is welcome.
+The Customizer Library includes additional classes and helper functions for creating inline styles and loading Google fonts.  These functions and classes were developed by [The Theme Foundry](https://thethemefoundry.com/) for their theme [Make](https://thethemefoundry.com/wordpress-themes/make/) and I've found them quite useful in my own projects.  However, I'm considering moving them into separate modules in order to make the core library as focused as possible.  Feedback on this is welcome.
 
 ## Installation
 

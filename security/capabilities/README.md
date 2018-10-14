@@ -198,7 +198,7 @@ usage: capsh [args ...]
   --killit=<n>   send signal(n) to child
   --forkfor=<n>  fork and make child sleep for <n> sec
   ==             re-exec(capsh) with args as for --
-  --             remaing arguments are for /bin/bash
+  --             remaining arguments are for /bin/bash
                  (without -- [capsh] will simply exit(0))
 ```
 

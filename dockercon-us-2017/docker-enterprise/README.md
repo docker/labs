@@ -129,7 +129,7 @@ It will take up to 30 seconds to install.
 
 4. Log in to UCP by going to `https://<node0-public-dns>` in your browswer
 
-Depending on what browser you are using, you will receive a warning about the connection. Proceed through to the UCP URL. The warning is occuring because we UCP uses privately signed certificates by default. In a production installation we would add our own certificates that would be trusted by our browser.
+Depending on what browser you are using, you will receive a warning about the connection. Proceed through to the UCP URL. The warning is occurring because we UCP uses privately signed certificates by default. In a production installation we would add our own certificates that would be trusted by our browser.
 
 ![](images/private.png) 
 
@@ -203,7 +203,7 @@ A [Docker Stack](https://docs.docker.com/engine/reference/commandline/stack_depl
 In this section we will deploy the [Docker Pets](https://github.com/mark-church/docker-paas) application using a compose file. In the following sections we will add features to our compose file and make our application progressively more complex and feature-full. Docker Pets is a simple web app that records votes for different animals and uses a persistent backend to record the votes. It's comprised of two images:
 
 - **`chrch/docker-pets`** is a front-end Python Flask container that serves up random images of housepets, depending on the given configuration
-- **`consul`** (which will be used in a later compose file) is a back-end KV store that stores the number of visits that the web services recieve. It's configured to bootstrap itself with 3 replicas so that we have fault tolerant persistence.
+- **`consul`** (which will be used in a later compose file) is a back-end KV store that stores the number of visits that the web services receive. It's configured to bootstrap itself with 3 replicas so that we have fault tolerant persistence.
 
 This is the first iteration of our compose file for the Docker Pets application:
 
