@@ -52,7 +52,7 @@ For more information, see the [official AppArmor documentation wiki](http://wiki
 
 In this step you will check the status of AppArmor on your Docker Host and learn how to identify whether or not Docker containers are running with an AppArmor profile.
 
-1.  View the status of AppArmor on your Docker Host with the `apparmor_status` command. You may need to preceed the command with `sudo`.
+1.  View the status of AppArmor on your Docker Host with the `apparmor_status` command. You may need to precede the command with `sudo`.
 
    ```
    $ apparmor_status

@@ -128,7 +128,7 @@ Be sure to substitute `nigelpoulton` with your own Docker ID in the steps below.
   v1: digest: sha256:99588bc8883c9...5f600a3e9f8d5cd size: 528
   ```
 
-Congratualtions. In this step you tagged and pushed an image to your newly
+Congratulations. In this step you tagged and pushed an image to your newly
 created *private repo* on Docker Hub.
 
 # <a name="results"></a>Step 4: View scan results

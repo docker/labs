@@ -154,7 +154,7 @@ Specify the Dockerfile path (in Step 7):
   + Enter **/voting/Dockerfile** for the **Dockerfile Path**
 
 ### Check to make sure the repositories were created
-If you click the **Repositories** menu on the left you should see both the ```voting``` and ```results``` respositories were created. 
+If you click the **Repositories** menu on the left you should see both the ```voting``` and ```results``` repositories were created. 
 
 Well done! You've created two new repos and configured them to autobuild whenever new changes are pushed to the associated GitHub repos.
 
