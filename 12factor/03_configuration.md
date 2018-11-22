@@ -4,10 +4,15 @@ Configuration (credentials, database connection string, ...) should be stored in
 
 ## What does that mean for our application ?
 
-In _config/connections.js_, we define the _mongo_ connection and use MONGO_URL environment variable to pass the mongo connection string.
+In _config/datastores.js_, we define the _mongo_ datastore and use MONGO_URL environment variable to pass the mongo datastore string (we'll see how to set MONGO_URL in step [5 - Build / Release / Run](05_build_release_run.md)).
 
 ```node
-module.exports.connections = {
+module.exports.datastores = {
+  // ...
+  default: {
+    // ...
+  },
+  // define mongo datastore
   mongo: {
     adapter: 'sails-mongo',
     url: process.env.MONGO_URL
@@ -15,11 +20,19 @@ module.exports.connections = {
 };
 ```
 
-In _config/model.js_, we make sure the _mongo_ connection defined above is the one used.
+In _config/models.js_, we make sure the _mongo_ datastore defined above is the one used. Also, we need to set the _id_ attribute properly.
 
 ```node
 module.exports.models = {
-  connection: 'mongo',
+  // ...
+  attributes: {
+    // ...
+    // set mongo id format
+    id: { type: 'string', columnName: '_id' },
+    // ...
+  },
+  // use mongo datastore instead of default
+  datastore: 'mongo',
   migrate: 'safe'
 };
 ```
