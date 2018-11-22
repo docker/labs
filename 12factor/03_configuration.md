@@ -8,9 +8,9 @@ In _config/datastores.js_, we define the _mongo_ datastore and use MONGO_URL env
 
 ```node
 module.exports.datastores = {
-  // ...
+  ...
   default: {
-    // ...
+    ...
   },
   // define mongo datastore
   mongo: {
@@ -24,12 +24,12 @@ In _config/models.js_, we make sure the _mongo_ datastore defined above is the o
 
 ```node
 module.exports.models = {
-  // ...
+  ...
   attributes: {
-    // ...
+    ...
     // set mongo id format
     id: { type: 'string', columnName: '_id' },
-    // ...
+    ...
   },
   // use mongo datastore instead of default
   datastore: 'mongo',
@@ -38,5 +38,14 @@ module.exports.models = {
 ```
 
 Those changes enable to provide a different _MONGO_URL_ very easily as it's defined in the environment.
+
+In order to run in production, Sails requires us to set at least one URL in the `onlyAllowOrigins` array in _config/sockets.js_. We'll read the values from environment variables `ALLOW_ORIGIN` and `PORT` and fallback to default values in case they are not set.
+
+```node
+module.exports.sockets = {
+  ...
+  onlyAllowOrigins: [ "http://" + (process.env.ALLOW_ORIGIN || "localhost") + ":" + (process.env.PORT || "1337") ]
+};
+```
 
 [Previous](02_dependencies.md) - [Next ](04_external_services.md)
