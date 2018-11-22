@@ -28,7 +28,7 @@ services:
   app:
     image: message-app:v0.2 # New version taking into account REDIS_HOST
     ports:
-      - "8000:80"     // app service is exposed on the port 8000 of the host
+      - "8000:80"     # app service is exposed on the port 8000 of the host
     links:
       - mongo
     depends_on:
