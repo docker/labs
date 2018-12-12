@@ -332,7 +332,7 @@ that in application Docker image.
 Create a custom Java runtime that is small and only contains the `java.base`
 module:
 
-    docker container run --rm \
+    docker run --rm \
       --volume $PWD:/out \
       jdk-9-debian-slim \
       jlink --module-path /opt/jdk-9/jmods \
