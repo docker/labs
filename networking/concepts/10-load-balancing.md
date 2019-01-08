@@ -35,7 +35,7 @@ $ docker service inspect myservice
 > DNS round robin (DNS RR) load balancing is another load balancing option for services (configured with `--endpoint-mode`). In DNS RR mode a VIP is not created for each service. The Docker DNS server resolves a service name to individual container IPs in round robin fashion.
 
 
-###External Load Balancing (Docker Routing Mesh) 
+### External Load Balancing (Docker Routing Mesh) 
 You can expose services externally by using the `--publish` flag when creating or updating the service. Publishing ports in Docker Swarm mode means that every node in your cluster will be listening on that port. But what happens if the service's task isn't on the node that is listening on that port?
 
 This is where routing mesh comes into play. Routing mesh is a feature introduced in Docker 1.12 that combines `ipvs` and `iptables` to create a powerful cluster-wide transport-layer (L4) load balancer. It allows all the Swarm nodes to accept connections on the services' published ports. When any Swarm node receives traffic destined to the published TCP/UDP port of a running `service`, it forwards it to service's VIP using a pre-defined overlay network called `ingress`. The `ingress` network behaves similarly to other overlay networks but its sole purpose is to transport mesh routing traffic from external clients to cluster services. It uses the same VIP-based internal load balancing as described in the previous section.
@@ -43,7 +43,7 @@ This is where routing mesh comes into play. Routing mesh is a feature introduced
 Once you launch services, you can create an external DNS record for your applications and map it to any or all Docker Swarm nodes. You do not need to worry about where your container is running as all nodes in your cluster look as one with the routing mesh routing feature.  
 
 ```
-#Create a service with two replicas and export port 8000 on the cluster
+# Create a service with two replicas and export port 8000 on the cluster
 $ docker service create --name app --replicas 2 --network appnet -p 8000:80 nginx
 ```
 
