@@ -180,13 +180,13 @@ The important part of this file
 The following commands are some of the main ones to interact with the application
 
 * Start the application ```docker-compose up -d```  (-d option enables the application to run in background)
-* Check the status of each services conposing the application ```docker-compose ps```
+* Check the status of each services composing the application ```docker-compose ps```
 * Stop the application ```docker-compose stop```
 * Scale the app service changing the number of instances ```docker-compose scale app=3```
 
 ![3 api containers](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/single_host_net_1.png)
 
-Several containers of the app service (our Node.js API) are running and are accessible through random port number of the Docker host. Wow are the new instanciated containers addressed ?
+Several containers of the app service (our Node.js API) are running and are accessible through random port number of the Docker host. Wow are the new instantiated containers addressed?
 
 => Need to add a load balancer that will be updated each time a container is created or removed and that will forward each request to a running instance of the app service.
 
