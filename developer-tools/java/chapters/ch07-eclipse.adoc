@@ -40,7 +40,7 @@ image::docker-eclipse-docker-perspective-default-look.png[]
 This has three views:
 
 - *Docker Explorer*: a tree view listing all connected Docker instances, with image and containers.
-- *Docker Images*: a table view listing containers for selected Docker connection.
+- *Docker Images*: a table view listing images for selected Docker connection.
 - *Docker Containers*: a table view listing containers for selected Docker connection
 
 Click on the text in Docker Explorer to create a new connection. If you are on Mac/Windows, you are likely using Docker for Mac/Windows or Docker Toolbox to setup Docker Host. Eclipse allows to configure Docker Engine using both Docker for Mac/Windows and Docker Toolbox.
