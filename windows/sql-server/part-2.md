@@ -4,7 +4,7 @@ Your database image will come packaged with the schema, by compiling the Dacpac 
 
 ## Dockerfile for the SQL Server Image
 
-[SQL Server Express](https://www.microsoft.com/en-us/sql-server/sql-server-editions-express) is the free version of SQL Server which is suitable for dev and test environments, and even for production with smaller workloads. Microsoft provide a Docker image with SQL Server Expres installed on Docker Hub: [microsoft/mssql-server-windows-express](https://hub.docker.com/r/microsoft/mssql-server-windows-express/). You will use that as the basis for your database image.
+[SQL Server Express](https://www.microsoft.com/en-us/sql-server/sql-server-editions-express) is the free version of SQL Server which is suitable for dev and test environments, and even for production with smaller workloads. Microsoft provides a Docker image with SQL Server Express installed on Docker Hub: [microsoft/mssql-server-windows-express](https://hub.docker.com/r/microsoft/mssql-server-windows-express/). You will use that as the basis for your database image.
 
 Version 1 of the schema is packaged in [Dockerfile.v1](Dockerfile.v1), using multi-stage builds. The first stage compiles the Dacpac from the SQL Server Data Tools project. It starts by using the builder from [Part 1](part-1.md), and copying in the V1 source code:
 
