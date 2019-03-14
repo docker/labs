@@ -362,7 +362,7 @@ web
 ```
 
 ## Cleanup
-There's also a [bash script](https://github.com/ManoMarks/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-vbox-teardown.sh) that will clean up your machine by removing all the Docker Machines.
+There's also a [bash script](https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/swarm-node-vbox-teardown.sh) that will clean up your machine by removing all the Docker Machines.
 
 ```
 $ ./swarm-node-vbox-teardown.sh
