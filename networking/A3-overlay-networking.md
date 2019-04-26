@@ -253,7 +253,7 @@ To complete this step you will need the IP address of the service task running o
     ]
     ```
 
-    Notice that the IP address listed for the service task (container) running on **node1** is different to the IP address for the service task running on **node2**. Note also that they are one the sane "overnet" network.
+    Notice that the IP address listed for the service task (container) running on **node1** is different to the IP address for the service task running on **node2**. Note also that they are on the same "overnet" network.
 
 2. Run a `docker ps` command to get the ID of the service task on **node1** so that you can log in to it in the next step.
 
