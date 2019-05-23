@@ -5,7 +5,7 @@
 
 Este repositório contém exemplos e tutoriais do [Docker](https://docker.com) escritos pela Docker e por membros da comunidade. Contribuições são bem-vindas para o crescimento do repositório.
 
-#### Docker tutoiais:
+#### Docker tutoriais:
 * [Docker para iniciantes](beginner/readme.md)
 * [Docker Swarm Mode](swarm-mode/README.md)
 * [Configurando ferramentas de desenvolvimento e linguagens de programação](developer-tools/README.md)
