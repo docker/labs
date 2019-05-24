@@ -1,4 +1,4 @@
-## Docker for beginners
+## Docker para iniciantes
 
 Esse tutorial contém as sessões:
 
