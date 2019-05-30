@@ -208,7 +208,7 @@ docker service scale web=4
 ```
 +
 This is accurate as a new container is created and the event is shown in T1 console.
-.. In T2, scale the service back to 2 using the command `docker servie scale web=2`
+.. In T2, scale the service back to 2 using the command `docker service scale web=2`
 .. T1 does not show any additional events because its only looking for create events
 .. More samples are explained at https://docs.docker.com/engine/reference/commandline/events/#/filter-events-by-criteria.
 
@@ -216,7 +216,7 @@ This is accurate as a new container is created and the event is shown in T1 cons
 
 https://prometheus.io/[Prometheus] is an open-source systems monitoring and alerting toolkit. Prometheus collects metrics from monitored targets by scraping metrics from HTTP endpoints on these targets. Docker instance can be configured as Prometheus target.
 
-Different targets to scrape are defined in the https://prometheus.io/docs/operating/configuration/[Prometheus configuration file]. Targets may be statically configured via the `static_configs` parameter in the configuration fle or dynamically discovered using one of the supported service-discovery mechanisms (Consul, DNS, Etcd, etc.).
+Different targets to scrape are defined in the https://prometheus.io/docs/operating/configuration/[Prometheus configuration file]. Targets may be statically configured via the `static_configs` parameter in the configuration file or dynamically discovered using one of the supported service-discovery mechanisms (Consul, DNS, Etcd, etc.).
 
 Prometheus collects metrics from monitored targets by scraping metrics from HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.
 
