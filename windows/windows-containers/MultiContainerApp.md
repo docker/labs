@@ -6,7 +6,7 @@ This tutorial walks you through building and running the sample Album Viewer app
 
 ## Using Docker Compose on Windows
 
-[Docker Compose](https://docs.docker.com/compose/) is a great way develop distributed applications, where all the components run in their own containers. In this lab you'll use Docker Compose to run SQL Server in a container, as the data store for an ASP.NET Core web application running in another container.
+[Docker Compose](https://docs.docker.com/compose/) is a great way to develop distributed applications, where all the components run in their own containers. In this lab you'll use Docker Compose to run SQL Server in a container, as the data store for an ASP.NET Core web application running in another container.
 
 Docker Compose is installed with [Docker Desktop on Windows 10](https://www.docker.com/docker-windows). If you've installed the Docker Engine as a Windows Service instead, you can download the compose command line using PowerShell:
 
