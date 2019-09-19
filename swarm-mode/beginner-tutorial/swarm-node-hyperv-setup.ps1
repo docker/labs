@@ -4,7 +4,7 @@ $managers=3
 $workers=3
 
 # Change the SwitchName to the name of your virtual switch
-$SwitchName = "New Virtual Switch"
+$SwitchName = "Primary Virtual Switch"
 
 # create manager machines
 echo "======> Creating manager machines ..."
