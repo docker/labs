@@ -420,6 +420,8 @@ Successfully built 2f7357a0805d
 
 If you don't have the `alpine:3.5` image, the client will first pull the image and then create your image. Therefore, your output on running the command will look different from mine. If everything went well, your image should be ready! Run `docker images` and see if your image (`<YOUR_USERNAME>/myfirstapp`) shows.
 
+If you encounter a failure while building the docker image, then restart with the build command and docker will resume its operation from where it failed. In this way, docker saves time while building docker images in cases of failure.
+
 ### 2.3.4 Run your image
 The next step in this section is to run the image and see if it actually works.
 
