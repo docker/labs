@@ -16,7 +16,7 @@ Docker simplifies software delivery by making it easy to build and share images 
 
 Your application typically requires specific versions for your operating system, application server, JDK, and database server, may require to tune the configuration files, and similarly multiple other dependencies. The application may need binding to specific ports and certain amount of memory. The components and configuration together required to run your application is what is referred to as application operating system.
 
-You can certainly provide an installation script that will download and install these components. Docker simplifies this process by allowing to create an image that contains your application and infrastructure together, managed as one component. These images are then used to create Docker containers which run on the container virtualization platform, provided by Docker.
+You can certainly provide an installation script that will download and install these components. Docker simplifies this process by allowing you to create an image that contains your application and infrastructure together, managed as one component. These images are then used to create Docker containers which run on the container virtualization platform, provided by Docker. The latter procedure is known as 'containerization'.
 
 == Main Components
 
@@ -31,13 +31,13 @@ In order for these three components to work together, the *Docker Daemon* (or Do
 .Docker architecture
 image::docker-architecture.png[]
 
-The Client communicates with the Engine that is either co-located on the same host or on a different host. Client uses the `pull` command to request the Engine to pull an image from the registry. The Engine then downloads the image from Docker Store, or whichever registry is configured. Multiple images can be downloaded from the registry and installed on the Engine. Client uses the `run` run the container.
+The Client communicates with the Engine that is either co-located on the same host or on a different host. The Client uses the `pull` command to request the Engine to pull an image from the registry. The Engine then downloads the image from Docker Store, or whichever registry is configured. Multiple images can be downloaded from the registry and installed on the Engine. The Client uses the `run` run the container.
 
 == Docker Image
 
 We've already seen that Docker images are read-only templates from which Docker containers are launched. Each image consists of a series of layers. Docker makes use of union file systems to combine these layers into a single image. Union file systems allow files and directories of separate file systems, known as branches, to be transparently overlaid, forming a single coherent file system.
 
-One of the reasons Docker is so lightweight is because of these layers. When you change a Docker image—for example, update an application to a new version— a new layer gets built. Thus, rather than replacing the whole image or entirely rebuilding, as you may do with a virtual machine, only that layer is added or updated. Now you don't need to distribute a whole new image, just the update, making distributing Docker images faster and simpler.
+One of the reasons Docker is so lightweight is because of these layers. When you change a Docker image—for example, update an application to a new version— a new layer gets built. Thus, rather than replacing the whole image or entirely rebuilding, as you may do with a virtual machine, only the required layer is added or updated. Now you don't need to distribute a whole new image, just the update, making distributing Docker images faster and simpler.
 
 Every image starts from a base image, for example `ubuntu`, a base Ubuntu image, or `fedora`, a base Fedora image. You can also use images of your own as the basis for a new image, for example if you have a base Apache image you could use this as the base of all your web application images.
 
@@ -62,7 +62,7 @@ Docker Host is created as part of installing Docker on your machine. Once your D
 
 == Docker Client
 
-The client communicates with the Docker Host and let's you work with images and containers.
+The client communicates with the Docker Host and lets you work with images and containers.
 
 Check if your client is working using the following command:
 
