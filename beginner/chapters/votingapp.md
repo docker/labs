@@ -190,11 +190,11 @@ The [`deploy`](https://docs.docker.com/compose/compose-file/#deploy) key is new 
 
 #### Test run
 
-Now that the app is running, you can go to `http://localhost:5000` to see:
+Now that the app is running, you can go to [http://localhost:5000](http://localhost:5000) to see:
 
 <img src="../images/vote.png" title="vote">
 
-Click on one to vote. You can check the results at `http://localhost:5001`.
+Click on one to vote. You can check the results at [http://localhost:5001](http://localhost:5001).
 
 **NOTE**: If you are running this tutorial in a cloud environment like AWS, Azure, Digital Ocean, or GCE you will not have direct access to localhost or 127.0.0.1 via a browser.  A work around for this is to leverage ssh port forwarding. Below is an example for Mac OS. Similarly this can be done for Windows and Putty users.
 
