@@ -99,4 +99,4 @@ module.exports.connections = {
 ```
 Next: [Application Image][application-image]
 
-[application-image] : ./2_application_image.md
+[application-image]: ./2_application_image.md

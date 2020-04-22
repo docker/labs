@@ -267,5 +267,5 @@ Seems to be good :)
 Previous: [Publish Image][publish-image]
 Next: [Multiple Host Networking][multiple-host-networking]
 
-[publish-image] : ./3_publish_image.md
-[multiple-host-networking] : ./5_multiple_hosts_networking.md
+[publish-image]: ./3_publish_image.md
+[multiple-host-networking]: ./5_multiple_hosts_networking.md

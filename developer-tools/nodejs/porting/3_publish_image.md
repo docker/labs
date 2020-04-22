@@ -44,5 +44,5 @@ The image can then be used from any Docker host (the image is public in this exa
 Previous: [Application Image][application-image]
 Next: [Single Host Networking][single-host-networking]
 
-[application-image] : ./2_application_image.md
-[single-host-networking] : ./4_single_host_networking.md
+[application-image]: ./2_application_image.md
+[single-host-networking]: ./4_single_host_networking.md
