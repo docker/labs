@@ -104,6 +104,7 @@ PING mongo.appnet (10.0.0.2): 56 data bytes
 ```
 
 Previous: [Single Host Networking][single-host-networking]
+
 Next: [Deploy On Swarm][deploy-on-swarm]
 
 [single-host-networking]: ./4_single_host_networking.md

@@ -76,7 +76,8 @@ error: Error: Failed to connect to MongoDB.  Are you sure your configured Mongo 
 
 
 Previous: [Node Application][node-application] 
+
 Next: [Publish Image][publish-image]
 
-[node-application] : ./1_node_application.md
-[publish-image] : ./3_publish_image.md
+[node-application]: ./1_node_application.md
+[publish-image]: ./3_publish_image.md

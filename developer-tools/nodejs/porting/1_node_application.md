@@ -97,6 +97,7 @@ module.exports.connections = {
   }
 ]
 ```
+
 Next: [Application Image][application-image]
 
 <<<<<<< HEAD

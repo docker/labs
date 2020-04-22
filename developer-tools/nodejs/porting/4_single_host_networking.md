@@ -265,6 +265,7 @@ $ curl -XGET http://192.168.99.100:8000/message
 Seems to be good :)
 
 Previous: [Publish Image][publish-image]
+
 Next: [Multiple Host Networking][multiple-host-networking]
 
 [publish-image]: ./3_publish_image.md
