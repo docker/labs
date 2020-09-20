@@ -182,7 +182,7 @@ It's important that you use [version 3](https://docs.docker.com/compose/compose-
         condition: on-failure
 ```
 
-The `image` key there specifies which image you can use, in this case the image `dockersamples/examplevotingapp_vote:before`. If you're familiar with Compose, you may know that there's a `build` key, which builds based on a Dockerfile. However, `docker stack deploy` does not suppport `build`, so you need to use pre-built images.
+The `image` key there specifies which image you can use, in this case the image `dockersamples/examplevotingapp_vote:before`. If you're familiar with Compose, you may know that there's a `build` key, which builds based on a Dockerfile. However, `docker stack deploy` does not support `build`, so you need to use pre-built images.
 
 Much like `docker run` you will see you can define `ports` and `networks`. There's also a `depends_on` key which allows you to specify that a service is only deployed after another service, in this case `vote` only deploys after `redis`.
 
