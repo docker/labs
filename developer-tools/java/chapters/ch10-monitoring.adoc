@@ -190,9 +190,9 @@ Let's apply the filters.
 docker system events -f container=web.1.ytyv0gqi7dzxtetssrlsgvvbu
 ```
 +
-You may have to terminate previous run of `docker system events` using `Ctrl` + `C` to give this new command. 
+You may have to terminate previous run of `docker system events` using `Ctrl` + `C` to give this new command.
 +
-.. In T2, terminate the second replica of the service as `docker container rm -f web.2.1ic0vevvvu2nwwyc6css58ref`. 
+.. In T2, terminate the second replica of the service as `docker container rm -f web.2.1ic0vevvvu2nwwyc6css58ref`.
 .. T1 does not show any events because its only listening for events from the first replica of the service.
 . Show events for an event
 .. In T1, give the command `docker system events -f event=create`.
@@ -250,14 +250,17 @@ In this section, we'll start Prometheus and use it to scrape it's own health.
 . Create a text file `prometheus.yml` and use the following content
 +
 ```
-# A scrape configuration scraping a Node Exporter and the Prometheus server
-# itself.
 scrape_configs:
   # Scrape Prometheus itself every 5 seconds.
   - job_name: 'prometheus'
     scrape_interval: 5s
     static_configs:
       - targets: ['localhost:9090']
+  # Scrape Docker-Daemon every 10s
+  - job_name: 'docker-for-mac'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['docker.for.mac.localhost:9323']
 ```
 +
 This configuration file scrapes data from the Prometheus container which will be started subsequently on port 9090.
@@ -311,6 +314,13 @@ image::prometheus-metrics6.png[]
 
 Multiple graphs can be added this way.
 
+==== Plot the Docker daemon internal metrics
+
+The experimental feature on the Docker deamon we enabled before, exposes various metrics about the daemon itself.
+For example the `engine_daemon_events_total` metric provides the number of events which happend on the Docker Daemon (see also the `docker system events` command).
+
+image::prometheus-metrics17.png[]
+
 === Node health
 
 In this section, we'll start Prometheus node exporter that will publish machine metrics. Then we'll use Prometheus to scrape its health information about the node running Docker.
@@ -358,6 +368,7 @@ scrape_configs:
     static_configs:
       - targets:
         - 'localhost:9090'
+
   - job_name: 'node resources'
     dns_sd_configs:
       - names: ['tasks.node']
@@ -414,7 +425,7 @@ docker service create \
 ```
 ID                  NAME                MODE                REPLICAS            IMAGE                       PORTS
 lzl41s2i66jd        metrics             replicated          1/1                 prom/prometheus:latest      *:9090->9090/tcp
-dro3ncpyuchp        node                global              1/1                 prom/node-exporter:latest   
+dro3ncpyuchp        node                global              1/1                 prom/node-exporter:latest
 ```
 +
 . Confirm that all the targets are configured correctly at http://localhost:9090/targets[Prometheus dashboard]:
@@ -597,7 +608,7 @@ As discussed earlier, Prometheus collects metrics from monitored targets by scra
 
 An link:ch05-compose.adoc#configuration-file[earlier chapter] explained a simple Java EE application that talks to a MySQL database. This application also publishes Prometheus-style metrics for the underlying JVM at `/metrics`. It also publishes application-specific metrics such as total number of times `GET /` and `GET /{id}` is called.
 
-The complete set of JVM metrics are explained at https://github.com/prometheus/client_java. Refer to https://github.com/arun-gupta/docker-javaee/tree/master/employees/src/main/java/org/javaee/samples/employees/metrics for more details on how these metrics are enabled. 
+The complete set of JVM metrics are explained at https://github.com/prometheus/client_java. Refer to https://github.com/arun-gupta/docker-javaee/tree/master/employees/src/main/java/org/javaee/samples/employees/metrics for more details on how these metrics are enabled.
 
 === Start Java application
 
@@ -851,4 +862,3 @@ The green bar indicates that the data source was added successfully.
 . Enter the following Prometheus query expressions in the query field. The graphs will referesh in a few seconds and will look like as shown:
 +
 image::grafana-metrics4.png[]
-
