@@ -5,14 +5,14 @@
 	<groupId>com.docker</groupId>
 	<artifactId>UserSignup</artifactId>
 	<packaging>war</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>UserSignup Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>3.2.4.RELEASE</version>
+			<version>${spring.release}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -48,12 +48,12 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
-			<version>3.2.0.RELEASE</version>
+			<version>${spring.release}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>3.2.0.RELEASE</version>
+			<version>${spring.release}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -66,10 +66,17 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-simple</artifactId>
+                  <version>1.6.2</version>
+                </dependency>
 	</dependencies>
 	<properties>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring.release>4.3.25.RELEASE</spring.release>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	<build>
 		<finalName>UserSignup</finalName>
