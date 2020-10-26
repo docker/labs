@@ -68,7 +68,7 @@ $ docker port static-site
 
 If you are running [Docker for Mac](https://docs.docker.com/docker-for-mac/), [Docker for Windows](https://docs.docker.com/docker-for-windows/), or Docker on Linux, you can open `http://localhost:[YOUR_PORT_FOR 80/tcp]`. For our example this is `http://localhost:32773`.
 
-If you are using Docker Machine on Mac or Windows, you can find the hostname on the command line using `docker-machine` as follows (assuming you are using the `default` machine).
+If you are using [**Docker Machine** on Mac or Windows *(Legacy)*](https://docs.docker.com/toolbox/), you can find the hostname on the command line using `docker-machine` as follows (assuming you are using the `default` machine).
 
 ```bash
 $ docker-machine ip default
