@@ -5,18 +5,18 @@ app = Flask(__name__)
 
 # list of cat images
 images = [
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr05/15/9/anigif_enhanced-buzz-26388-1381844103-11.gif",
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr01/15/9/anigif_enhanced-buzz-31540-1381844535-8.gif",
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr05/15/9/anigif_enhanced-buzz-26390-1381844163-18.gif",
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr06/15/10/anigif_enhanced-buzz-1376-1381846217-0.gif",
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr03/15/9/anigif_enhanced-buzz-3391-1381844336-26.gif",
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr06/15/10/anigif_enhanced-buzz-29111-1381845968-0.gif",
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr03/15/9/anigif_enhanced-buzz-3409-1381844582-13.gif",
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr02/15/9/anigif_enhanced-buzz-19667-1381844937-10.gif",
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr05/15/9/anigif_enhanced-buzz-26358-1381845043-13.gif",
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr06/15/9/anigif_enhanced-buzz-18774-1381844645-6.gif",
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr06/15/9/anigif_enhanced-buzz-25158-1381844793-0.gif",
-    "http://ak-hdl.buzzfed.com/static/2013-10/enhanced/webdr03/15/10/anigif_enhanced-buzz-11980-1381846269-1.gif"
+    "https://upload.wikimedia.org/wikipedia/commons/b/bb/Kittyply_edit1.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Felis_silvestris_catus_lying_on_rice_straw.jpg/1920px-Felis_silvestris_catus_lying_on_rice_straw.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Domestic_Cat_Face_Shot.jpg/1920px-Domestic_Cat_Face_Shot.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/d/da/Cat_tongue_macro.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/3/3b/Gato_enervado_pola_presencia_dun_can.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Kot_z_mysz%C4%85.jpg/1024px-Kot_z_mysz%C4%85.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Large_Ragdoll_cat_tosses_a_mouse.jpg/1920px-Large_Ragdoll_cat_tosses_a_mouse.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/b/b5/1dayoldkitten.JPG",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Felis_catus-cat_on_snow.jpg/1920px-Felis_catus-cat_on_snow.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/7/76/TapetumLucidum.JPG",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Domestic_Cat_Demonstrating_Dilated_Slit_Pupils.jpg/800px-Domestic_Cat_Demonstrating_Dilated_Slit_Pupils.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Black_Cat_%287983739954%29.jpg/1920px-Black_Cat_%287983739954%29.jpg"
 ]
 
 @app.route('/')
