@@ -19,7 +19,7 @@ _Dockerfile_ is usually called _Dockerfile_. The complete list of commands that 
 |==================
 | Command | Purpose | Example
 | FROM | First non-comment instruction in _Dockerfile_ | `FROM ubuntu`
-| COPY | Copies mulitple source files from the context to the file system of the container at the specified path | `COPY .bash_profile /home`
+| COPY | Copies multiple source files from the context to the file system of the container at the specified path | `COPY .bash_profile /home`
 | ENV | Sets the environment variable | `ENV HOSTNAME=test`
 | RUN | Executes a command | `RUN apt-get update`
 | CMD | Defaults for an executing container | `CMD ["/bin/echo", "hello world"]`
