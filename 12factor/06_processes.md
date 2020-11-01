@@ -52,11 +52,13 @@ services:
       - "8000:80"
     links:
       - mongo
+      - kv
     depends_on:
       - mongo
+      - kv
     environment:
       - MONGO_URL=mongodb://mongo/messageApp
-      - REDIS_URL=redis
+      - REDIS_HOST=kv
 volumes:
   mongo-data:
   redis-data:
