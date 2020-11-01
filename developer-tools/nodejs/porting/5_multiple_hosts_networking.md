@@ -57,7 +57,7 @@ We will create an overlay user defined network and benefit from the embedded DNS
 
 ## Creation of an overlay network
 
-As seen befire, a user defined network can easily be created. Let's create an overlay network, named **appnet**, from host1.
+As seen before, a user defined network can easily be created. Let's create an overlay network, named **appnet**, from host1.
 
 ```docker $(docker-machine config host1) network create -d overlay appnet```
 
