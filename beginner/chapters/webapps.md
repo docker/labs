@@ -6,7 +6,7 @@ Great! So you have now looked at `docker run`, played with a Docker container an
 
 Let's start by taking baby-steps. First, we'll use Docker to run a static website in a container. The website is based on an existing image. We'll pull a Docker image from Docker Store, run the container, and see how easy it is to set up a web server.
 
-The image that you are going to use is a single-page website that was already created for this demo and is available on the Docker Store as [`dockersamples/static-site`](https://store.docker.com/community/images/dockersamples/static-site). You can download and run the image directly in one go using `docker run` as follows.
+The image that you are going to use is a single-page website that was already created for this demo and is available on DockerHub as [`dockersamples/static-site`](https://hub.docker.com/r/dockersamples/static-site). You can download and run the image directly in one go using `docker run` as follows.
 
 ```bash
 $ docker run -d dockersamples/static-site
