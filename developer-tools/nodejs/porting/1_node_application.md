@@ -97,3 +97,11 @@ module.exports.connections = {
   }
 ]
 ```
+
+Next: [Application Image][application-image]
+
+<<<<<<< HEAD
+[application-image]: ./2_application_image.md
+=======
+[application-image]: ./2_application_image.md
+>>>>>>> befd0a3dcc9e5302d95bf80b9df85eda46c84c06

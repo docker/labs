@@ -75,3 +75,9 @@ error: Error: Failed to connect to MongoDB.  Are you sure your configured Mongo 
 **The application cannot connect to a database as we did not provide external db information nor container running mongodb**
 
 
+Previous: [Node Application][node-application] 
+
+Next: [Publish Image][publish-image]
+
+[node-application]: ./1_node_application.md
+[publish-image]: ./3_publish_image.md
