@@ -202,19 +202,10 @@ app = Flask(__name__)
 
 # list of cat images
 images = [
-   "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr05/15/9/anigif_enhanced-buzz-26388-1381844103-11.gif",
-    "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr01/15/9/anigif_enhanced-buzz-31540-1381844535-8.gif",
-    "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr05/15/9/anigif_enhanced-buzz-26390-1381844163-18.gif",
-    "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr06/15/10/anigif_enhanced-buzz-1376-1381846217-0.gif",
-    "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr03/15/9/anigif_enhanced-buzz-3391-1381844336-26.gif",
-    "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr06/15/10/anigif_enhanced-buzz-29111-1381845968-0.gif",
-    "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr03/15/9/anigif_enhanced-buzz-3409-1381844582-13.gif",
-    "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr02/15/9/anigif_enhanced-buzz-19667-1381844937-10.gif",
-    "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr05/15/9/anigif_enhanced-buzz-26358-1381845043-13.gif",
-    "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr06/15/9/anigif_enhanced-buzz-18774-1381844645-6.gif",
-    "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr06/15/9/anigif_enhanced-buzz-25158-1381844793-0.gif",
-    "http://img.buzzfeed.com/buzzfeed-static/static/2013-10/enhanced/webdr03/15/10/anigif_enhanced-buzz-11980-1381846269-1.gif"
-    ]
+    "https://img.buzzfeed.com/buzzfeed-static/static/2015-11/16/8/campaign_images/webdr11/19-motivos-que-fazem-gatos-serem-melhores-do-que--1-16042-1447681191-0_big.jpg?output-format=auto&output-quality=auto&resize=300:*;",
+    "https://img.buzzfeed.com/buzzfeed-static/static/2013-11/campaign_images/webdr02/11/16/grumpy-cat-tem-o-pior-dia-de-todos-os-tempos-na-d-1-16133-1384204659-10_big.jpg?output-format=auto&output-quality=auto&resize=300:*;",
+    "https://img.buzzfeed.com/buzzfeed-static/static/2019-03/25/17/campaign_images/buzzfeed-prod-web-01/por-que-voce-deveria-dar-um-microfone-para-o-seu--2-1108-1553548816-0_dblbig.jpg?output-format=auto&output-quality=auto&resize=300:*;",
+]
 
 @app.route('/')
 def index():
