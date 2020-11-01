@@ -10,7 +10,7 @@
 
 Docker build images by reading instructions from a _Dockerfile_. A _Dockerfile_ is a text document that contains all the commands a user could call on the command line to assemble an image. `docker image build` command uses this file and executes all the commands in succession to create an image.
 
-`build` command is also passed a context that is used during image creation. This context can be a path on your local filesystem or a URL to a Git repository.
+The `build` command is also passed a context that is used during image creation. This context can be a path on your local filesystem or a URL to a Git repository.
 
 _Dockerfile_ is usually called _Dockerfile_. The complete list of commands that can be specified in this file are explained at https://docs.docker.com/reference/builder/. The common commands are listed below:
 
@@ -19,7 +19,7 @@ _Dockerfile_ is usually called _Dockerfile_. The complete list of commands that 
 |==================
 | Command | Purpose | Example
 | FROM | First non-comment instruction in _Dockerfile_ | `FROM ubuntu`
-| COPY | Copies mulitple source files from the context to the file system of the container at the specified path | `COPY .bash_profile /home`
+| COPY | Copies mulitple source files from the specified context to the file system of the container at the specified path | `COPY .bash_profile /home`
 | ENV | Sets the environment variable | `ENV HOSTNAME=test`
 | RUN | Executes a command | `RUN apt-get update`
 | CMD | Defaults for an executing container | `CMD ["/bin/echo", "hello world"]`
@@ -39,7 +39,7 @@ FROM ubuntu:latest
 CMD ["/bin/echo", "hello world"]
 ----
 
-This image uses `ubuntu` as the base image. `CMD` command defines the command that needs to run. It provides a different entry point of `/bin/echo` and gives the argument "`hello world`".
+This image uses `ubuntu` as the base image. The `CMD` command specifies the command that needs to run. It provides a different entry point of `/bin/echo` and gives the argument "`hello world`".
 
 Build the image using the command:
 
@@ -82,7 +82,7 @@ helloworld          latest              e61f88f3a0f7        3 minutes ago       
 ubuntu              latest              2d696327ab2e        4 days ago          122MB
 ----
 
-Other images may be shown as well but we are interested in these two images for now.
+Other images may be shown as well but we are interested only in these two images for now.
 
 Run the container using the command:
 
@@ -109,7 +109,7 @@ ubuntu              latest              2d696327ab2e        4 days ago          
 busybox             latest              54511612f1c4        9 days ago          1.13MB
 ----
 
-`helloworld:2` is the format that allows to specify the image name and assign a tag/version to it separated by `:`.
+`helloworld:2` is the format that allows you to specify the image name; assign a tag/version to it separated by `:`.
 
 == Create your first image using Java
 
@@ -126,7 +126,7 @@ If you are running OpenJDK 9, `mvn package` may fail with
 ----
 because support for Java 5 http://openjdk.java.net/jeps/182[was dropped in JDK9].
 
-You can add
+You can add the following (place it above the dependency tag)
 [source, xml]
 ----
   <properties>
@@ -190,7 +190,7 @@ Exit out of the container by typing `exit` in the container shell.
 
 === Package and run Java application as Docker image
 
-Create a new Dockerfile in `helloworld` directory and use the following content:
+Create a new Dockerfile in the `helloworld` directory and use the following content:
 
 [source, text]
 ----
@@ -213,7 +213,7 @@ This displays the output:
 
     Hello World!
 
-This shows the exactly same output that was printed when the Java class was invoked using Java CLI.
+This shows exactly the same output that was printed when the Java class was invoked using the Java CLI.
 
 === Package and run Java Application using Docker Maven Plugin
 
@@ -230,7 +230,7 @@ https://github.com/fabric8io/docker-maven-plugin[Docker Maven Plugin] allows you
 | `docker:logs` | Show container logs
 |====
 
-Complete set of goals are listed at https://github.com/fabric8io/docker-maven-plugin.
+The complete set of goals are listed at https://github.com/fabric8io/docker-maven-plugin.
 
 Clone the sample code from https://github.com/arun-gupta/docker-java-sample/.
 
@@ -251,7 +251,7 @@ This will show an output like:
 [INFO] ------------------------------------------------------------------------
 ----
 
-The list of images can be checked using the command `docker image ls | grep hello-java`:
+The list of images can then be checked using the command `docker image ls | grep hello-java`:
 
 [source, text]
 ----
@@ -273,7 +273,7 @@ This will show an output like:
 
 This is similar output when running the Java application using `java` CLI or the Docker container using `docker container run` command.
 
-The container is running in the foreground. Use `Ctrl` + `C` to interrupt the container and return back to terminal.
+The container is running in the foreground. Use `Ctrl` + `C` to interrupt the container and return back to the terminal.
 
 Only one change was required in the project to enable Docker packaging and running. A Maven profile is added in `pom.xml`:
 
