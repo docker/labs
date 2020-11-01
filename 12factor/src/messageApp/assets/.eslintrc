@@ -1,0 +1,61 @@
+{
+  //   ╔═╗╔═╗╦  ╦╔╗╔╔╦╗┬─┐┌─┐  ┌─┐┬  ┬┌─┐┬─┐┬─┐┬┌┬┐┌─┐
+  //   ║╣ ╚═╗║  ║║║║ ║ ├┬┘│    │ │└┐┌┘├┤ ├┬┘├┬┘│ ││├┤
+  //  o╚═╝╚═╝╩═╝╩╝╚╝ ╩ ┴└─└─┘  └─┘ └┘ └─┘┴└─┴└─┴─┴┘└─┘
+  //  ┌─  ┌─┐┌─┐┬─┐  ┌┐ ┬─┐┌─┐┬ ┬┌─┐┌─┐┬─┐   ┬┌─┐  ┌─┐┌─┐┌─┐┌─┐┌┬┐┌─┐  ─┐
+  //  │   ├┤ │ │├┬┘  ├┴┐├┬┘│ ││││└─┐├┤ ├┬┘   │└─┐  ├─┤└─┐└─┐├┤  │ └─┐   │
+  //  └─  └  └─┘┴└─  └─┘┴└─└─┘└┴┘└─┘└─┘┴└─  └┘└─┘  ┴ ┴└─┘└─┘└─┘ ┴ └─┘  ─┘
+  // > An .eslintrc configuration override for use in the `assets/` directory.
+  //
+  // This extends the top-level .eslintrc file, primarily to change the set of
+  // supported globals, as well as any other relevant settings.  (Since JavaScript
+  // code in the `assets/` folder is intended for the browser habitat, a different
+  // set of globals is supported.  For example, instead of Node.js/Sails globals
+  // like `sails` and `process`, you have access to browser globals like `window`.)
+  //
+  // (See .eslintrc in the root directory of this Sails app for more context.)
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  "extends": [
+    "../.eslintrc"
+  ],
+
+  "env": {
+    "browser": true,
+    "node": false
+  },
+
+  "parserOptions": {
+    "ecmaVersion": 8
+    //^ If you are not using a transpiler like Babel, change this to `5`.
+  },
+
+  "globals": {
+
+    // Allow any window globals you're relying on here; e.g.
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    "SAILS_LOCALS": true,
+    "io": true,
+    // "google": true,
+    // ...etc.
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    // Make sure backend globals aren't indadvertently tolerated in our client-side JS:
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    "sails": false,
+    "_": false
+    // ...and any other backend globals (e.g. `"Organization": false`)
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  },
+
+  "rules": {
+    "no-undef": ["error"]
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // ^^Note: If you've enabled the "no-undef" rule in the top level .eslintrc file, then
+    // the globalIds of Sails models should also be blacklisted above under "globals".
+    // (In this scenario, also note that this override for the "no-undef" rule could
+    // simply be removed, since it'd be redundant.)
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  }
+
+}

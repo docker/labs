@@ -3,8 +3,8 @@
 To illustrate the 12 factors, we start by creating a simple Node.js application as a HTTP Rest API exposing CRUD verbs on a *message* model.
 
 There is a couple of prerequisite to build this application
-* [Node.js 4.4.5 (LTS)](https://nodejs.org/en/)
-* [mongo 3.2](https://docs.mongodb.org/manual/installation/)
+* [Node.js 10.13.0 (LTS)](https://nodejs.org/en/)
+* [mongo 4.0](https://docs.mongodb.org/manual/installation/)
 
 ## Routes exposed
 
@@ -13,7 +13,7 @@ HTTP verb | URI | Action
 GET | /message | list all messages
 GET | /message/ID | get message with ID
 POST | /message | create a new message
-PUT | /message/ID | modify message with ID
+PATCH | /message/ID | modify message with ID
 DELETE | /message/ID | delete message with ID
 
 ## Setup
@@ -42,13 +42,13 @@ curl http://localhost:1337/message
    "text": "hello",
    "createdAt": "2015-11-08T13:15:15.363Z",
    "updatedAt": "2015-11-08T13:15:15.363Z",
-   "id": "5638b363c5cd0825511690bd"
+   "id": 1
  },
  {
    "text": "hola",
    "createdAt": "2015-11-08T13:15:45.774Z",
    "updatedAt": "2015-11-08T13:15:45.774Z",
-   "id": "5638b381c5cd0825511690be"
+   "id": 2
  }
 ]
 ```
@@ -56,13 +56,13 @@ curl http://localhost:1337/message
 Modify a message
 
 ```
-curl -XPUT http://localhost:1337/message/5638b363c5cd0825511690bd?text=hey
+curl -XPATCH http://localhost:1337/message/1?text=hey
 ```
 
 Delete a message
 
  ```
- curl -XDELETE http://localhost:1337/message/5638b381c5cd0825511690be
+ curl -XDELETE http://localhost:1337/message/2
  ```
 
 Get updates list of messages
@@ -75,7 +75,7 @@ curl http://localhost:1337/message
    "text": "hey",
    "createdAt": "2015-11-08T13:15:15.363Z",
    "updatedAt": "2015-11-08T13:19:40.179Z",
-   "id": "5638b363c5cd0825511690bd"
+   "id": 1
  }
 ]
 ```

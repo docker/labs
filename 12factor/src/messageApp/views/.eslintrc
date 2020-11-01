@@ -1,0 +1,21 @@
+{
+  //   ╔═╗╔═╗╦  ╦╔╗╔╔╦╗┬─┐┌─┐  ┌─┐┬  ┬┌─┐┬─┐┬─┐┬┌┬┐┌─┐
+  //   ║╣ ╚═╗║  ║║║║ ║ ├┬┘│    │ │└┐┌┘├┤ ├┬┘├┬┘│ ││├┤
+  //  o╚═╝╚═╝╩═╝╩╝╚╝ ╩ ┴└─└─┘  └─┘ └┘ └─┘┴└─┴└─┴─┴┘└─┘
+  //  ┌─  ┌─┐┌─┐┬─┐  ┬┌┐┌┬  ┬┌┐┌┌─┐  ┌─┐┌─┐┬─┐┬┌─┐┌┬┐  ┌┬┐┌─┐┌─┐┌─┐  ─┐
+  //  │   ├┤ │ │├┬┘  │││││  ││││├┤   └─┐│  ├┬┘│├─┘ │    │ ├─┤│ ┬└─┐   │
+  //  └─  └  └─┘┴└─  ┴┘└┘┴─┘┴┘└┘└─┘  └─┘└─┘┴└─┴┴   ┴    ┴ ┴ ┴└─┘└─┘  ─┘
+  // > An .eslintrc configuration override for use in the `views/` directory.
+  //
+  // (This works just like assets/.eslintrc, with one minor addition)
+  //
+  // For more information see:
+  //   https://sailsjs.com/anatomy/views/.eslintrc
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  "extends": [
+    "../assets/.eslintrc"
+  ],
+  "rules": {
+    "eol-last": [0]
+  }
+}
