@@ -1,7 +1,7 @@
 ## 1.0 Running your first container
-Now that you have everything setup, it's time to get our hands dirty. In this section, you are going to run an [Alpine Linux](http://www.alpinelinux.org/) container (a lightweight linux distribution) on your system and get a taste of the `docker run` command.
+Now that you have everything set up, it's time to get your hands dirty. In this section, you are going to run an [Alpine Linux](http://www.alpinelinux.org/) container (a lightweight linux distribution) on your system and get a taste of the `docker run` command.
 
-To get started, let's run the following in our terminal:
+To get started, let's run the following in your terminal:
 ```
 $ docker pull alpine
 ```
