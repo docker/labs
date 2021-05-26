@@ -1,3 +1,5 @@
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/docker/labs)
+
 # Docker Tutorials and Labs
 
 > At this time we are not actively adding labs to this repository. Our focus is on [training.play-with-docker.com](https://training.play-with-docker.com) where new lab and workshop oriented content is being added. We welcome fixes to existing content. For any new content you wish to contribute, please use this repository:[https://github.com/play-with-docker/play-with-docker.github.io](https://github.com/play-with-docker/play-with-docker.github.io).
