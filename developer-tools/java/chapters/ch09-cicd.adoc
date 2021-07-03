@@ -80,8 +80,8 @@ sudo -E docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-com
 
 # Run the integration tests
 sudo -E docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compose.yml \
-     run mongo-docker-demo-tests \
-     mvn -e JAVA_TOOL_OPTIONS="--add-opens=java.base/java.lang=ALL-UNNAMED" -f /maven/code/pom.xml -Dmaven.repo.local=/m2/repository \
+     run -e JAVA_TOOL_OPTIONS="--add-opens=java.base/java.lang=ALL-UNNAMED" mongo-docker-demo-tests \
+     mvn -f /maven/code/pom.xml -Dmaven.repo.local=/m2/repository \
      -Pintegration-test verify 
 ----
 +
