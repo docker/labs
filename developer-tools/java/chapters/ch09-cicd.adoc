@@ -64,7 +64,7 @@ image::docker-ci-cd-03.png[]
 cd sample
 
 # Generates the images
-sudo /var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn clean install -Papp-docker-image
+sudo -E /var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn clean install -Papp-docker-image
 
 # Starts the mongo service. The -p option allows multiple builds to run at the same time, 
 # since we can start multiple instances of the containers
@@ -74,14 +74,14 @@ sudo docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compos
 sleep 30
 
 # Run the application
-sudo docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compose.yml \
+sudo -E docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compose.yml \
      run mongo-docker-demo \
-     java -jar /maven/jar/mongo-docker-demo-1.0-SNAPSHOT-jar-with-dependencies.jar mongo 
+     java --add-opens=java.base/java.lang=ALL-UNNAMED -jar /maven/jar/mongo-docker-demo-1.0-SNAPSHOT-jar-with-dependencies.jar mongo 
 
 # Run the integration tests
-sudo docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compose.yml \
+sudo -E docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compose.yml \
      run mongo-docker-demo-tests \
-     mvn -f /maven/code/pom.xml -Dmaven.repo.local=/m2/repository \
+     mvn -e JAVA_TOOL_OPTIONS="--add-opens=java.base/java.lang=ALL-UNNAMED" -f /maven/code/pom.xml -Dmaven.repo.local=/m2/repository \
      -Pintegration-test verify 
 ----
 +
@@ -98,7 +98,7 @@ image::docker-ci-cd-05.png[]
 [source, text]
 ----
 cd sample
-sudo docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compose.yml down
+sudo -E docker-compose -p app-$BUILD_NUMBER --file src/test/resources/docker-compose.yml down
 ----
 +
 . Uncheck the `Execute script only if build succeeds` and `Execute script only if build fails` options, so this script will run always when the build ends. This way, we make sure to always stop the services.
