@@ -2,7 +2,7 @@
 
 ## Application details
 
-* API HTTP Rest based on Node.js / [Sails.js](sailsjs.org)) and [MongoDB](https://www.mongodb.com/)
+* API HTTP Rest based on Node.js / [Sails.js](sailsjs.com)) and [MongoDB](https://www.mongodb.com/)
 * A couple of prerequisites are needed to run the application locally
   * [Node.js 4.4.5 (LTS)](https://nodejs.org/en/)
   * [mongo 3.2](https://docs.mongodb.org/manual/installation/)
@@ -33,7 +33,7 @@ connection: 'mongo',
 ```
 
 ```
-config/connections.js:
+config/datastores.js:
 module.exports.connections = {
   mongo: {
      adapter: 'sails-mongo',
