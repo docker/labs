@@ -4,7 +4,7 @@ Configuration (credentials, database connection string, ...) should be stored in
 
 ## What does that mean for our application ?
 
-In _config/connections.js_, we define the _mongo_ connection and use MONGO_URL environment variable to pass the mongo connection string.
+In _config/datastores.js_, we define the _mongo_ connection and use MONGO_URL environment variable to pass the mongo connection string.
 
 ```node
 module.exports.connections = {
