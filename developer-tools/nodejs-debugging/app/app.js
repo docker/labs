@@ -21,7 +21,7 @@ app.get('/', function(req, res) {
     var message = LINES[lineIndex];
 
     lineIndex += 1;
-    if (lineIndex >= LINES.length) {
+    if (lineIndex > LINES.length) {
         lineIndex = 0;
     }
 
