@@ -11,8 +11,8 @@ A release is deployed on the execution environment and must be immutable.
 We'll use Docker in the whole development pipeline. We will start by adding a Dockerfile that will help define the build phase (during which the dependencies are compiled in _node-modules_ folder)
 
 ```
-FROM node:4.4.5
-ENV LAST_UPDATED 20160617T185400
+FROM node:10.13.0
+ENV LAST_UPDATED 20181122T020500
 
 # Copy source code
 COPY . /app
@@ -37,8 +37,8 @@ And verify the resulting image is in the list of available images
 
 ```
 $ docker images
-REPOSITORY        TAG           IMAGE ID           CREATED             SIZE
-message-app       v0.1          f35464cf4b0b       2 seconds ago       769 MB
+REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
+message-app         v0.1                8b841a90a089        About a minute ago   804MB
 ```
 
 Now the image (build) is available, execution environment must be injected to create a release.
@@ -53,7 +53,7 @@ We'll go for the second option and define a docker-compose file where the MONGO_
 version: '3'
 services:
   mongo:
-    image: mongo:3.2
+    image: mongo:4.0
     volumes:
       - mongo-data:/data/db
     expose:

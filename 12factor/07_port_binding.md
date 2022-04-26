@@ -14,7 +14,7 @@ Docker already handles that for us, as we can see in the docker-compose file. Th
 version: '3'
 services:
   mongo:
-    image: mongo:3.2
+    image: mongo:4.0
     volumes:
       - mongo-data:/data/db
     expose:
@@ -26,16 +26,16 @@ services:
     expose:
       - "6379"
   app:
-    image: message-app:v0.2 # New version taking into account REDIS_URL
+    image: message-app:v0.2 # New version taking into account REDIS_HOST
     ports:
-      - "8000:80"     // app service is exposed on the port 8000 of the host
+      - "8000:80"     # app service is exposed on the port 8000 of the host
     links:
       - mongo
     depends_on:
       - mongo
     environment:
       - MONGO_URL=mongodb://mongo/messageApp
-      - REDIS_URL=redis
+      - REDIS_HOST=kv
 volumes:
   mongo-data:
   redis-data:
