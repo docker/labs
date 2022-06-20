@@ -179,4 +179,6 @@ Our application is then available through http://192.168.99.101:8000/message
 
 192.168.99.101 is the IP of the Swarm master. 8000 is the port exported by the load balancer to the outside.
 
+Previous: [Multiple Host Networking][multiple-host-networking]
 
+[multiple-host-networking]: ./5_multiple_hosts_networking.md
