@@ -12,7 +12,7 @@ The minimum requirements are:
 You can run Windows containers on Windows 10, Windows Server 2016 and Windows Server 2019:
 
 + [Install Docker Desktop on Windows 10](https://hub.docker.com/editions/community/docker-ce-desktop-windows "Windows 10 Setup")
-+ [Install Docker Enterprise Engine on Windows Server](https://hub.docker.com/editions/enterprise/docker-ee-server-windows "Setup on Windows Server")
++ [Install Docker Enterprise Engine on Windows Server](https://docker-docs.netlify.app/install/windows/docker-ee/ "Setup on Windows Server")
 
 > Most public cloud providers also have a VM image with Docker already installed. You can use Microsoft's **Windows Server 2019 Datacenter with Containers** VM image on Azure, and Amazon's **Microsoft Windows Server 2019 Base with Containers** AMI on AWS.
 
