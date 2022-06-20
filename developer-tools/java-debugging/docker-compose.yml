@@ -22,6 +22,8 @@ services:
     # mount point for application in tomcat
     volumes:
       - ./app/target/UserSignup:/usr/local/tomcat/webapps/UserSignup
+      # for checking logs in host conveniently
+      - ./app/logs:/usr/local/tomcat/logs
     links:
       - database:registration-database
     # open ports for tomcat and remote debugging
