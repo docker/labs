@@ -186,14 +186,14 @@ The following commands are some of the main ones to interact with the applicatio
 
 ![3 api containers](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/single_host_net_1.png)
 
-Several containers of the app service (our Node.js API) are running and are accessible through random port number of the Docker host. Wow are the new instanciated containers addressed ?
+Several containers of the app service (our Node.js API) are running and are accessible through random port number of the Docker host. How are the new instanciated containers addressed ?
 
 => Need to add a load balancer that will be updated each time a container is created or removed and that will forward each request to a running instance of the app service.
 
 ## Usage of dockercloud/haproxy image
 
 [dockercloud/haproxy](https://store.docker.com/images/haproxy) is a good candidate to be used in front of our **app** service.
-It will update it's configuration each time a container is started / stopped.
+It will update its configuration each time a container is started / stopped.
 
 ![load balancer](https://dl.dropboxusercontent.com/u/2330187/docker/labs/node/single_host_net_2.png)
 
