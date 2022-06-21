@@ -116,7 +116,7 @@ Test HTTP Rest API
 
 ```
 # Create a  new message
-$ curl -XPOST http://192.168.99.100:8000/message?text=hello
+$ curl -XPOST http://192.168.99.100:8000/message?text=hello - not working: curl (7) Connection refused when run my mac command line
 {
   "text": "hello",
   "createdAt": "2016-06-06T14:01:05.764Z",
