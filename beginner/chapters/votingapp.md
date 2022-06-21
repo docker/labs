@@ -249,7 +249,7 @@ docker stack deploy --compose-file docker-stack.yml vote
 ```
 #### 3.2.4 Another test run
 
-Now take it for a spin again. Go to the URLs you used in section [3.1](#31-deploying-the-app) and see the new votes.
+Now take it for a spin again. Go to the URLs you used in section [3.1](#test-run) and see the new votes.
 
 #### 3.2.5 Remove the stack
 
