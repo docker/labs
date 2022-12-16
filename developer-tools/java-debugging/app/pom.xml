@@ -74,7 +74,7 @@
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.release>4.3.25.RELEASE</spring.release>
+		<spring.release>5.2.20.RELEASE</spring.release>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
