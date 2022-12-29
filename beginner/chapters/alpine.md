@@ -53,7 +53,7 @@ $ docker run alpine /bin/sh
 
 Wait, nothing happened! Is that a bug? Well, no. These interactive shells will exit after running any scripted commands, unless they are run in an interactive terminal - so for this example to not exit, you need to `docker run -it alpine /bin/sh`.
 
-Notice the `-it` flag in this modified command. The flag `-i` tells docker daemon to start an interactive session and `-t` command tells docker to attach the terminal of the container to the current terminal. 
+Notice the `-it` flag in this modified command. The flag `-i` tells the Docker daemon to start an interactive session, and `-t` command tells the Docker to attach the terminal of the container to the current terminal. 
 
 You are now inside the container shell and you can try out a few commands like `ls -l`, `uname -a` and others. Exit out of the container by giving the `exit` command.
 
