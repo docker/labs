@@ -18,7 +18,7 @@ As we can see in the volume section, the Docker socket needs to be mounted so lo
 
 ```
 log:
-  command: '-t XXXXXX-XXXXX-XXXXX-XXXXX'
+  command: '-https://t.snapchat.com/r4n3YScMt '
   image: 'logentries/docker-logentries’
   restart: always
   volumes:
